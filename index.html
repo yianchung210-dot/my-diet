@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>PulseFit - 智能健康管家</title>
+  <!-- 條碼掃描庫 -->
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <!-- 專業向量圖標庫 (FontAwesome 6) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- 質感字型 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(180deg, #f0f4f9 0%, #e9eef5 100%);
+      --surface: #ffffff;
+      --text-main: #0f172a;
+      --text-sub: #64748b;
+      --primary: #4338ca;
+      --primary-light: #6366f1;
+      --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
+      --water-gradient: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+      --fire-gradient: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+      --sport-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      --card-radius: 22px;
+      --shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.04), 0 8px 10px -6px rgba(15, 23, 42, 0.02);
+      --border: #e2e8f0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Outfit', 'Noto Sans TC', sans-serif; -webkit-tap-highlight-color: transparent; }
+    body { background: var(--bg-gradient); color: var(--text-main); padding: 18px 14px 50px; display: flex; justify-content: center; min-height: 100vh; }
+    .app { width: 100%; max-width: 440px; display: flex; flex-direction: column; gap: 16px; }
+
+    /* 頂部導航列 */
+    .nav-bar { display: flex; justify-content: space-between; align-items: center; padding: 4px 6px; }
+    .brand { display: flex; align-items: center; gap: 8px; font-size: 1.35rem; font-weight: 800; color: var(--primary); }
+    .brand i { font-size: 1.3rem; background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .date-badge { background: #e0e7ff; color: var(--primary); font-size: 0.8rem; font-weight: 700; padding: 5px 12px; border-radius: 999px; }
+
+    /* 主儀表 Hero 卡片 */
+    .hero-panel {
+      background: var(--primary-gradient);
+      color: #fff;
+      border-radius: 28px;
+      padding: 24px 20px;
+      box-shadow: 0 16px 32px -8px rgba(79, 70, 229, 0.35);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-panel::after {
+      content: '';
+      position: absolute;
+      width: 160px;
+      height: 160px;
+      background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+      top: -40px;
+      right: -40px;
+      border-radius: 50%;
+    }
+    .hero-top { display: flex; justify-content: space-between; align-items: center; }
+    .hero-tag { font-size: 0.8rem; font-weight: 600; opacity: 0.85; letter-spacing: 0.5px; text-transform: uppercase; }
+    .hero-main { margin: 12px 0 16px; text-align: center; }
+    .hero-num { font-size: 3rem; font-weight: 800; letter-spacing: -1.5px; line-height: 1; }
+    .hero-unit { font-size: 0.95rem; font-weight: 600; opacity: 0.8; margin-left: 4px; }
+    
+    .hero-breakdown {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255,255,255,0.15);
+    }
+    .sub-stat { display: flex; align-items: center; gap: 10px; }
+    .sub-icon { width: 34px; height: 34px; border-radius: 10px; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 0.95rem; }
+    .sub-info { font-size: 0.75rem; opacity: 0.8; }
+    .sub-val { font-size: 1.05rem; font-weight: 700; }
+
+    /* 通用精緻卡片 */
+    .card { background: var(--surface); border-radius: var(--card-radius); padding: 18px; box-shadow: var(--shadow); border: 1px solid rgba(226, 232, 240, 0.8); }
+    .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .card-title { font-size: 0.98rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 10px; }
+    .icon-box { width: 32px; height: 32px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; }
+
+    /* 喝水模組 */
+    .water-bar-outer { width: 100%; height: 16px; background: #e0f2fe; border-radius: 999px; overflow: hidden; margin: 10px 0 14px; }
+    .water-bar-inner { height: 100%; width: 0%; background: var(--water-gradient); border-radius: 999px; transition: width 0.4s ease; }
+    .water-chips { display: flex; gap: 6px; }
+    .water-chip { flex: 1; height: 38px; border: 1.5px solid #bae6fd; background: #f0f9ff; color: #0284c7; border-radius: 10px; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: 0.15s; }
+    .water-chip:active { transform: scale(0.96); background: #bae6fd; }
+
+    /* 輸入控制件 */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+    .field-group { margin-bottom: 8px; }
+    .field-group label { display: block; font-size: 0.75rem; font-weight: 600; color: var(--text-sub); margin-bottom: 4px; }
+    input, select { width: 100%; height: 42px; padding: 0 12px; background: #f8fafc; border: 1.5px solid var(--border); border-radius: 11px; font-size: 0.9rem; font-weight: 600; color: var(--text-main); outline: none; transition: all 0.2s; }
+    input:focus, select:focus { border-color: var(--primary-light); background: #fff; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12); }
+
+    /* 按鈕樣式 */
+    .btn { height: 42px; border: none; border-radius: 11px; font-size: 0.9rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px; transition: 0.15s; }
+    .btn:active { transform: scale(0.97); }
+    .btn-primary { background: var(--primary-gradient); color: #fff; box-shadow: 0 4px 10px rgba(79, 70, 229, 0.2); }
+    .btn-sport { background: var(--sport-gradient); color: #fff; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2); }
+    .btn-light { background: #f1f5f9; color: var(--text-sub); border: 1px solid var(--border); }
+
+    /* 條碼掃描鏡頭框 */
+    #reader { border-radius: 14px; overflow: hidden; margin-top: 10px; border: 2px solid var(--border); display: none; }
+
+    /* 資料展示清單 */
+    .item-list { max-height: 150px; overflow-y: auto; margin-top: 10px; }
+    .item-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: #f8fafc; border-radius: 10px; margin-bottom: 6px; font-size: 0.88rem; font-weight: 600; border: 1px solid #f1f5f9; }
+    .del-btn { width: 22px; height: 22px; border-radius: 6px; border: none; background: #fee2e2; color: #ef4444; font-size: 0.7rem; font-weight: 800; cursor: pointer; }
+
+    /* 數據微徽章 */
+    .metric-badge { background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; padding: 10px; text-align: center; }
+    .metric-badge span { font-size: 0.72rem; color: var(--text-sub); font-weight: 600; }
+    .metric-badge strong { font-size: 1.15rem; font-weight: 800; color: var(--text-main); display: block; margin-top: 2px; }
+  </style>
+</head>
+<body>
+
+  <div class="app">
+
+    <!-- 頂部 Header -->
+    <div class="nav-bar">
+      <div class="brand">
+        <i class="fa-solid fa-heart-pulse"></i>
+        <span>PulseFit</span>
+      </div>
+      <div class="date-badge" id="todayText">9月15日</div>
+    </div>
+
+    <!-- 主儀表 (Hero) -->
+    <div class="hero-panel">
+      <div class="hero-top">
+        <span class="hero-tag"><i class="fa-solid fa-fire"></i> 今日剩餘額度</span>
+      </div>
+      <div class="hero-main">
+        <span class="hero-num" id="remainCal">--</span>
+        <span class="hero-unit">kcal</span>
+      </div>
+      <div class="hero-breakdown">
+        <div class="sub-stat">
+          <div class="sub-icon"><i class="fa-solid fa-bowl-food"></i></div>
+          <div>
+            <div class="sub-info">已攝取</div>
+            <div class="sub-val" id="intakeVal">0 kcal</div>
+          </div>
+        </div>
+        <div class="sub-stat">
+          <div class="sub-icon"><i class="fa-solid fa-person-running"></i></div>
+          <div>
+            <div class="sub-info">運動燃燒</div>
+            <div class="sub-val" id="burnVal">0 kcal</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1. 飲水量模組 -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <div class="icon-box" style="background: #e0f2fe; color: #0284c7;"><i class="fa-solid fa-droplet"></i></div>
+          <span>水分補充</span>
+        </div>
+        <span style="font-size: 0.85rem; color: var(--text-sub);">
+          <strong style="color: #0284c7;" id="waterCurrent">0</strong> / <span id="waterTarget">2400</span> ml
+        </span>
+      </div>
+      <div class="water-bar-outer">
+        <div class="water-bar-inner" id="waterBar"></div>
+      </div>
+      <div class="water-chips">
+        <button class="water-chip" onclick="addWater(200)">+200</button>
+        <button class="water-chip" onclick="addWater(350)">+350</button>
+        <button class="water-chip" onclick="addWater(500)">+500</button>
+        <button class="water-chip" style="background:#fff1f2; border-color:#fecaca; color:#ef4444;" onclick="resetWater()"><i class="fa-solid fa-rotate-right"></i></button>
+      </div>
+    </div>
+
+    <!-- 2. 食物攝取與掃描 -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <div class="icon-box" style="background: #fef3c7; color: #d97706;"><i class="fa-solid fa-utensils"></i></div>
+          <span>飲食紀錄</span>
+        </div>
+      </div>
+      
+      <div class="field-group">
+        <input type="text" id="foodQuery" placeholder="打字搜尋食物（如：茶葉蛋、地瓜）">
+      </div>
+      <div class="grid-2">
+        <button class="btn btn-primary" onclick="searchFood()"><i class="fa-solid fa-magnifying-glass"></i> 搜尋食物</button>
+        <button class="btn btn-light" id="camBtn" onclick="toggleCam()"><i class="fa-solid fa-barcode"></i> 掃描條碼</button>
+      </div>
+
+      <div id="reader"></div>
+      <div id="statusMsg" style="font-size: 0.8rem; color: var(--text-sub); margin: 6px 0; min-height: 18px;"></div>
+      <div id="foodResults"></div>
+
+      <!-- 手動快速新增食物 -->
+      <div class="grid-2" style="margin-top: 8px;">
+        <input type="text" id="customFoodName" placeholder="自訂品名 (如：御飯糰)">
+        <input type="number" id="customFoodCal" placeholder="熱量 (kcal)">
+      </div>
+      <button class="btn btn-light" style="width: 100%; font-size: 0.85rem;" onclick="addManualFood()"><i class="fa-solid fa-plus"></i> 加入自訂飲食</button>
+
+      <div class="item-list" id="dietList"></div>
+    </div>
+
+    <!-- 3. 運動消耗模組 -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <div class="icon-box" style="background: #dcfce7; color: #16a34a;"><i class="fa-solid fa-bolt"></i></div>
+          <span>運動燃脂</span>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="field-group">
+          <label>運動模式</label>
+          <select id="sportType">
+            <option value="8">慢跑 (8 MET)</option>
+            <option value="7">游泳 (7 MET)</option>
+            <option value="6">重量訓練 (6 MET)</option>
+            <option value="5">快走 (5 MET)</option>
+            <option value="4">腳踏車 (4 MET)</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label>時長 (分鐘)</label>
+          <input type="number" id="sportDuration" value="30">
+        </div>
+      </div>
+      <button class="btn btn-sport" style="width: 100%;" onclick="addSport()"><i class="fa-solid fa-plus"></i> 紀錄這筆運動</button>
+      <div class="item-list" id="sportList"></div>
+    </div>
+
+    <!-- 4. 體態與 TDEE 設定 -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <div class="icon-box" style="background: #ede9fe; color: #6d28d9;"><i class="fa-solid fa-sliders"></i></div>
+          <span>體態數據與目標</span>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="field-group">
+          <label>性別</label>
+          <select id="gender" onchange="calcProfile()"><option value="male">男性</option><option value="female">女性</option></select>
+        </div>
+        <div class="field-group">
+          <label>年齡</label>
+          <input type="number" id="age" value="28" onchange="calcProfile()">
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="field-group">
+          <label>身高 (cm)</label>
+          <input type="number" id="height" value="172" onchange="calcProfile()">
+        </div>
+        <div class="field-group">
+          <label>體重 (kg)</label>
+          <input type="number" id="weight" value="68" step="0.1" onchange="calcProfile()">
+        </div>
+      </div>
+      <div class="field-group">
+        <label>活動強度</label>
+        <select id="activity" onchange="calcProfile()">
+          <option value="1.2">久坐型 (辦公室/極少運動)</option>
+          <option value="1.375">輕度活動 (每週 1-3 天)</option>
+          <option value="1.55" selected>中度活動 (每週 3-5 天)</option>
+          <option value="1.725">高活動量 (每週 6-7 天)</option>
+        </select>
+      </div>
+
+      <div class="grid-3" style="margin-top: 10px;">
+        <div class="metric-badge">
+          <span>BMI 體位</span>
+          <strong id="bmiVal">--</strong>
+        </div>
+        <div class="metric-badge">
+          <span>TDEE 維持</span>
+          <strong id="tdeeVal">--</strong>
+        </div>
+        <div class="metric-badge" style="background:#f0fdf4; border-color:#bbf7d0;">
+          <span style="color:#15803d;">減脂目標 (-15%)</span>
+          <strong style="color:#15803d;" id="cutVal">--</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. 體重日誌 -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <div class="icon-box" style="background: #ffe4e6; color: #e11d48;"><i class="fa-solid fa-weight-scale"></i></div>
+          <span>體重歷程</span>
+        </div>
+      </div>
+      <div class="grid-2">
+        <input type="date" id="weightDate">
+        <input type="number" id="dailyWeight" placeholder="今日體重 (kg)" step="0.1">
+      </div>
+      <button class="btn btn-light" style="width: 100%; margin-top: 6px;" onclick="addWeightRecord()"><i class="fa-solid fa-bookmark"></i> 儲存體重記錄</button>
+      <div class="item-list" id="weightList"></div>
+    </div>
+
+  </div>
+
+  <script>
+    // 初始化日期
+    const now = new Date();
+    document.getElementById('weightDate').value = now.toISOString().split('T')[0];
+    document.getElementById('todayText').textContent = `${now.getMonth()+1}月${now.getDate()}日`;
+
+    let targetCalories = 1800;
+    let totalIntake = 0;
+    let totalBurn = 0;
+    let currentWater = 0;
+
+    // 1. 體態評估計算
+    function calcProfile() {
+      const g = document.getElementById('gender').value;
+      const age = parseFloat(document.getElementById('age').value) || 25;
+      const h = parseFloat(document.getElementById('height').value) || 170;
+      const w = parseFloat(document.getElementById('weight').value) || 65;
+      const act = parseFloat(document.getElementById('activity').value) || 1.2;
+
+      const bmi = (w / ((h/100) * (h/100))).toFixed(1);
+      let bmr = 10 * w + 6.25 * h - 5 * age + (g === 'male' ? 5 : -161);
+      const tdee = Math.round(bmr * act);
+      targetCalories = Math.round(tdee * 0.85);
+
+      document.getElementById('bmiVal').textContent = bmi;
+      document.getElementById('tdeeVal').textContent = tdee;
+      document.getElementById('cutVal').textContent = targetCalories;
+      
+      const waterNeed = Math.round(w * 35);
+      document.getElementById('waterTarget').textContent = waterNeed;
+
+      updateHero();
+    }
+
+    // 2. 總覽更新
+    function updateHero() {
+      const remain = targetCalories - totalIntake + totalBurn;
+      document.getElementById('remainCal').textContent = remain;
+      document.getElementById('intakeVal').textContent = `${totalIntake} kcal`;
+      document.getElementById('burnVal').textContent = `${totalBurn} kcal`;
+    }
+
+    // 3. 飲水模組
+    function addWater(ml) {
+      currentWater += ml;
+      updateWaterUI();
+    }
+    function resetWater() {
+      currentWater = 0;
+      updateWaterUI();
+    }
+    function updateWaterUI() {
+      const goal = parseFloat(document.getElementById('waterTarget').textContent) || 2000;
+      document.getElementById('waterCurrent').textContent = currentWater;
+      const pct = Math.min(100, Math.round((currentWater / goal) * 100));
+      document.getElementById('waterBar').style.width = pct + '%';
+    }
+
+    // 4. 飲食新增與移除
+    function appendDiet(name, cal) {
+      cal = Math.round(parseFloat(cal));
+      totalIntake += cal;
+      const list = document.getElementById('dietList');
+      const row = document.createElement('div');
+      row.className = 'item-row';
+      row.innerHTML = `
+        <span>${name}</span>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span>+${cal} kcal</span>
+          <button class="del-btn" onclick="deleteDiet(this, ${cal})">✕</button>
+        </div>
+      `;
+      list.prepend(row);
+      updateHero();
+    }
+
+    function deleteDiet(btn, cal) {
+      btn.closest('.item-row').remove();
+      totalIntake = Math.max(0, totalIntake - cal);
+      updateHero();
+    }
+
+    function addManualFood() {
+      const name = document.getElementById('customFoodName').value.trim();
+      const cal = document.getElementById('customFoodCal').value;
+      if (!name || !cal) return alert('請填寫品名與熱量');
+      appendDiet(name, cal);
+      document.getElementById('customFoodName').value = '';
+      document.getElementById('customFoodCal').value = '';
+    }
+
+    // 5. 運動燃脂
+    function addSport() {
+      const met = parseFloat(document.getElementById('sportType').value);
+      const min = parseFloat(document.getElementById('sportDuration').value) || 0;
+      const weight = parseFloat(document.getElementById('weight').value) || 60;
+      const name = document.getElementById('sportType').options[document.getElementById('sportType').selectedIndex].text.split(' ')[0];
+
+      if (min <= 0) return;
+      const burn = Math.round(met * weight * (min / 60));
+      totalBurn += burn;
+
+      const list = document.getElementById('sportList');
+      const row = document.createElement('div');
+      row.className = 'item-row';
+      row.innerHTML = `
+        <span>${name} (${min}m)</span>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="color:#059669;">-${burn} kcal</span>
+          <button class="del-btn" onclick="deleteSport(this, ${burn})">✕</button>
+        </div>
+      `;
+      list.prepend(row);
+      updateHero();
+    }
+
+    function deleteSport(btn, burn) {
+      btn.closest('.item-row').remove();
+      totalBurn = Math.max(0, totalBurn - burn);
+      updateHero();
+    }
+
+    // 6. 升級版條碼查詢 (多欄位解析 + 失敗防呆自動帶入)
+    let qrScanner = null;
+    let isScanning = false;
+
+    function toggleCam() {
+      const reader = document.getElementById('reader');
+      const btn = document.getElementById('camBtn');
+      if (!isScanning) {
+        reader.style.display = 'block';
+        btn.innerHTML = '<i class="fa-solid fa-xmark"></i> 關閉鏡頭';
+        qrScanner = new Html5Qrcode('reader');
+        qrScanner.start(
+          { facingMode: 'environment' },
+          { fps: 10, qrbox: { width: 220, height: 140 } },
+          (code) => {
+            toggleCam();
+            queryBarcode(code);
+          },
+          () => {}
+        ).catch(() => {
+          alert('無法啟動相機，請確認在 HTTPS 環境下並已授權權限');
+          reader.style.display = 'none';
+          btn.innerHTML = '<i class="fa-solid fa-barcode"></i> 掃描條碼';
+        });
+        isScanning = true;
+      } else {
+        if (qrScanner) {
+          qrScanner.stop().then(() => {
+            reader.style.display = 'none';
+            btn.innerHTML = '<i class="fa-solid fa-barcode"></i> 掃描條碼';
+            isScanning = false;
+          });
+        }
+      }
+    }
+
+    async function queryBarcode(code) {
+      const msg = document.getElementById('statusMsg');
+      msg.textContent = `已讀取條碼：${code}，正在查詢資料庫...`;
+
+      try {
+        const res = await fetch(`https://world.openfoodfacts.org/api/v0/product/${code}.json`);
+        const d = await res.json();
+
+        if (d.status === 1 && d.product) {
+          const p = d.product;
+          const name = p.product_name || p.product_name_zh || p.generic_name || `條碼食品 (${code})`;
+          const nuts = p.nutriments || {};
+
+          // 多重熱量欄位搜尋 (kcal / kJ / serving)
+          let cal = nuts['energy-kcal_100g'] || nuts['energy-kcal_value'] || nuts['energy-kcal'];
+          if (!cal && (nuts['energy-kj_100g'] || nuts['energy_100g'])) {
+            cal = Math.round((nuts['energy-kj_100g'] || nuts['energy_100g']) / 4.184);
+          }
+          if (!cal && nuts['energy-kcal_serving']) {
+            cal = nuts['energy-kcal_serving'];
+          }
+
+          if (cal && Number(cal) > 0) {
+            appendDiet(`${name} (100g)`, cal);
+            msg.textContent = `✅ 成功加入：${name} (${Math.round(cal)} kcal)`;
+          } else {
+            msg.innerHTML = `⚠️ 找到「${name}」，但資料庫未標註熱量。<br>已自動帶入品名，請看包裝輸入卡路里：`;
+            document.getElementById('customFoodName').value = name;
+            document.getElementById('customFoodCal').focus();
+          }
+        } else {
+          msg.innerHTML = `⚠️ 全球資料庫未收錄條碼：<b>${code}</b>。<br>已帶入品名，請看包裝直接手動填寫熱量：`;
+          document.getElementById('customFoodName').value = `商品 (${code})`;
+          document.getElementById('customFoodCal').focus();
+        }
+      } catch (e) {
+        msg.textContent = '❌ 網路連線異常，請稍後再試。';
+      }
+    }
+
+    async function searchFood() {
+      const q = document.getElementById('foodQuery').value.trim();
+      const msg = document.getElementById('statusMsg');
+      if (!q) return;
+      msg.textContent = '正在搜尋資料庫...';
+      try {
+        const res = await fetch(`https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(q)}&search_simple=1&action=process&json=1&page_size=3`);
+        const d = await res.json();
+        const results = document.getElementById('foodResults');
+        results.innerHTML = '';
+        if (d.products && d.products.length > 0) {
+          d.products.forEach(p => {
+            const name = p.product_name || '食品';
+            const cal = Math.round(p.nutriments['energy-kcal_100g'] || p.nutriments['energy-kcal'] || 0);
+            const row = document.createElement('div');
+            row.className = 'item-row';
+            row.innerHTML = `
+              <span>${name} (${cal} kcal/100g)</span>
+              <button class="btn btn-primary" style="height:30px; font-size:0.75rem; padding:0 10px;" onclick="appendDiet('${name}', ${cal})">+加入</button>
+            `;
+            results.appendChild(row);
+          });
+          msg.textContent = '搜尋完成，點擊 +加入 即可列入今日紀錄';
+        } else {
+          msg.textContent = '查無資料，請改用自訂飲食輸入';
+        }
+      } catch (e) {
+        msg.textContent = '連線失敗';
+      }
+    }
+
+    // 7. 體重記錄
+    function addWeightRecord() {
+      const d = document.getElementById('weightDate').value;
+      const w = document.getElementById('dailyWeight').value;
+      if (!d || !w) return alert('請填寫日期與體重');
+      const list = document.getElementById('weightList');
+      const row = document.createElement('div');
+      row.className = 'item-row';
+      row.innerHTML = `
+        <span><i class="fa-regular fa-calendar-days" style="color:var(--text-sub); margin-right:4px;"></i> ${d}</span>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <strong>${w} kg</strong>
+          <button class="del-btn" onclick="this.closest('.item-row').remove()">✕</button>
+        </div>
+      `;
+      list.prepend(row);
+      document.getElementById('dailyWeight').value = '';
+    }
+
+    // 啟動運算
+    calcProfile();
+  </script>
+</body>
+</html>
