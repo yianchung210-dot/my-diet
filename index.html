@@ -20,11 +20,10 @@
     .stat-label { font-size: 0.75rem; opacity: 0.85; }
     .stat-val { font-size: 1.1rem; font-weight: 700; margin-top: 2px; }
 
-    /* 卡片通用設計 */
+    /* 卡片與標籤 */
     .card { background: white; border-radius: 14px; padding: 14px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
     .card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-weight: bold; }
     
-    /* 標籤色塊 */
     .badge { padding: 4px 10px; border-radius: 8px; color: white; font-size: 0.85rem; font-weight: bold; }
     .b-step { background: #8b5cf6; }
     .b-sport { background: #16a34a; }
@@ -34,9 +33,9 @@
     .b-snack { background: #10b981; }
     .b-drink { background: #06b6d4; }
 
-    /* 輸入區與按鈕排版 */
+    /* 表單與按鈕 */
     .input-row { display: grid; grid-template-columns: 2fr 1fr auto; gap: 6px; margin-bottom: 6px; }
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px; }
+    .grid-2 { display: grid; grid-template-columns: 1.4fr 1fr; gap: 6px; margin-bottom: 6px; }
     input, select { width: 100%; padding: 8px 10px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; outline: none; background: #fff; }
     input:focus, select:focus { border-color: #2563eb; }
     
@@ -46,7 +45,7 @@
     .btn-green { width: 100%; background: #16a34a; color: white; }
     .btn-purple { width: 100%; background: #8b5cf6; color: white; }
 
-    /* 條列清單明細 */
+    /* 條列清單 */
     .item-list { display: flex; flex-direction: column; gap: 4px; }
     .item-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 8px; background: #f8fafc; border-radius: 6px; font-size: 0.85rem; }
     .time-tag { font-size: 0.72rem; color: #64748b; margin-left: 6px; background: #e2e8f0; padding: 1px 4px; border-radius: 4px; }
@@ -58,9 +57,12 @@
 </head>
 <body>
 
+  <!-- 自動提示食物選單 -->
+  <datalist id="foodSuggestions"></datalist>
+
   <div class="container">
 
-    <!-- 頂部淨熱量總覽 -->
+    <!-- 頂部淨熱量總覽看板 -->
     <div class="summary-box">
       <div class="summary-top">
         <span id="dateShow">--</span>
@@ -79,14 +81,14 @@
       </div>
     </div>
 
-    <!-- 條碼掃描相機 -->
+    <!-- 相機掃描條碼 -->
     <div class="card">
       <button class="btn btn-cam" id="camBtn" onclick="toggleScanner()">📷 點此開啟相機掃條碼</button>
       <div id="reader"></div>
-      <div id="scanMsg">掃描條碼會自動抓取熱量，並即時同步到 Google 試算表</div>
+      <div id="scanMsg">掃描條碼或手動輸入，資料即時同步至 Google 試算表</div>
     </div>
 
-    <!-- 1. 每日步數 (排在最上方) -->
+    <!-- 每日步數 -->
     <div class="card">
       <div class="card-head">
         <span class="badge b-step">👟 每日步數</span>
@@ -97,10 +99,10 @@
         <span style="font-size:0.8rem; line-height:36px; color:#64748b;">步</span>
         <button class="btn btn-purple" onclick="saveSteps()">更新</button>
       </div>
-      <div style="font-size:0.75rem; color:#94a3b8; text-align:right;">系統自動換算 (每千步約 35 kcal)</div>
+      <div style="font-size:0.75rem; color:#94a3b8; text-align:right;">每千步自動換算約 35 kcal</div>
     </div>
 
-    <!-- 2. 運動燃脂 (排在最上方) -->
+    <!-- 運動燃脂（包含超慢跑、匹克球、重訓） -->
     <div class="card">
       <div class="card-head">
         <span class="badge b-sport">🏃 運動燃脂</span>
@@ -108,83 +110,85 @@
       </div>
       <div class="grid-2">
         <select id="sportType">
-          <option value="8">慢跑 (8 MET)</option>
-          <option value="7">游泳 (7 MET)</option>
-          <option value="6">重量訓練 (6 MET)</option>
-          <option value="4">快走 / 散步 (4 MET)</option>
-          <option value="5">騎腳踏車 (5 MET)</option>
-          <option value="6">匹克球 / 羽球 (6 MET)</option>
+          <option value="5.0">超慢跑 (5.0 MET)</option>
+          <option value="6.0">匹克球 (6.0 MET)</option>
+          <option value="5.5">重量訓練 (5.5 MET)</option>
+          <option value="8.0">慢跑 (8.0 MET)</option>
+          <option value="4.0">快走 / 散步 (4.0 MET)</option>
+          <option value="7.0">游泳 (7.0 MET)</option>
+          <option value="5.5">羽毛球 (5.5 MET)</option>
+          <option value="5.0">腳踏車 (5.0 MET)</option>
         </select>
-        <input type="number" id="sportMins" placeholder="分鐘 (例: 30)">
+        <input type="number" id="sportMins" placeholder="分鐘 (如: 30)">
       </div>
       <button class="btn btn-green" onclick="addSport()">＋ 紀錄這筆運動</button>
       <div class="item-list" id="list-sport" style="margin-top:8px;"></div>
     </div>
 
-    <!-- 3. 早餐 -->
+    <!-- 早餐 -->
     <div class="card">
       <div class="card-head">
         <span class="badge b-breakfast">🌅 早餐</span>
         <span style="font-size:0.85rem; color:#64748b;">小計：<strong id="sub-breakfast">0</strong> kcal</span>
       </div>
       <div class="input-row">
-        <input type="text" id="name-breakfast" placeholder="早餐品名 (如: 蛋餅)">
+        <input type="text" id="name-breakfast" list="foodSuggestions" placeholder="輸入或點選食物 (如: 水煮蛋)" oninput="autoFillCal('breakfast')">
         <input type="number" id="cal-breakfast" placeholder="熱量">
         <button class="btn-add" onclick="manualAdd('breakfast')">＋</button>
       </div>
       <div class="item-list" id="list-breakfast"></div>
     </div>
 
-    <!-- 4. 午餐 -->
+    <!-- 午餐 -->
     <div class="card">
       <div class="card-head">
         <span class="badge b-lunch">☀️ 午餐</span>
         <span style="font-size:0.85rem; color:#64748b;">小計：<strong id="sub-lunch">0</strong> kcal</span>
       </div>
       <div class="input-row">
-        <input type="text" id="name-lunch" placeholder="午餐品名 (如: 排骨便當)">
+        <input type="text" id="name-lunch" list="foodSuggestions" placeholder="輸入或點選食物 (如: 排骨便當)" oninput="autoFillCal('lunch')">
         <input type="number" id="cal-lunch" placeholder="熱量">
         <button class="btn-add" onclick="manualAdd('lunch')">＋</button>
       </div>
       <div class="item-list" id="list-lunch"></div>
     </div>
 
-    <!-- 5. 晚餐 -->
+    <!-- 晚餐 -->
     <div class="card">
       <div class="card-head">
         <span class="badge b-dinner">🌙 晚餐</span>
         <span style="font-size:0.85rem; color:#64748b;">小計：<strong id="sub-dinner">0</strong> kcal</span>
       </div>
       <div class="input-row">
-        <input type="text" id="name-dinner" placeholder="晚餐品名 (如: 水餃)">
+        <input type="text" id="name-dinner" list="foodSuggestions" placeholder="輸入或點選食物 (如: 水餃)" oninput="autoFillCal('dinner')">
         <input type="number" id="cal-dinner" placeholder="熱量">
         <button class="btn-add" onclick="manualAdd('dinner')">＋</button>
       </div>
       <div class="item-list" id="list-dinner"></div>
     </div>
 
-    <!-- 6. 點心/宵夜 -->
+    <!-- 點心/宵夜 -->
     <div class="card">
       <div class="card-head">
         <span class="badge b-snack">🍪 點心 / 宵夜</span>
         <span style="font-size:0.85rem; color:#64748b;">小計：<strong id="sub-snack">0</strong> kcal</span>
       </div>
       <div class="input-row">
-        <input type="text" id="name-snack" placeholder="點心品名 (如: 水果、堅果)">
+        <input type="text" id="name-snack" list="foodSuggestions" placeholder="輸入或點選食物 (如: 統一布丁)" oninput="autoFillCal('snack')">
         <input type="number" id="cal-snack" placeholder="熱量">
         <button class="btn-add" onclick="manualAdd('snack')">＋</button>
       </div>
       <div class="item-list" id="list-snack"></div>
     </div>
 
-    <!-- 7. 飲料 -->
+    <!-- 飲料 -->
     <div class="card">
       <div class="card-head">
         <span class="badge b-drink">🧋 飲料</span>
         <span style="font-size:0.85rem; color:#64748b;">小計：<strong id="sub-drink">0</strong> kcal</span>
       </div>
       <div class="input-row">
-        <input type="text" id="name-drink" placeholder="飲料名稱 (如: 拿鐵、微糖青茶)">
+        <input type="text" id="name-drink" list="foodSuggestions" placeholder="輸入或點選飲料 (如: 無糖豆漿)" oninput="autoFillCal('drink')">
         <input type="number" id="cal-drink" placeholder="熱量">
         <button class="btn-add" onclick="manualAdd('drink')">＋</button>
       </div>
@@ -194,10 +198,29 @@
   </div>
 
   <script>
-    // 已嵌入你的專屬 Google Apps Script 後端網址
     const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbz_pceZbIkWcBtp8a9EzbPEsj1avqhcMjNs16o85SERy6vFmq6IY1iwsuT6oQb4u3g9/exec";
 
-    // 常用超商條碼離線資料庫（秒查必有熱量）
+    // 擴充常見食物熱量資料庫
+    const calorieDictionary = {
+      // 蛋豆魚肉蛋品
+      "水煮蛋": 75, "茶葉蛋": 75, "荷包蛋": 120, "煎蛋": 130, "蒸蛋": 80, "溫泉蛋": 65,
+      "雞胸肉": 165, "舒肥雞胸肉": 130, "煎鮭魚": 230, "滷牛腱": 120, "嫩豆腐(半盒)": 80,
+      // 早餐類
+      "原味蛋餅": 260, "玉米蛋餅": 300, "鮪魚蛋餅": 320, "起司蛋餅": 310, "肉鬆蛋餅": 340,
+      "蘿蔔糕": 220, "肉包": 210, "菜包": 180, "饅頭": 280, "燒餅油條": 450, "飯糰": 420,
+      // 正餐主食便當
+      "白飯一碗": 280, "糙米飯一碗": 270, "排骨便當": 850, "雞腿便當": 800, "招牌便當": 750,
+      "健康餐盒": 550, "滷肉飯": 450, "火雞肉飯": 380, "水餃10顆": 500, "水餃": 50, "鍋貼10顆": 650,
+      "牛肉麵": 750, "陽春麵": 350, "麻醬麵": 520, "乾麵": 480, "燙青菜": 60, "地瓜": 140,
+      // 點心與宵夜
+      "香蕉": 90, "蘋果": 60, "統一布丁": 110, "豆花": 180, "鹹酥雞": 450, "炸薯條": 320,
+      "雞排": 650, "大腸包小腸": 500, "滷味切盤": 280, "堅果一把": 160,
+      // 飲品類
+      "無糖豆漿": 147, "低糖豆漿": 180, "低脂鮮乳": 120, "全脂鮮乳": 150, "美式咖啡": 15,
+      "拿鐵咖啡": 180, "珍珠奶茶": 550, "微糖青茶": 60, "無糖綠茶": 0, "無糖高纖豆漿": 147
+    };
+
+    // 條碼快查庫
     const barcodeDB = {
       "4710088410012": { name: "7-11 茶葉蛋", cal: 75 },
       "4710018111019": { name: "統一無糖高纖豆漿", cal: 147 },
@@ -211,6 +234,24 @@
       "4710088421025": { name: "7-11 肉鬆御飯糰", cal: 236 },
       "4710085121010": { name: "統一布丁", cal: 110 }
     };
+
+    // 初始化自動提示清單
+    const datalist = document.getElementById('foodSuggestions');
+    Object.keys(calorieDictionary).forEach(item => {
+      const opt = document.createElement('option');
+      opt.value = item;
+      opt.label = `${calorieDictionary[item]} kcal`;
+      datalist.appendChild(opt);
+    });
+
+    // 選擇食物自動帶入熱量
+    function autoFillCal(type) {
+      const name = document.getElementById(`name-${type}`).value.trim();
+      const calInput = document.getElementById(`cal-${type}`);
+      if (calorieDictionary[name] !== undefined) {
+        calInput.value = calorieDictionary[name];
+      }
+    }
 
     const mealNames = {
       breakfast: "早餐",
@@ -236,7 +277,6 @@
       stepBurn: 0
     }));
 
-    // 即時傳送至 Google 試算表
     function syncToGoogleSheet(record) {
       fetch(GOOGLE_SHEET_URL, {
         method: "POST",
@@ -246,12 +286,11 @@
       }).catch(e => console.log("同步失敗:", e));
     }
 
-    // 介面渲染
     function render() {
       let intakeTotal = 0;
       const categories = ['breakfast', 'lunch', 'dinner', 'snack', 'drink'];
 
-      // 渲染五大餐別
+      // 渲染五餐
       categories.forEach(type => {
         const listEl = document.getElementById(`list-${type}`);
         listEl.innerHTML = '';
@@ -278,7 +317,7 @@
         intakeTotal += sub;
       });
 
-      // 渲染運動清單
+      // 渲染運動
       const sportListEl = document.getElementById('list-sport');
       sportListEl.innerHTML = '';
       let sportTotal = 0;
@@ -301,12 +340,9 @@
       });
 
       document.getElementById('sub-sport').textContent = sportTotal;
-
-      // 渲染步數
       document.getElementById('stepInput').value = appData.steps || '';
       document.getElementById('sub-steps').textContent = appData.stepBurn || 0;
 
-      // 計算總消耗與淨熱量
       const burnTotal = sportTotal + (appData.stepBurn || 0);
       document.getElementById('totalIntake').textContent = `${intakeTotal} kcal`;
       document.getElementById('totalBurn').textContent = `${burnTotal} kcal`;
@@ -315,7 +351,6 @@
       localStorage.setItem(key, JSON.stringify(appData));
     }
 
-    // 1. 新增食物
     function manualAdd(type) {
       const nameEl = document.getElementById(`name-${type}`);
       const calEl = document.getElementById(`cal-${type}`);
@@ -342,7 +377,6 @@
       render();
     }
 
-    // 2. 步數儲存
     function saveSteps() {
       const steps = parseInt(document.getElementById('stepInput').value) || 0;
       const burn = Math.round((steps / 1000) * 35);
@@ -356,7 +390,6 @@
       alert(`已更新步數！消耗約 ${burn} kcal`);
     }
 
-    // 3. 新增運動
     function addSport() {
       const sel = document.getElementById('sportType');
       const met = parseFloat(sel.value);
@@ -383,7 +416,6 @@
       render();
     }
 
-    // 4. 條碼相機開關
     let scanner = null;
     function toggleScanner() {
       const reader = document.getElementById('reader');
@@ -409,7 +441,6 @@
       }
     }
 
-    // 5. 條碼解析
     async function fetchBarcode(code) {
       const msg = document.getElementById('scanMsg');
       msg.textContent = `已辨識條碼：${code}，熱量搜尋中...`;
