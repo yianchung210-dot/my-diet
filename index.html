@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>健康熱量與運動日記</title>
+  <title>健康熱量與生活日記</title>
   <script src="https://unpkg.com/html5-qrcode"></script>
   <style>
     * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 0; }
     body { background: #f8fafc; padding: 14px 10px 60px; display: flex; justify-content: center; }
     .container { width: 100%; max-width: 440px; display: flex; flex-direction: column; gap: 12px; }
 
-    /* 頂部總覽看板 */
+    /* 頂部看板 */
     .summary-box { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; border-radius: 18px; padding: 16px; box-shadow: 0 4px 12px rgba(37,99,235,0.25); }
     .summary-top { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; opacity: 0.9; }
     .net-cal { font-size: 2.5rem; font-weight: 800; margin: 6px 0 10px; text-align: center; }
@@ -25,6 +25,7 @@
     .card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-weight: bold; }
     
     .badge { padding: 4px 10px; border-radius: 8px; color: white; font-size: 0.85rem; font-weight: bold; }
+    .b-body { background: #0284c7; }
     .b-step { background: #8b5cf6; }
     .b-sport { background: #16a34a; }
     .b-breakfast { background: #f59e0b; }
@@ -33,9 +34,10 @@
     .b-snack { background: #10b981; }
     .b-drink { background: #06b6d4; }
 
-    /* 表單與按鈕 */
+    /* 表單排版 */
     .input-row { display: grid; grid-template-columns: 2fr 1fr auto; gap: 6px; margin-bottom: 6px; }
     .grid-2 { display: grid; grid-template-columns: 1.4fr 1fr; gap: 6px; margin-bottom: 6px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 8px; }
     input, select { width: 100%; padding: 8px 10px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; outline: none; background: #fff; }
     input:focus, select:focus { border-color: #2563eb; }
     
@@ -44,8 +46,9 @@
     .btn-cam { width: 100%; background: #ea580c; color: white; padding: 10px; font-size: 0.9rem; }
     .btn-green { width: 100%; background: #16a34a; color: white; }
     .btn-purple { width: 100%; background: #8b5cf6; color: white; }
+    .btn-sky { width: 100%; background: #0284c7; color: white; }
 
-    /* 條列清單 */
+    /* 清單時序明細 */
     .item-list { display: flex; flex-direction: column; gap: 4px; }
     .item-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 8px; background: #f8fafc; border-radius: 6px; font-size: 0.85rem; }
     .time-tag { font-size: 0.72rem; color: #64748b; margin-left: 6px; background: #e2e8f0; padding: 1px 4px; border-radius: 4px; }
@@ -57,7 +60,7 @@
 </head>
 <body>
 
-  <!-- 自動提示食物選單 -->
+  <!-- 自動提示食物資料庫選單 -->
   <datalist id="foodSuggestions"></datalist>
 
   <div class="container">
@@ -81,11 +84,26 @@
       </div>
     </div>
 
-    <!-- 相機掃描條碼 -->
+    <!-- 相機掃碼條碼 -->
     <div class="card">
       <button class="btn btn-cam" id="camBtn" onclick="toggleScanner()">📷 點此開啟相機掃條碼</button>
       <div id="reader"></div>
-      <div id="scanMsg">掃描條碼或手動輸入，資料即時同步至 Google 試算表</div>
+      <div id="scanMsg">掃描條碼或手動記錄，數據即時同步至 Google 試算表</div>
+    </div>
+
+    <!-- 身體數據：血糖、身高、體重、BMI -->
+    <div class="card">
+      <div class="card-head">
+        <span class="badge b-body">🩺 身體數據</span>
+        <span style="font-size:0.85rem; color:#64748b;">BMI：<strong id="bmiVal" style="color:#0284c7;">--</strong></span>
+      </div>
+      <div class="grid-3">
+        <input type="number" id="sugarInput" placeholder="血糖 (mg/dL)">
+        <input type="number" id="heightInput" placeholder="身高 (cm)">
+        <input type="number" id="weightInput" placeholder="體重 (kg)">
+      </div>
+      <button class="btn btn-sky" onclick="saveBodyStats()">儲存生理數據</button>
+      <div id="bodyStatsMsg" style="font-size:0.75rem; color:#64748b; margin-top:6px; text-align:right;">可隨時更新今日測量值</div>
     </div>
 
     <!-- 每日步數 -->
@@ -102,7 +120,7 @@
       <div style="font-size:0.75rem; color:#94a3b8; text-align:right;">每千步自動換算約 35 kcal</div>
     </div>
 
-    <!-- 運動燃脂（包含超慢跑、匹克球、重訓） -->
+    <!-- 運動燃脂 -->
     <div class="card">
       <div class="card-head">
         <span class="badge b-sport">🏃 運動燃脂</span>
@@ -132,7 +150,7 @@
         <span style="font-size:0.85rem; color:#64748b;">小計：<strong id="sub-breakfast">0</strong> kcal</span>
       </div>
       <div class="input-row">
-        <input type="text" id="name-breakfast" list="foodSuggestions" placeholder="輸入或點選食物 (如: 水煮蛋)" oninput="autoFillCal('breakfast')">
+        <input type="text" id="name-breakfast" list="foodSuggestions" placeholder="輸入食物 (如: 蔥燒餅)" oninput="autoFillCal('breakfast')">
         <input type="number" id="cal-breakfast" placeholder="熱量">
         <button class="btn-add" onclick="manualAdd('breakfast')">＋</button>
       </div>
@@ -146,7 +164,7 @@
         <span style="font-size:0.85rem; color:#64748b;">小計：<strong id="sub-lunch">0</strong> kcal</span>
       </div>
       <div class="input-row">
-        <input type="text" id="name-lunch" list="foodSuggestions" placeholder="輸入或點選食物 (如: 排骨便當)" oninput="autoFillCal('lunch')">
+        <input type="text" id="name-lunch" list="foodSuggestions" placeholder="輸入食物 (如: 排骨便當)" oninput="autoFillCal('lunch')">
         <input type="number" id="cal-lunch" placeholder="熱量">
         <button class="btn-add" onclick="manualAdd('lunch')">＋</button>
       </div>
@@ -156,11 +174,11 @@
     <!-- 晚餐 -->
     <div class="card">
       <div class="card-head">
-        <span class="badge b-dinner">🌙 晚餐</span>
+        <span class="badge b-dinner">🌙 晚餐 / 熱炒</span>
         <span style="font-size:0.85rem; color:#64748b;">小計：<strong id="sub-dinner">0</strong> kcal</span>
       </div>
       <div class="input-row">
-        <input type="text" id="name-dinner" list="foodSuggestions" placeholder="輸入或點選食物 (如: 水餃)" oninput="autoFillCal('dinner')">
+        <input type="text" id="name-dinner" list="foodSuggestions" placeholder="輸入熱炒 (如: 客家小炒)" oninput="autoFillCal('dinner')">
         <input type="number" id="cal-dinner" placeholder="熱量">
         <button class="btn-add" onclick="manualAdd('dinner')">＋</button>
       </div>
@@ -170,11 +188,11 @@
     <!-- 點心/宵夜 -->
     <div class="card">
       <div class="card-head">
-        <span class="badge b-snack">🍪 點心 / 宵夜</span>
+        <span class="badge b-snack">🍪 點心 / 宵夜 / 糕點</span>
         <span style="font-size:0.85rem; color:#64748b;">小計：<strong id="sub-snack">0</strong> kcal</span>
       </div>
       <div class="input-row">
-        <input type="text" id="name-snack" list="foodSuggestions" placeholder="輸入或點選食物 (如: 統一布丁)" oninput="autoFillCal('snack')">
+        <input type="text" id="name-snack" list="foodSuggestions" placeholder="輸入糕點 (如: 蛋黃酥、鳳梨酥)" oninput="autoFillCal('snack')">
         <input type="number" id="cal-snack" placeholder="熱量">
         <button class="btn-add" onclick="manualAdd('snack')">＋</button>
       </div>
@@ -184,11 +202,11 @@
     <!-- 飲料 -->
     <div class="card">
       <div class="card-head">
-        <span class="badge b-drink">🧋 飲料</span>
+        <span class="badge b-drink">🧋 飲料 / 啤酒</span>
         <span style="font-size:0.85rem; color:#64748b;">小計：<strong id="sub-drink">0</strong> kcal</span>
       </div>
       <div class="input-row">
-        <input type="text" id="name-drink" list="foodSuggestions" placeholder="輸入或點選飲料 (如: 無糖豆漿)" oninput="autoFillCal('drink')">
+        <input type="text" id="name-drink" list="foodSuggestions" placeholder="輸入飲品 (如: 無糖豆漿、台啤)" oninput="autoFillCal('drink')">
         <input type="number" id="cal-drink" placeholder="熱量">
         <button class="btn-add" onclick="manualAdd('drink')">＋</button>
       </div>
@@ -200,27 +218,45 @@
   <script>
     const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbz_pceZbIkWcBtp8a9EzbPEsj1avqhcMjNs16o85SERy6vFmq6IY1iwsuT6oQb4u3g9/exec";
 
-    // 擴充常見食物熱量資料庫
+    // 全方位外食資料庫
     const calorieDictionary = {
-      // 蛋豆魚肉蛋品
-      "水煮蛋": 75, "茶葉蛋": 75, "荷包蛋": 120, "煎蛋": 130, "蒸蛋": 80, "溫泉蛋": 65,
-      "雞胸肉": 165, "舒肥雞胸肉": 130, "煎鮭魚": 230, "滷牛腱": 120, "嫩豆腐(半盒)": 80,
-      // 早餐類
-      "原味蛋餅": 260, "玉米蛋餅": 300, "鮪魚蛋餅": 320, "起司蛋餅": 310, "肉鬆蛋餅": 340,
-      "蘿蔔糕": 220, "肉包": 210, "菜包": 180, "饅頭": 280, "燒餅油條": 450, "飯糰": 420,
-      // 正餐主食便當
-      "白飯一碗": 280, "糙米飯一碗": 270, "排骨便當": 850, "雞腿便當": 800, "招牌便當": 750,
-      "健康餐盒": 550, "滷肉飯": 450, "火雞肉飯": 380, "水餃10顆": 500, "水餃": 50, "鍋貼10顆": 650,
-      "牛肉麵": 750, "陽春麵": 350, "麻醬麵": 520, "乾麵": 480, "燙青菜": 60, "地瓜": 140,
-      // 點心與宵夜
-      "香蕉": 90, "蘋果": 60, "統一布丁": 110, "豆花": 180, "鹹酥雞": 450, "炸薯條": 320,
-      "雞排": 650, "大腸包小腸": 500, "滷味切盤": 280, "堅果一把": 160,
-      // 飲品類
-      "無糖豆漿": 147, "低糖豆漿": 180, "低脂鮮乳": 120, "全脂鮮乳": 150, "美式咖啡": 15,
-      "拿鐵咖啡": 180, "珍珠奶茶": 550, "微糖青茶": 60, "無糖綠茶": 0, "無糖高纖豆漿": 147
+      "客家小炒": 480, "蔥爆牛肉": 420, "蔥爆豬肉": 450, "薑絲大腸": 380, "五更腸旺": 520,
+      "三杯雞": 550, "糖醋排骨": 580, "蒜泥白肉": 420, "鐵板牛柳": 450, "鳳梨蝦球": 460,
+      "炸蚵仔酥": 420, "炒海瓜子": 240, "塔香蛤蜊": 220, "炒花枝": 260, "豆酥鱈魚": 430,
+      "金沙豆腐": 420, "鐵板豆腐": 350, "蟹黃豆腐煲": 380, "菜脯蛋": 320, "九層塔煎蛋": 320,
+      "炒水蓮": 140, "熱炒高麗菜": 130, "炒空心菜": 130, "台灣金牌啤酒(600ml)": 210, "罐裝台啤(330ml)": 120,
+      "蔥燒餅": 320, "老麵蔥燒餅": 350, "三角蔥餅": 320, "厚燒餅": 350,
+      "蘿蔔絲酥餅": 280, "蘿蔔酥餅": 280, "蘿蔔絲餅": 280, "蟹殼黃(蔥肉)": 150, "蟹殼黃(甜糖)": 140, "胡椒餅": 380,
+      "燒餅油條": 450, "燒餅夾蛋": 380, "燒餅夾蔥蛋": 390, "燒餅夾肉排蛋": 520, "燒餅夾生菜肉排": 420,
+      "燒餅": 260, "油條": 230, "豆沙酥餅": 260, "糖膏酥餅": 280, "太陽餅": 260, "牛舌餅(厚酥)": 240,
+      "鳳梨酥": 200, "土鳳梨酥": 220, "蛋黃酥": 280, "綠豆椪": 360, "芋頭酥": 240,
+      "黑糖糕": 160, "發糕": 230, "草仔粿": 280, "紅龜粿": 250, "桂圓核桃糕": 180,
+      "老婆餅": 250, "狀元餅": 320, "沙其馬": 200, "花生糖(一塊)": 120,
+      "原味蛋塔": 220, "葡式蛋塔": 280, "起司蛋糕(切片)": 320, "提拉米蘇": 300,
+      "巧克力布朗尼": 340, "檸檬磅蛋糕": 280, "肉桂捲": 420, "司康": 280, "可頌": 240,
+      "菠蘿麵包": 380, "蔥花麵包": 260, "肉鬆麵包": 360, "克林姆麵包": 300, "紅豆麵包": 280,
+      "傳統飯糰": 480, "紫米飯糰": 480, "飯糰加蛋": 550, "鮮肉水煎包": 220, "高麗菜水煎包": 180,
+      "小籠包(8顆)": 640, "小籠湯包(8顆)": 580, "蔥油餅": 300, "蔥油餅加蛋": 420, "蔥抓餅加蛋": 450,
+      "韭菜盒": 300, "蘿蔔糕兩片": 220, "蘿蔔糕加蛋": 340, "肉包": 210, "菜包": 180, "白饅頭": 280,
+      "黑糖饅頭": 290, "饅頭夾蛋": 380, "原味蛋餅": 260, "玉米蛋餅": 300, "鮪魚蛋餅": 320, "起司蛋餅": 310, "肉鬆蛋餅": 340, "培根蛋餅": 350, "薯餅蛋餅": 400,
+      "火腿蛋吐司": 350, "肉排蛋吐司": 420, "鮪魚蛋吐司": 380, "花生厚片": 350, "奶酥厚片": 400,
+      "卡啦雞腿堡": 580, "牛肉漢堡": 450, "豬肉滿福堡加蛋": 380, "薯餅": 150,
+      "水煮蛋": 75, "茶葉蛋": 75, "荷包蛋": 120, "蔥花煎蛋": 140, "蒸蛋": 80, "溫泉蛋": 65,
+      "雞胸肉": 165, "舒肥雞胸肉": 130, "煎鮭魚": 230, "滷牛腱": 120, "皮蛋豆腐": 160, "嫩豆腐(半盒)": 80,
+      "白飯一碗": 280, "糙米飯一碗": 270, "排骨便當": 850, "炸雞腿便當": 880, "滷雞腿便當": 680,
+      "控肉便當": 900, "招牌便當": 750, "健康低脂餐盒": 520, "滷肉飯(小)": 450, "火雞肉飯": 380,
+      "水餃10顆": 500, "水餃": 50, "鍋貼10顆": 650, "牛肉麵": 750, "陽春麵": 350,
+      "麻醬麵": 520, "肉燥乾麵": 480, "炸醬麵": 500, "餛飩麵": 460, "牛肉湯餃": 600,
+      "肉羹麵": 550, "大腸蚵仔麵線": 420, "炒飯": 750, "炒麵": 680, "燙青菜": 60,
+      "炸雞排": 650, "鹹酥雞一份": 450, "甜不辣一份": 350, "地瓜球(小)": 280, "大腸包小腸": 520,
+      "蚵仔煎": 510, "肉圓一顆": 320, "章魚燒(一盒)": 320, "炸薯條": 320, "烤香腸": 240,
+      "統一布丁": 110, "豆花(含糖水花生)": 280, "原味豆花": 180, "香蕉": 90, "蘋果": 60, "綜合堅果一把": 160,
+      "無糖豆漿": 147, "微糖豆漿": 180, "鹹豆漿": 190, "鹹豆漿加蛋": 260, "米漿": 210,
+      "全脂鮮乳": 150, "低脂鮮乳": 120, "美式黑咖啡": 15, "拿鐵咖啡": 180,
+      "珍珠奶茶(全糖)": 650, "珍珠奶茶(微糖)": 480, "鮮奶茶(微糖)": 220,
+      "微糖青茶": 60, "微糖紅茶": 120, "無糖綠茶": 0, "無糖青茶": 0
     };
 
-    // 條碼快查庫
     const barcodeDB = {
       "4710088410012": { name: "7-11 茶葉蛋", cal: 75 },
       "4710018111019": { name: "統一無糖高纖豆漿", cal: 147 },
@@ -235,7 +271,6 @@
       "4710085121010": { name: "統一布丁", cal: 110 }
     };
 
-    // 初始化自動提示清單
     const datalist = document.getElementById('foodSuggestions');
     Object.keys(calorieDictionary).forEach(item => {
       const opt = document.createElement('option');
@@ -244,7 +279,6 @@
       datalist.appendChild(opt);
     });
 
-    // 選擇食物自動帶入熱量
     function autoFillCal(type) {
       const name = document.getElementById(`name-${type}`).value.trim();
       const calInput = document.getElementById(`cal-${type}`);
@@ -254,11 +288,7 @@
     }
 
     const mealNames = {
-      breakfast: "早餐",
-      lunch: "午餐",
-      dinner: "晚餐",
-      snack: "點心",
-      drink: "飲料"
+      breakfast: "早餐", lunch: "午餐", dinner: "晚餐", snack: "點心", drink: "飲料"
     };
 
     const todayStr = new Date().toISOString().split('T')[0];
@@ -267,14 +297,9 @@
 
     const key = `health_tracker_${todayStr}`;
     let appData = JSON.parse(localStorage.getItem(key) || JSON.stringify({
-      breakfast: [],
-      lunch: [],
-      dinner: [],
-      snack: [],
-      drink: [],
-      sports: [],
-      steps: 0,
-      stepBurn: 0
+      breakfast: [], lunch: [], dinner: [], snack: [], drink: [], sports: [],
+      steps: 0, stepBurn: 0,
+      sugar: '', height: '', weight: '', bmi: '--'
     }));
 
     function syncToGoogleSheet(record) {
@@ -290,7 +315,6 @@
       let intakeTotal = 0;
       const categories = ['breakfast', 'lunch', 'dinner', 'snack', 'drink'];
 
-      // 渲染五餐
       categories.forEach(type => {
         const listEl = document.getElementById(`list-${type}`);
         listEl.innerHTML = '';
@@ -317,7 +341,6 @@
         intakeTotal += sub;
       });
 
-      // 渲染運動
       const sportListEl = document.getElementById('list-sport');
       sportListEl.innerHTML = '';
       let sportTotal = 0;
@@ -343,12 +366,50 @@
       document.getElementById('stepInput').value = appData.steps || '';
       document.getElementById('sub-steps').textContent = appData.stepBurn || 0;
 
+      // 渲染身體數據
+      document.getElementById('sugarInput').value = appData.sugar || '';
+      document.getElementById('heightInput').value = appData.height || '';
+      document.getElementById('weightInput').value = appData.weight || '';
+      document.getElementById('bmiVal').textContent = appData.bmi || '--';
+
       const burnTotal = sportTotal + (appData.stepBurn || 0);
       document.getElementById('totalIntake').textContent = `${intakeTotal} kcal`;
       document.getElementById('totalBurn').textContent = `${burnTotal} kcal`;
       document.getElementById('netCal').textContent = intakeTotal - burnTotal;
 
       localStorage.setItem(key, JSON.stringify(appData));
+    }
+
+    // 儲存生理數據
+    function saveBodyStats() {
+      const sugar = document.getElementById('sugarInput').value;
+      const h = parseFloat(document.getElementById('heightInput').value);
+      const w = parseFloat(document.getElementById('weightInput').value);
+      let bmiStr = '--';
+
+      if (h > 0 && w > 0) {
+        const hm = h / 100;
+        bmiStr = (w / (hm * hm)).toFixed(1);
+      }
+
+      appData.sugar = sugar;
+      appData.height = h || '';
+      appData.weight = w || '';
+      appData.bmi = bmiStr;
+
+      const d = new Date();
+      const timeStr = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+
+      render();
+      syncToGoogleSheet({
+        date: todayStr,
+        time: timeStr,
+        meal: "身體數據",
+        name: `血糖: ${sugar || '--'} mg/dL | 身高: ${h || '--'}cm | 體重: ${w || '--'}kg | BMI: ${bmiStr}`,
+        cal: 0
+      });
+
+      alert(`身體數據已更新！BMI：${bmiStr}`);
     }
 
     function manualAdd(type) {
@@ -398,7 +459,8 @@
 
       if (mins <= 0) return alert('請填寫運動時間（分鐘）');
 
-      const burn = Math.round(met * 65 * (mins / 60));
+      const userW = parseFloat(appData.weight) || 65;
+      const burn = Math.round(met * userW * (mins / 60));
       const d = new Date();
       const timeStr = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
       const record = { date: todayStr, time: timeStr, meal: "運動燃脂", name: `${sportName} (${mins}分)`, cal: -burn, mins: mins, burn: burn };
