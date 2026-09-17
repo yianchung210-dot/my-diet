@@ -232,7 +232,7 @@
       </div>
       <div class="recent-chips" id="chips-breakfast"></div>
       <div class="input-row">
-        <input type="text" id="name-breakfast" list="foodSuggestions" placeholder="輸入早餐 (如: 生菜沙拉、金針菇)" oninput="autoFillCal('breakfast')">
+        <input type="text" id="name-breakfast" list="foodSuggestions" placeholder="輸入早餐 (如: 紅豆吐司、皮蛋瘦肉粥)" oninput="autoFillCal('breakfast')">
         <input type="number" id="cal-breakfast" placeholder="熱量">
         <button class="btn-add" onclick="manualAdd('breakfast')">＋</button>
       </div>
@@ -250,7 +250,7 @@
       </div>
       <div class="recent-chips" id="chips-lunch"></div>
       <div class="input-row">
-        <input type="text" id="name-lunch" list="foodSuggestions" placeholder="輸入午餐 (如: 杏鮑菇、炒空心菜)" oninput="autoFillCal('lunch')">
+        <input type="text" id="name-lunch" list="foodSuggestions" placeholder="輸入午餐 (如: 排骨便當、貢丸湯)" oninput="autoFillCal('lunch')">
         <input type="number" id="cal-lunch" placeholder="熱量">
         <button class="btn-add" onclick="manualAdd('lunch')">＋</button>
       </div>
@@ -260,7 +260,7 @@
     <!-- 7. 晚餐 -->
     <div class="card">
       <div class="card-head">
-        <span class="badge b-dinner">🌙 晚餐 / 菇類蔬菜</span>
+        <span class="badge b-dinner">🌙 晚餐 / 湯品料理</span>
         <div>
           <button class="btn-copy-yesterday" onclick="copyYesterdayMeal('dinner')">📋 複製昨天晚餐</button>
           <span style="font-size:0.85rem; color:#64748b; margin-left:4px;">小計：<strong id="sub-dinner">0</strong> kcal</span>
@@ -268,7 +268,7 @@
       </div>
       <div class="recent-chips" id="chips-dinner"></div>
       <div class="input-row">
-        <input type="text" id="name-dinner" list="foodSuggestions" placeholder="輸入晚餐 (如: 三杯杏鮑菇、鴻喜菇)" oninput="autoFillCal('dinner')">
+        <input type="text" id="name-dinner" list="foodSuggestions" placeholder="輸入晚餐/湯品 (如: 香菇雞湯、蛤蜊湯)" oninput="autoFillCal('dinner')">
         <input type="number" id="cal-dinner" placeholder="熱量">
         <button class="btn-add" onclick="manualAdd('dinner')">＋</button>
       </div>
@@ -278,19 +278,19 @@
     <!-- 8. 點心/宵夜 -->
     <div class="card">
       <div class="card-head">
-        <span class="badge b-snack">🍪 點心 / 宵夜 / 炸菇</span>
+        <span class="badge b-snack">🍪 點心 / 宵夜 / 蛋糕</span>
         <span style="font-size:0.85rem; color:#64748b;">小計：<strong id="sub-snack">0</strong> kcal</span>
       </div>
       <div class="recent-chips" id="chips-snack"></div>
       <div class="input-row">
-        <input type="text" id="name-snack" list="foodSuggestions" placeholder="輸入點心 (如: 炸杏鮑菇、瑞士妞)" oninput="autoFillCal('snack')">
+        <input type="text" id="name-snack" list="foodSuggestions" placeholder="輸入點心 (如: 瑞士妞、燕麥豆漿蛋糕捲)" oninput="autoFillCal('snack')">
         <input type="number" id="cal-snack" placeholder="熱量">
         <button class="btn-add" onclick="manualAdd('snack')">＋</button>
       </div>
       <div class="item-list" id="list-snack"></div>
     </div>
 
-    <!-- 9. 飲料 / 沖泡飲品 -->
+    <!-- 9. 飲料 / 沖泡飲品 / 湯品 -->
     <div class="card">
       <div class="card-head">
         <span class="badge b-drink">🧋 飲料 / 沖泡飲 / 湯品</span>
@@ -298,7 +298,7 @@
       </div>
       <div class="recent-chips" id="chips-drink"></div>
       <div class="input-row">
-        <input type="text" id="name-drink" list="foodSuggestions" placeholder="輸入飲品/沖泡 (如: 大燕麥片、瑞士妞)" oninput="autoFillCal('drink')">
+        <input type="text" id="name-drink" list="foodSuggestions" placeholder="輸入飲品/湯品 (如: 四神湯、玉米濃湯)" oninput="autoFillCal('drink')">
         <input type="number" id="cal-drink" placeholder="熱量">
         <button class="btn-add" onclick="manualAdd('drink')">＋</button>
       </div>
@@ -310,16 +310,27 @@
   <script>
     const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbz_pceZbIkWcBtp8a9EzbPEsj1avqhcMjNs16o85SERy6vFmq6IY1iwsuT6oQb4u3g9/exec";
 
-    // 🌟 全台超完整飲食熱量字典（新增台灣常見菇類全系列）
+    // 🌟 全台超完整飲食熱量字典（全面擴充台式家常湯品、小吃羹湯、燉補湯系列）
     const calorieDictionary = {
-      // ===== 🍄 菇類（水煮、火鍋、涼拌、熱炒與炸物） =====
-      "金針菇": 35, "金針菇一份": 35, "水煮金針菇": 35,
-      "杏鮑菇": 35, "杏鮑菇一份": 35, "水煮杏鮑菇": 35, "烤杏鮑菇": 80, "滷杏鮑菇": 70,
-      "三杯杏鮑菇": 160, "醬燒杏鮑菇": 110, "炸杏鮑菇": 260, "炸杏鮑菇一份": 260,
-      "鴻喜菇": 30, "雪白菇": 30, "美白菇": 30, "秀珍菇": 30, "炸秀珍菇": 220,
-      "香菇": 35, "鮮香菇": 35, "生香菇": 35, "乾香菇(3朵)": 25, "炸香菇": 200, "滷香菇": 60, "香菇炒肉絲": 220,
+      // ===== 🥣 台灣經典湯品全系列 =====
+      "蛋花湯": 80, "紫菜蛋花湯": 85, "青菜豆腐湯": 70, "豆腐湯": 50,
+      "蛤蜊湯": 70, "蚵仔湯": 90, "薑絲鱸魚湯": 140, "鱸魚湯": 140, "虱目魚皮湯": 160, "虱目魚肚湯": 260,
+      "蘿蔔湯": 50, "白蘿蔔湯": 50, "冬瓜湯": 45, "竹筍湯": 60, "竹筍排骨湯": 220,
+      "貢丸湯": 150, "福州魚丸湯": 180, "虱目魚丸湯": 140, "魚丸湯": 140,
+      "豬血湯": 120, "豬血大腸湯": 230, "餛飩湯": 200, "四神湯": 250, "豬肝湯": 160, "下水湯": 140,
+      "酸辣湯": 180, "玉米濃湯": 200, "南瓜濃湯": 180, "羅宋湯": 130, "洋蔥湯": 90,
+      "肉羹湯": 220, "魷魚羹湯": 180, "花枝羹湯": 200, "土魠魚羹湯": 280,
+      "香菇雞湯": 220, "剝皮辣椒雞湯": 240, "蒜頭雞湯": 250, "麻油雞湯": 380,
+      "苦瓜排骨湯": 210, "玉米排骨湯": 240, "藥膳排骨湯": 280, "肉骨茶湯": 260,
+      "薑母鴨湯": 320, "羊肉爐湯": 300, "牛肉湯": 160, "台南牛肉湯": 160,
+      "味噌湯": 60, "豆腐味噌湯": 60, "康寶玉米濃湯包": 70, "即溶味噌湯": 35, "即食紫菜蛋花湯包": 25,
+
+      // ===== 🍄 菇類 =====
+      "金針菇": 35, "水煮金針菇": 35, "杏鮑菇": 35, "水煮杏鮑菇": 35, "烤杏鮑菇": 80, "滷杏鮑菇": 70,
+      "三杯杏鮑菇": 160, "醬燒杏鮑菇": 110, "炸杏鮑菇": 260, "鴻喜菇": 30, "雪白菇": 30, "美白菇": 30, "秀珍菇": 30, "炸秀珍菇": 220,
+      "香菇": 35, "鮮香菇": 35, "乾香菇(3朵)": 25, "炸香菇": 200, "滷香菇": 60, "香菇炒肉絲": 220,
       "洋菇": 28, "蘑菇": 28, "黑木耳": 25, "白木耳": 20, "銀耳": 20, "涼拌黑木耳": 60,
-      "綜合菇類": 35, "綜合菇": 35, "炒綜合菇": 120, "奶油金針菇": 140, "香菇雞湯": 180,
+      "綜合菇類": 35, "綜合菇": 35, "炒綜合菇": 120, "奶油金針菇": 140,
 
       // ===== 🥬 熱炒青菜類 =====
       "炒高麗菜": 130, "熱炒高麗菜": 130, "炒空心菜": 130, "炒水蓮": 140,
@@ -358,10 +369,9 @@
       "沖泡糙米麩": 130, "沖泡麵茶": 140, "萬歲牌堅果飲": 125, "核桃堅果飲": 125,
       "無糖薏仁粉(2匙)": 80, "沖泡十穀粉": 115,
 
-      // ===== 🥛 沖泡奶粉、乳清蛋白與湯包 =====
+      // ===== 🥛 沖泡奶粉與蛋白粉 =====
       "全脂奶粉(一杯)": 150, "低脂奶粉(一杯)": 120, "脫脂奶粉(一杯)": 110,
       "乳清蛋白粉(一匙)": 120, "乳清蛋白": 120, "大豆蛋白粉(一匙)": 110,
-      "康寶玉米濃湯包": 70, "即溶味噌湯": 35, "即食紫菜蛋花湯包": 25, "即溶洋蔥湯": 45,
 
       // ===== 🥖 馬可先生 (Mr. Mark) 全系列 =====
       "起士核桃雜糧麵包(切片)": 160, "起士核桃雜糧麵包": 160, "水果百匯雜糧麵包(切片)": 150, "水果百匯雜糧麵包": 150,
@@ -402,11 +412,10 @@
       "榨菜肉絲麵": 450, "大滷麵": 500, "涼麵(大)": 550, "涼麵(小)": 400, "涼麵": 450, "餛飩麵": 460, 
       "大腸蚵仔麵線": 420, "紅油抄手": 450, "水餃10顆": 500, "水餃": 50, "鍋貼10顆": 650,
 
-      // ===== 小火鍋、湯品與小吃 =====
+      // ===== 小火鍋與小吃 =====
       "大腸臭臭鍋(含飯)": 850, "海鮮豆腐鍋(含飯)": 700, "麻辣鍋(個人)": 900,
       "炸臭豆腐": 550, "麻辣臭豆腐": 450, "綜合滷味(一份)": 400, "蚵仔煎": 510, "肉圓一顆": 320, 
       "生煎包": 120, "胡椒餅": 380, "章魚燒(一盒)": 320, "大腸包小腸": 520, "甜不辣一份": 350, "地瓜球(小)": 280,
-      "貢丸湯": 150, "豬血湯": 120, "四神湯": 250, "酸辣湯": 180, "玉米濃湯": 200, "蛋花湯": 80, "蛤蜊湯": 70,
 
       // ===== 早餐經典 =====
       "原味蛋餅": 260, "古早味粉漿蛋餅": 320, "玉米蛋餅": 300, "起司蛋餅": 310, "鮪魚蛋餅": 320, "肉鬆蛋餅": 340, 
@@ -637,10 +646,10 @@
 
         const defaults = {
           breakfast: ["生菜沙拉", "金針菇", "紅豆吐司", "桂格大燕麥片", "三合一咖啡"],
-          lunch: ["杏鮑菇", "炒高麗菜", "燙青菜", "排骨便當", "水餃10顆"],
-          dinner: ["三杯杏鮑菇", "鴻喜菇", "炒水蓮", "燙地瓜葉", "蒜泥白肉"],
+          lunch: ["貢丸湯", "蛤蜊湯", "炒高麗菜", "排骨便當", "水餃10顆"],
+          dinner: ["香菇雞湯", "酸辣湯", "炒水蓮", "燙地瓜葉", "三杯杏鮑菇"],
           snack: ["炸杏鮑菇", "瑞士妞可可", "沖泡黑芝麻糊", "燕麥豆漿蛋糕捲"],
-          drink: ["瑞士妞", "桂格大燕麥片", "乳清蛋白粉", "三合一咖啡", "馬可先生燕麥豆漿(無糖)"]
+          drink: ["四神湯", "玉米濃湯", "瑞士妞", "乳清蛋白粉", "桂格大燕麥片"]
         };
 
         (defaults[type] || []).forEach(n => historyNames.add(n));
