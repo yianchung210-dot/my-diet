@@ -10,22 +10,34 @@
     body { background: #f8fafc; padding: 14px 10px 60px; display: flex; justify-content: center; }
     .container { width: 100%; max-width: 440px; display: flex; flex-direction: column; gap: 12px; }
 
-    /* 頂部看板 */
-    .summary-box { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; border-radius: 18px; padding: 16px; box-shadow: 0 4px 12px rgba(37,99,235,0.25); }
+    /* 日期切換列 */
+    .date-nav { display: flex; align-items: center; justify-content: space-between; background: white; padding: 8px 12px; border-radius: 14px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+    .date-nav button { background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 8px; padding: 6px 10px; font-size: 0.8rem; font-weight: bold; cursor: pointer; color: #334155; }
+    .date-nav button:active { background: #e2e8f0; }
+    .date-picker-wrap { display: flex; align-items: center; gap: 6px; }
+    .date-picker-wrap input[type="date"] { padding: 5px 8px; font-size: 0.85rem; font-weight: bold; border: 1.5px solid #cbd5e1; border-radius: 8px; outline: none; background: #fff; color: #1e293b; }
+
+    /* 頂部綜合熱量儀表板 */
+    .summary-box { background: linear-gradient(135deg, #1e3a8a, #2563eb); color: white; border-radius: 18px; padding: 16px; box-shadow: 0 4px 12px rgba(37,99,235,0.25); }
     .summary-top { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; opacity: 0.9; }
-    .net-cal { font-size: 2.5rem; font-weight: 800; margin: 6px 0 10px; text-align: center; }
+    .budget-tag { background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; }
+    .net-cal-wrap { text-align: center; margin: 8px 0; }
+    .net-cal-title { font-size: 0.8rem; opacity: 0.85; margin-bottom: 2px; }
+    .net-cal { font-size: 2.3rem; font-weight: 800; }
     .net-cal span { font-size: 1rem; font-weight: normal; }
     
-    .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 10px; text-align: center; }
-    .stat-label { font-size: 0.75rem; opacity: 0.85; }
-    .stat-val { font-size: 1.1rem; font-weight: 700; margin-top: 2px; }
+    .stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 10px; text-align: center; }
+    .stat-label { font-size: 0.7rem; opacity: 0.85; }
+    .stat-val { font-size: 0.95rem; font-weight: 700; margin-top: 2px; }
 
-    /* 卡片與標籤 */
+    /* 通用卡片 */
     .card { background: white; border-radius: 14px; padding: 14px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
     .card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-weight: bold; }
     
+    /* 標籤色塊 */
     .badge { padding: 4px 10px; border-radius: 8px; color: white; font-size: 0.85rem; font-weight: bold; }
-    .b-body { background: #0284c7; }
+    .b-water { background: #0284c7; }
+    .b-body { background: #0d9488; }
     .b-step { background: #8b5cf6; }
     .b-sport { background: #16a34a; }
     .b-breakfast { background: #f59e0b; }
@@ -33,6 +45,13 @@
     .b-dinner { background: #6366f1; }
     .b-snack { background: #10b981; }
     .b-drink { background: #06b6d4; }
+
+    /* 喝水進度條與快捷鍵 */
+    .water-progress-bg { width: 100%; height: 14px; background: #e0f2fe; border-radius: 10px; overflow: hidden; margin: 8px 0; }
+    .water-progress-fill { height: 100%; background: linear-gradient(90deg, #38bdf8, #0284c7); width: 0%; transition: width 0.3s; }
+    .quick-water-btns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 6px; }
+    .btn-quick-water { background: #f0f9ff; border: 1.5px solid #bae6fd; color: #0369a1; border-radius: 8px; padding: 8px 4px; font-weight: bold; font-size: 0.8rem; cursor: pointer; }
+    .btn-quick-water:active { background: #e0f2fe; }
 
     /* 表單排版 */
     .input-row { display: grid; grid-template-columns: 2fr 1fr auto; gap: 6px; margin-bottom: 6px; }
@@ -46,6 +65,7 @@
     .btn-cam { width: 100%; background: #ea580c; color: white; padding: 10px; font-size: 0.9rem; }
     .btn-green { width: 100%; background: #16a34a; color: white; }
     .btn-purple { width: 100%; background: #8b5cf6; color: white; }
+    .btn-teal { width: 100%; background: #0d9488; color: white; }
     .btn-sky { width: 100%; background: #0284c7; color: white; }
 
     /* 清單時序明細 */
@@ -65,48 +85,87 @@
 
   <div class="container">
 
-    <!-- 頂部淨熱量總覽看板 -->
+    <!-- 日期切換與補記控制列 -->
+    <div class="date-nav">
+      <button onclick="shiftDate(-1)">◀ 前一天</button>
+      <div class="date-picker-wrap">
+        <input type="date" id="targetDate" onchange="onDateChanged()">
+        <button onclick="setToday()" style="padding:4px 8px;">今天</button>
+      </div>
+      <button onclick="shiftDate(1)">後一天 ▶</button>
+    </div>
+
+    <!-- 頂部綜合熱量看板（含剩餘熱量與目標預算） -->
     <div class="summary-box">
       <div class="summary-top">
         <span id="dateShow">--</span>
-        <span>今日淨攝取熱量</span>
+        <span class="budget-tag" onclick="editBudget()">⚙️ 目標預算: <span id="budgetVal">2000</span> kcal</span>
       </div>
-      <div class="net-cal"><span id="netCal">0</span> <span>kcal</span></div>
+      <div class="net-cal-wrap">
+        <div class="net-cal-title">今日剩餘可攝取額度</div>
+        <div class="net-cal" id="remainCalBox"><span id="remainCal">2000</span> <span>kcal</span></div>
+      </div>
       <div class="stats-row">
         <div>
-          <div class="stat-label">飲食總攝取 (+)</div>
-          <div class="stat-val" id="totalIntake">0 kcal</div>
+          <div class="stat-label">飲食攝取 (+)</div>
+          <div class="stat-val" id="totalIntake">0</div>
         </div>
         <div>
-          <div class="stat-label">運動與步數 (-)</div>
-          <div class="stat-val" id="totalBurn">0 kcal</div>
+          <div class="stat-label">運動步數 (-)</div>
+          <div class="stat-val" id="totalBurn">0</div>
+        </div>
+        <div>
+          <div class="stat-label">當日淨值</div>
+          <div class="stat-val" id="netCal">0</div>
         </div>
       </div>
     </div>
 
-    <!-- 相機掃碼條碼 -->
+    <!-- 條碼掃描相機 -->
     <div class="card">
       <button class="btn btn-cam" id="camBtn" onclick="toggleScanner()">📷 點此開啟相機掃條碼</button>
       <div id="reader"></div>
-      <div id="scanMsg">掃描條碼或手動記錄，數據即時同步至 Google 試算表</div>
+      <div id="scanMsg">掃描條碼或手動記錄，自動標註所選日期並同步試算表</div>
     </div>
 
-    <!-- 身體數據：血糖、身高、體重、BMI -->
+    <!-- 1. 喝水追蹤 (快捷按鈕 + 進度條) -->
+    <div class="card">
+      <div class="card-head">
+        <span class="badge b-water">💧 喝水紀錄</span>
+        <span style="font-size:0.85rem; color:#64748b;">
+          已喝：<strong id="waterCur" style="color:#0284c7;">0</strong> / <span id="waterGoal" onclick="editWaterGoal()" style="cursor:pointer; text-decoration:underline;">2000</span> ml
+        </span>
+      </div>
+      <div class="water-progress-bg">
+        <div class="water-progress-fill" id="waterBar"></div>
+      </div>
+      <div class="quick-water-btns">
+        <button class="btn-quick-water" onclick="addWater(250)">＋250ml 🥛<br><span style="font-size:0.7rem; font-weight:normal;">馬克杯</span></button>
+        <button class="btn-quick-water" onclick="addWater(500)">＋500ml 🧴<br><span style="font-size:0.7rem; font-weight:normal;">寶特瓶</span></button>
+        <button class="btn-quick-water" onclick="addWater(800)">＋800ml 🍶<br><span style="font-size:0.7rem; font-weight:normal;">大水壺</span></button>
+      </div>
+      <div class="input-row" style="margin-bottom:0;">
+        <input type="number" id="customWater" placeholder="自訂毫升數 (ml)">
+        <button class="btn btn-sky" onclick="addCustomWater()" style="grid-column: span 2;">記錄飲水</button>
+      </div>
+    </div>
+
+    <!-- 2. 身體數據 (血糖、身高、體重、BMI) -->
     <div class="card">
       <div class="card-head">
         <span class="badge b-body">🩺 身體數據</span>
-        <span style="font-size:0.85rem; color:#64748b;">BMI：<strong id="bmiVal" style="color:#0284c7;">--</strong></span>
+        <span style="font-size:0.85rem; color:#64748b;">BMI：<strong id="bmiVal" style="color:#0d9488;">--</strong></span>
       </div>
       <div class="grid-3">
         <input type="number" id="sugarInput" placeholder="血糖 (mg/dL)">
         <input type="number" id="heightInput" placeholder="身高 (cm)">
         <input type="number" id="weightInput" placeholder="體重 (kg)">
       </div>
-      <button class="btn btn-sky" onclick="saveBodyStats()">儲存生理數據</button>
-      <div id="bodyStatsMsg" style="font-size:0.75rem; color:#64748b; margin-top:6px; text-align:right;">可隨時更新今日測量值</div>
+      <button class="btn btn-teal" onclick="saveBodyStats()">儲存當日生理數據</button>
+      <div style="font-size:0.75rem; color:#64748b; margin-top:6px; text-align:right;">自動記錄在目前選取的日期中</div>
     </div>
 
-    <!-- 每日步數 -->
+    <!-- 3. 每日步數 -->
     <div class="card">
       <div class="card-head">
         <span class="badge b-step">👟 每日步數</span>
@@ -120,7 +179,7 @@
       <div style="font-size:0.75rem; color:#94a3b8; text-align:right;">每千步自動換算約 35 kcal</div>
     </div>
 
-    <!-- 運動燃脂 -->
+    <!-- 4. 運動燃脂 -->
     <div class="card">
       <div class="card-head">
         <span class="badge b-sport">🏃 運動燃脂</span>
@@ -143,7 +202,7 @@
       <div class="item-list" id="list-sport" style="margin-top:8px;"></div>
     </div>
 
-    <!-- 早餐 -->
+    <!-- 5. 早餐 -->
     <div class="card">
       <div class="card-head">
         <span class="badge b-breakfast">🌅 早餐</span>
@@ -157,7 +216,7 @@
       <div class="item-list" id="list-breakfast"></div>
     </div>
 
-    <!-- 午餐 -->
+    <!-- 6. 午餐 -->
     <div class="card">
       <div class="card-head">
         <span class="badge b-lunch">☀️ 午餐</span>
@@ -171,7 +230,7 @@
       <div class="item-list" id="list-lunch"></div>
     </div>
 
-    <!-- 晚餐 -->
+    <!-- 7. 晚餐 -->
     <div class="card">
       <div class="card-head">
         <span class="badge b-dinner">🌙 晚餐 / 熱炒</span>
@@ -185,7 +244,7 @@
       <div class="item-list" id="list-dinner"></div>
     </div>
 
-    <!-- 點心/宵夜 -->
+    <!-- 8. 點心/宵夜 -->
     <div class="card">
       <div class="card-head">
         <span class="badge b-snack">🍪 點心 / 宵夜 / 糕點</span>
@@ -199,7 +258,7 @@
       <div class="item-list" id="list-snack"></div>
     </div>
 
-    <!-- 飲料 -->
+    <!-- 9. 飲料 -->
     <div class="card">
       <div class="card-head">
         <span class="badge b-drink">🧋 飲料 / 啤酒</span>
@@ -218,7 +277,7 @@
   <script>
     const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbz_pceZbIkWcBtp8a9EzbPEsj1avqhcMjNs16o85SERy6vFmq6IY1iwsuT6oQb4u3g9/exec";
 
-    // 全方位外食資料庫
+    // 常用食物熱量字典庫
     const calorieDictionary = {
       "客家小炒": 480, "蔥爆牛肉": 420, "蔥爆豬肉": 450, "薑絲大腸": 380, "五更腸旺": 520,
       "三杯雞": 550, "糖醋排骨": 580, "蒜泥白肉": 420, "鐵板牛柳": 450, "鳳梨蝦球": 460,
@@ -291,16 +350,73 @@
       breakfast: "早餐", lunch: "午餐", dinner: "晚餐", snack: "點心", drink: "飲料"
     };
 
-    const todayStr = new Date().toISOString().split('T')[0];
-    const now = new Date();
-    document.getElementById('dateShow').textContent = `${now.getMonth()+1}月${now.getDate()}日 紀錄`;
+    function getLocalDateString(d) {
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
 
-    const key = `health_tracker_${todayStr}`;
-    let appData = JSON.parse(localStorage.getItem(key) || JSON.stringify({
-      breakfast: [], lunch: [], dinner: [], snack: [], drink: [], sports: [],
-      steps: 0, stepBurn: 0,
-      sugar: '', height: '', weight: '', bmi: '--'
-    }));
+    let currentDateStr = getLocalDateString(new Date());
+    document.getElementById('targetDate').value = currentDateStr;
+
+    // 全局設定：每日預算與目標喝水量
+    let dailyCalBudget = parseInt(localStorage.getItem('user_cal_budget') || '2000');
+    let dailyWaterGoal = parseInt(localStorage.getItem('user_water_goal') || '2000');
+
+    function editBudget() {
+      const val = prompt('請輸入每日目標熱量預算 (kcal):', dailyCalBudget);
+      if (val && !isNaN(val)) {
+        dailyCalBudget = parseInt(val);
+        localStorage.setItem('user_cal_budget', dailyCalBudget);
+        render();
+      }
+    }
+
+    function editWaterGoal() {
+      const val = prompt('請設定每日目標飲水量 (ml):', dailyWaterGoal);
+      if (val && !isNaN(val)) {
+        dailyWaterGoal = parseInt(val);
+        localStorage.setItem('user_water_goal', dailyWaterGoal);
+        render();
+      }
+    }
+
+    // 讀取當前選取日期的資料
+    function loadCurrentData() {
+      const key = `health_tracker_${currentDateStr}`;
+      return JSON.parse(localStorage.getItem(key) || JSON.stringify({
+        breakfast: [], lunch: [], dinner: [], snack: [], drink: [], sports: [],
+        steps: 0, stepBurn: 0,
+        water: 0,
+        sugar: '', height: '', weight: '', bmi: '--'
+      }));
+    }
+
+    let appData = loadCurrentData();
+
+    function onDateChanged() {
+      currentDateStr = document.getElementById('targetDate').value;
+      appData = loadCurrentData();
+      render();
+    }
+
+    function shiftDate(offset) {
+      const parts = currentDateStr.split('-');
+      const d = new Date(parts[0], parts[1] - 1, parts[2]);
+      d.setDate(d.getDate() + offset);
+      currentDateStr = getLocalDateString(d);
+      document.getElementById('targetDate').value = currentDateStr;
+      appData = loadCurrentData();
+      render();
+    }
+
+    function setToday() {
+      currentDateStr = getLocalDateString(new Date());
+      document.getElementById('targetDate').value = currentDateStr;
+      appData = loadCurrentData();
+      render();
+    }
 
     function syncToGoogleSheet(record) {
       fetch(GOOGLE_SHEET_URL, {
@@ -312,6 +428,9 @@
     }
 
     function render() {
+      const parts = currentDateStr.split('-');
+      document.getElementById('dateShow').textContent = `${parseInt(parts[1])}月${parseInt(parts[2])}日 紀錄`;
+
       let intakeTotal = 0;
       const categories = ['breakfast', 'lunch', 'dinner', 'snack', 'drink'];
 
@@ -341,6 +460,7 @@
         intakeTotal += sub;
       });
 
+      // 運動
       const sportListEl = document.getElementById('list-sport');
       sportListEl.innerHTML = '';
       let sportTotal = 0;
@@ -366,21 +486,65 @@
       document.getElementById('stepInput').value = appData.steps || '';
       document.getElementById('sub-steps').textContent = appData.stepBurn || 0;
 
-      // 渲染身體數據
+      // 喝水渲染
+      const curWater = appData.water || 0;
+      document.getElementById('waterCur').textContent = curWater;
+      document.getElementById('waterGoal').textContent = dailyWaterGoal;
+      const waterPct = Math.min(100, Math.round((curWater / dailyWaterGoal) * 100));
+      document.getElementById('waterBar').style.width = `${waterPct}%`;
+
+      // 身體數據
       document.getElementById('sugarInput').value = appData.sugar || '';
       document.getElementById('heightInput').value = appData.height || '';
       document.getElementById('weightInput').value = appData.weight || '';
       document.getElementById('bmiVal').textContent = appData.bmi || '--';
 
+      // 熱量計算與剩餘額度
       const burnTotal = sportTotal + (appData.stepBurn || 0);
+      const netCalVal = intakeTotal - burnTotal;
+      const remainVal = dailyCalBudget - netCalVal;
+
+      document.getElementById('budgetVal').textContent = dailyCalBudget;
       document.getElementById('totalIntake').textContent = `${intakeTotal} kcal`;
       document.getElementById('totalBurn').textContent = `${burnTotal} kcal`;
-      document.getElementById('netCal').textContent = intakeTotal - burnTotal;
+      document.getElementById('netCal').textContent = `${netCalVal} kcal`;
 
+      const remainEl = document.getElementById('remainCal');
+      remainEl.textContent = remainVal;
+      if (remainVal < 0) {
+        remainEl.style.color = "#f87171"; // 超標警示紅字
+      } else {
+        remainEl.style.color = "#4ade80"; // 充裕安全綠字
+      }
+
+      const key = `health_tracker_${currentDateStr}`;
       localStorage.setItem(key, JSON.stringify(appData));
     }
 
-    // 儲存生理數據
+    // 喝水功能
+    function addWater(amount) {
+      appData.water = (appData.water || 0) + amount;
+      const d = new Date();
+      const timeStr = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+      render();
+      syncToGoogleSheet({
+        date: currentDateStr,
+        time: timeStr,
+        meal: "喝水紀錄",
+        name: `補充水分 +${amount}ml (當日累計: ${appData.water}ml)`,
+        cal: 0
+      });
+    }
+
+    function addCustomWater() {
+      const input = document.getElementById('customWater');
+      const val = parseInt(input.value);
+      if (!val || val <= 0) return alert('請輸入有效的毫升數');
+      addWater(val);
+      input.value = '';
+    }
+
+    // 生理數據
     function saveBodyStats() {
       const sugar = document.getElementById('sugarInput').value;
       const h = parseFloat(document.getElementById('heightInput').value);
@@ -402,16 +566,17 @@
 
       render();
       syncToGoogleSheet({
-        date: todayStr,
+        date: currentDateStr,
         time: timeStr,
         meal: "身體數據",
         name: `血糖: ${sugar || '--'} mg/dL | 身高: ${h || '--'}cm | 體重: ${w || '--'}kg | BMI: ${bmiStr}`,
         cal: 0
       });
 
-      alert(`身體數據已更新！BMI：${bmiStr}`);
+      alert(`【${currentDateStr}】生理數據已更新！BMI：${bmiStr}`);
     }
 
+    // 新增食物
     function manualAdd(type) {
       const nameEl = document.getElementById(`name-${type}`);
       const calEl = document.getElementById(`cal-${type}`);
@@ -422,7 +587,7 @@
 
       const d = new Date();
       const timeStr = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
-      const record = { date: todayStr, time: timeStr, meal: mealNames[type], name: name, cal: Math.round(Number(cal)) };
+      const record = { date: currentDateStr, time: timeStr, meal: mealNames[type], name: name, cal: Math.round(Number(cal)) };
 
       if (!appData[type]) appData[type] = [];
       appData[type].unshift(record);
@@ -438,6 +603,7 @@
       render();
     }
 
+    // 步數
     function saveSteps() {
       const steps = parseInt(document.getElementById('stepInput').value) || 0;
       const burn = Math.round((steps / 1000) * 35);
@@ -447,10 +613,11 @@
       const d = new Date();
       const timeStr = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
       render();
-      syncToGoogleSheet({ date: todayStr, time: timeStr, meal: "步數紀錄", name: `${steps} 步`, cal: -burn });
-      alert(`已更新步數！消耗約 ${burn} kcal`);
+      syncToGoogleSheet({ date: currentDateStr, time: timeStr, meal: "步數紀錄", name: `${steps} 步`, cal: -burn });
+      alert(`【${currentDateStr}】步數已更新！消耗約 ${burn} kcal`);
     }
 
+    // 運動
     function addSport() {
       const sel = document.getElementById('sportType');
       const met = parseFloat(sel.value);
@@ -463,7 +630,7 @@
       const burn = Math.round(met * userW * (mins / 60));
       const d = new Date();
       const timeStr = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
-      const record = { date: todayStr, time: timeStr, meal: "運動燃脂", name: `${sportName} (${mins}分)`, cal: -burn, mins: mins, burn: burn };
+      const record = { date: currentDateStr, time: timeStr, meal: "運動燃脂", name: `${sportName} (${mins}分)`, cal: -burn, mins: mins, burn: burn };
 
       if (!appData.sports) appData.sports = [];
       appData.sports.unshift(record);
@@ -478,6 +645,7 @@
       render();
     }
 
+    // 條碼相機
     let scanner = null;
     function toggleScanner() {
       const reader = document.getElementById('reader');
@@ -538,7 +706,7 @@
 
       const d = new Date();
       const timeStr = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
-      const record = { date: todayStr, time: timeStr, meal: mealNames[target], name: name, cal: cal };
+      const record = { date: currentDateStr, time: timeStr, meal: mealNames[target], name: name, cal: cal };
 
       if (!appData[target]) appData[target] = [];
       appData[target].unshift(record);
