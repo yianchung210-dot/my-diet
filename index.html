@@ -30,10 +30,22 @@
     .stat-label { font-size: 0.7rem; opacity: 0.85; }
     .stat-val { font-size: 0.95rem; font-weight: 700; margin-top: 2px; }
 
+    /* 昨日摘要折疊看板 */
+    .yesterday-box { background: #f1f5f9; border-radius: 10px; padding: 8px 12px; font-size: 0.8rem; color: #475569; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+    .yesterday-details { display: none; background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px; font-size: 0.8rem; color: #334155; line-height: 1.5; }
+
     /* 通用卡片 */
     .card { background: white; border-radius: 14px; padding: 14px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
     .card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-weight: bold; }
     
+    /* 複製昨日按鈕 */
+    .btn-copy-yesterday { background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; font-size: 0.72rem; padding: 2px 6px; border-radius: 6px; cursor: pointer; }
+
+    /* 常用常吃快捷標籤群 */
+    .recent-chips { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 6px; }
+    .chip { background: #f8fafc; border: 1px solid #cbd5e1; color: #475569; font-size: 0.75rem; padding: 2px 8px; border-radius: 12px; cursor: pointer; }
+    .chip:active { background: #e2e8f0; }
+
     /* 標籤色塊 */
     .badge { padding: 4px 10px; border-radius: 8px; color: white; font-size: 0.85rem; font-weight: bold; }
     .b-water { background: #0284c7; }
@@ -80,7 +92,6 @@
 </head>
 <body>
 
-  <!-- 自動提示食物資料庫選單 -->
   <datalist id="foodSuggestions"></datalist>
 
   <div class="container">
@@ -119,6 +130,15 @@
           <div class="stat-val" id="netCal">0</div>
         </div>
       </div>
+    </div>
+
+    <!-- 🌟 昨日飲食快速回顧卡片 -->
+    <div class="yesterday-box" onclick="toggleYesterdaySummary()">
+      <span>🕒 想知道昨天吃了什麼？點此查看</span>
+      <span id="yesterdayArrow">▼</span>
+    </div>
+    <div class="yesterday-details" id="yesterdayDetails">
+      載入中...
     </div>
 
     <!-- 條碼掃描相機 -->
@@ -206,10 +226,15 @@
     <div class="card">
       <div class="card-head">
         <span class="badge b-breakfast">🌅 早餐</span>
-        <span style="font-size:0.85rem; color:#64748b;">小計：<strong id="sub-breakfast">0</strong> kcal</span>
+        <div>
+          <button class="btn-copy-yesterday" onclick="copyYesterdayMeal('breakfast')">📋 複製昨天早餐</button>
+          <span style="font-size:0.85rem; color:#64748b; margin-left:4px;">小計：<strong id="sub-breakfast">0</strong> kcal</span>
+        </div>
       </div>
+      <!-- 常用常吃快捷點擊標籤 -->
+      <div class="recent-chips" id="chips-breakfast"></div>
       <div class="input-row">
-        <input type="text" id="name-breakfast" list="foodSuggestions" placeholder="輸入早餐 (如: 蛋餅、吐司、豆漿)" oninput="autoFillCal('breakfast')">
+        <input type="text" id="name-breakfast" list="foodSuggestions" placeholder="輸入早餐 (如: 紅豆吐司、馬可麵包)" oninput="autoFillCal('breakfast')">
         <input type="number" id="cal-breakfast" placeholder="熱量">
         <button class="btn-add" onclick="manualAdd('breakfast')">＋</button>
       </div>
@@ -220,8 +245,12 @@
     <div class="card">
       <div class="card-head">
         <span class="badge b-lunch">☀️ 午餐</span>
-        <span style="font-size:0.85rem; color:#64748b;">小計：<strong id="sub-lunch">0</strong> kcal</span>
+        <div>
+          <button class="btn-copy-yesterday" onclick="copyYesterdayMeal('lunch')">📋 複製昨天午餐</button>
+          <span style="font-size:0.85rem; color:#64748b; margin-left:4px;">小計：<strong id="sub-lunch">0</strong> kcal</span>
+        </div>
       </div>
+      <div class="recent-chips" id="chips-lunch"></div>
       <div class="input-row">
         <input type="text" id="name-lunch" list="foodSuggestions" placeholder="輸入午餐 (如: 排骨便當、蒜泥白肉)" oninput="autoFillCal('lunch')">
         <input type="number" id="cal-lunch" placeholder="熱量">
@@ -234,10 +263,14 @@
     <div class="card">
       <div class="card-head">
         <span class="badge b-dinner">🌙 晚餐 / 肉類料理</span>
-        <span style="font-size:0.85rem; color:#64748b;">小計：<strong id="sub-dinner">0</strong> kcal</span>
+        <div>
+          <button class="btn-copy-yesterday" onclick="copyYesterdayMeal('dinner')">📋 複製昨天晚餐</button>
+          <span style="font-size:0.85rem; color:#64748b; margin-left:4px;">小計：<strong id="sub-dinner">0</strong> kcal</span>
+        </div>
       </div>
+      <div class="recent-chips" id="chips-dinner"></div>
       <div class="input-row">
-        <input type="text" id="name-dinner" list="foodSuggestions" placeholder="輸入晚餐/肉類 (如: 嘴邊肉、三杯雞、紅燒肉)" oninput="autoFillCal('dinner')">
+        <input type="text" id="name-dinner" list="foodSuggestions" placeholder="輸入晚餐/肉類 (如: 嘴邊肉、三杯雞)" oninput="autoFillCal('dinner')">
         <input type="number" id="cal-dinner" placeholder="熱量">
         <button class="btn-add" onclick="manualAdd('dinner')">＋</button>
       </div>
@@ -247,11 +280,12 @@
     <!-- 8. 點心/宵夜 -->
     <div class="card">
       <div class="card-head">
-        <span class="badge b-snack">🍪 點心 / 宵夜 / 炸物</span>
+        <span class="badge b-snack">🍪 點心 / 宵夜 / 蛋糕</span>
         <span style="font-size:0.85rem; color:#64748b;">小計：<strong id="sub-snack">0</strong> kcal</span>
       </div>
+      <div class="recent-chips" id="chips-snack"></div>
       <div class="input-row">
-        <input type="text" id="name-snack" list="foodSuggestions" placeholder="輸入點心宵夜 (如: 鹹酥雞、香酥雞排)" oninput="autoFillCal('snack')">
+        <input type="text" id="name-snack" list="foodSuggestions" placeholder="輸入點心 (如: 燕麥豆漿蛋糕捲、鹹酥雞)" oninput="autoFillCal('snack')">
         <input type="number" id="cal-snack" placeholder="熱量">
         <button class="btn-add" onclick="manualAdd('snack')">＋</button>
       </div>
@@ -261,11 +295,12 @@
     <!-- 9. 飲料 -->
     <div class="card">
       <div class="card-head">
-        <span class="badge b-drink">🧋 飲料 / 啤酒 / 湯品</span>
+        <span class="badge b-drink">🧋 飲料 / 啤酒 / 豆漿</span>
         <span style="font-size:0.85rem; color:#64748b;">小計：<strong id="sub-drink">0</strong> kcal</span>
       </div>
+      <div class="recent-chips" id="chips-drink"></div>
       <div class="input-row">
-        <input type="text" id="name-drink" list="foodSuggestions" placeholder="輸入飲品/湯品 (如: 四神湯、貢丸湯)" oninput="autoFillCal('drink')">
+        <input type="text" id="name-drink" list="foodSuggestions" placeholder="輸入飲品 (如: 馬可先生燕麥豆漿)" oninput="autoFillCal('drink')">
         <input type="number" id="cal-drink" placeholder="熱量">
         <button class="btn-add" onclick="manualAdd('drink')">＋</button>
       </div>
@@ -277,54 +312,48 @@
   <script>
     const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbz_pceZbIkWcBtp8a9EzbPEsj1avqhcMjNs16o85SERy6vFmq6IY1iwsuT6oQb4u3g9/exec";
 
-    // 🌟 全台超完整飲食字典：肉類料理、三餐主食、小吃、熱炒與烘焙
+    // 常用食物熱量字典庫
     const calorieDictionary = {
-      // ===== 🥩 經典台灣肉類料理（黑白切、家常與主菜） =====
-      "蒜泥白肉": 350, "紅燒肉": 420, "炸紅糟肉": 420, "控肉": 480, "東坡肉": 500,
-      "滷排骨": 280, "炸排骨": 380, "糖醋里肌": 420, "京醬肉絲": 380, "客家小炒": 480,
-      "嘴邊肉": 140, "肝連肉": 150, "二層肉": 210, "松阪豬": 220, "大腸頭": 260, "滷大腸": 240, "粉腸": 160, "豬舌": 150, "豬耳朵": 180,
+      "起士核桃雜糧麵包(切片)": 160, "起士核桃雜糧麵包": 160, "水果百匯雜糧麵包(切片)": 150, "水果百匯雜糧麵包": 150,
+      "黑麥雜糧麵包(切片)": 140, "黑麥雜糧麵包": 140, "無糖高蛋白雜糧麵包(切片)": 135, "無糖高蛋白雜糧麵包": 135,
+      "奇亞籽雜糧麵包(切片)": 140, "奇亞籽雜糧麵包": 140, "紅莓雜糧麵包": 260, "雜糧肉桂捲": 260, "優格雜糧麵包": 250,
+      "優格起士雜糧堡": 260, "燻雞乳酪雜糧麵包": 270, "起士鮪魚雜糧麵包": 280, "蔬菜百匯雜糧麵包": 240, "雜糧餐包": 100,
+      "馬可先生全麥吐司(一片)": 95, "馬可先生全麥吐司": 95, "馬可先生黑麥雜糧吐司(一片)": 90, "馬可先生黑麥雜糧吐司": 90,
+      "馬可先生起士核桃吐司(一片)": 120, "馬可先生起士核桃吐司": 120, "馬可先生高纖胚芽吐司(一片)": 92, "馬可先生高纖胚芽吐司": 92,
+      "燕麥豆漿蛋糕捲(切片)": 180, "燕麥豆漿蛋糕捲": 180, "芋泥燕麥豆漿蛋糕捲(切片)": 210, "芋泥燕麥豆漿蛋糕捲": 210,
+      "芝麻燕麥豆漿蛋糕捲(切片)": 200, "芝麻燕麥豆漿蛋糕捲": 200, "巧克力燕麥豆漿蛋糕捲(切片)": 210, "巧克力燕麥豆漿蛋糕捲": 210,
+      "馬可先生燕麥豆漿(無糖)": 160, "馬可先生燕麥豆漿(微糖)": 210, "馬可先生濃豆漿": 170,
+      "雜糧手工燕麥餅(2片)": 110, "馬可先生雜糧鳳梨酥": 170,
+      "紅豆吐司": 160, "紅豆吐司(一片)": 160, "起司吐司": 150, "起司吐司(一片)": 150,
+      "芋頭吐司": 150, "芋頭吐司(一片)": 150, "芝麻吐司": 170, "芝麻吐司(一片)": 170,
+      "白吐司": 75, "白吐司(一片)": 75, "全麥吐司": 70, "全麥吐司(一片)": 70,
+      "生吐司": 140, "生吐司(一片)": 140, "鮮奶吐司": 95, "鮮奶吐司(一片)": 95,
+      "厚片吐司": 150, "烤花生厚片": 350, "烤奶酥厚片": 400, "烤草莓吐司": 160, "烤香蒜厚片": 320,
+      "煎蛋吐司": 240, "火腿蛋吐司": 330, "肉排蛋吐司": 420, "豬排蛋吐司": 420, "鮪魚蛋吐司": 360, "起司蛋吐司": 290, "培根蛋吐司": 380, "總匯吐司": 580,
+      "蒜泥白肉": 350, "紅燒肉": 420, "炸紅糟肉": 420, "控肉": 480, "東坡肉": 500, "滷排骨": 280, "炸排骨": 380, "糖醋里肌": 420, "客家小炒": 480,
+      "嘴邊肉": 140, "肝連肉": 150, "二層肉": 210, "松阪豬": 220, "大腸頭": 260, "滷大腸": 240, "粉腸": 160,
       "白斬雞": 240, "油雞": 260, "鹽水雞(一份)": 220, "鹹水雞(一份)": 220, "三杯雞": 520, "宮保雞丁": 360,
       "炸大雞腿": 480, "滷大雞腿": 300, "烤雞腿": 320, "香酥雞排": 650, "炸雞排": 650, "鹹酥雞一份": 450,
-      "舒肥雞胸肉": 130, "雞胸肉": 165, "烤二節翅(2隻)": 210, "滷雞爪(3支)": 150,
-      "滷牛腱": 140, "滷牛肚": 120, "蔥爆牛肉": 420, "鐵板牛柳": 450, "黑胡椒牛肉": 430, "沙茶牛肉": 460, "牛腩切盤": 360,
-      "當歸鴨肉": 260, "煙燻鴨肉": 280, "鹹水鴨": 270, "白斬鵝肉": 320, "沙茶羊肉": 450, "蔥爆羊肉": 420,
-      "煎鮭魚": 230, "烤鯖魚": 280, "煎虱目魚肚": 360, "清蒸鱸魚": 160, "紅燒鱈魚": 260, "鳳梨蝦球": 460, "炸蚵仔酥": 420,
-
-      // ===== 午晚餐：便當、燒臘與飯麵主食 =====
+      "舒肥雞胸肉": 130, "雞胸肉": 165, "烤二節翅(2隻)": 210, "滷牛腱": 140, "滷牛肚": 120, "蔥爆牛肉": 420, "鐵板牛柳": 450, "沙茶牛肉": 460,
+      "當歸鴨肉": 260, "煙燻鴨肉": 280, "白斬鵝肉": 320, "沙茶羊肉": 450, "蔥爆羊肉": 420,
+      "煎鮭魚": 230, "烤鯖魚": 280, "煎虱目魚肚": 360, "清蒸鱸魚": 160, "鳳梨蝦球": 460, "炸蚵仔酥": 420,
       "排骨便當": 850, "炸雞排便當": 950, "炸雞腿便當": 880, "滷雞腿便當": 680, "烤雞腿便當": 700,
       "控肉便當": 900, "三寶飯便當": 920, "燒肉便當": 750, "招牌便當": 750, "鯖魚便當": 750,
-      "鮭魚便當": 700, "素食便當": 650, "健康低脂餐盒": 520, "滷肉飯(小)": 450, "火雞肉飯": 380,
-      "咖哩豬肉飯": 800, "牛肉燴飯": 850, "炒飯": 750, "鮭魚炒飯": 780, "炒麵": 680,
+      "健康低脂餐盒": 520, "滷肉飯(小)": 450, "滷肉飯": 450, "火雞肉飯": 380,
+      "咖哩豬肉飯": 800, "牛肉燴飯": 850, "炒飯": 750, "炒麵": 680,
       "牛肉麵": 750, "陽春麵": 350, "麻醬麵": 520, "肉燥乾麵": 480, "炸醬麵": 500,
-      "榨菜肉絲麵": 450, "大滷麵": 500, "涼麵(大)": 550, "涼麵(小)": 400, "餛飩麵": 460, 
-      "牛肉湯餃": 600, "肉羹麵": 550, "大腸蚵仔麵線": 420, "紅油抄手": 450,
-      "肉醬義大利麵": 650, "奶油培根義大利麵": 850,
-      "水餃10顆": 500, "韭菜水餃10顆": 550, "鍋貼10顆": 650, "燙青菜": 60,
-
-      // ===== 小火鍋、夜市小吃與湯品 =====
+      "榨菜肉絲麵": 450, "大滷麵": 500, "涼麵(大)": 550, "涼麵(小)": 400, "涼麵": 450, "餛飩麵": 460, 
+      "大腸蚵仔麵線": 420, "紅油抄手": 450, "水餃10顆": 500, "水餃": 50, "鍋貼10顆": 650, "燙青菜": 60,
       "大腸臭臭鍋(含飯)": 850, "海鮮豆腐鍋(含飯)": 700, "麻辣鍋(個人)": 900,
       "炸臭豆腐": 550, "麻辣臭豆腐": 450, "綜合滷味(一份)": 400, "蚵仔煎": 510, "肉圓一顆": 320, 
-      "生煎包": 120, "胡椒餅": 380, "章魚燒(一盒)": 320, "大腸包小腸": 520, "烤香腸": 240, "甜不辣一份": 350, "地瓜球(小)": 280,
-      "貢丸湯": 150, "豬血湯": 120, "四神湯": 250, "酸辣湯": 180, "玉米濃湯": 200, "蛋花湯": 80, "蛤蜊湯": 70, "蘿蔔湯": 60,
-
-      // ===== 經典熱炒 =====
-      "薑絲大腸": 380, "五更腸旺": 520, "糖醋排骨": 580, "炒海瓜子": 240, "塔香蛤蜊": 220, "炒花枝": 260, 
-      "豆酥鱈魚": 430, "金沙豆腐": 420, "鐵板豆腐": 350, "蟹黃豆腐煲": 380, "菜脯蛋": 320, "九層塔煎蛋": 320,
-      "炒水蓮": 140, "熱炒高麗菜": 130, "炒空心菜": 130,
-
-      // ===== 早餐大系列（蛋餅、吐司、中西式、馬可先生） =====
+      "生煎包": 120, "胡椒餅": 380, "章魚燒(一盒)": 320, "大腸包小腸": 520, "甜不辣一份": 350, "地瓜球(小)": 280,
+      "貢丸湯": 150, "豬血湯": 120, "四神湯": 250, "酸辣湯": 180, "玉米濃湯": 200, "蛋花湯": 80, "蛤蜊湯": 70,
       "原味蛋餅": 260, "古早味粉漿蛋餅": 320, "玉米蛋餅": 300, "起司蛋餅": 310, "鮪魚蛋餅": 320, "肉鬆蛋餅": 340, 
       "火腿蛋餅": 310, "培根蛋餅": 350, "豬排蛋餅": 410, "卡啦雞腿蛋餅": 520, "薯餅蛋餅": 400,
-      "白吐司(一片)": 75, "全麥吐司(一片)": 70, "生吐司(一片)": 140, "鮮奶吐司(一片)": 95,
-      "紅豆吐司(一片)": 160, "起司吐司(一片)": 150, "芋頭吐司(一片)": 150, "芝麻吐司(一片)": 170,
-      "煎蛋吐司": 240, "火腿蛋吐司": 330, "肉排蛋吐司": 420, "豬排蛋吐司": 420, "鮪魚蛋吐司": 360, "起司蛋吐司": 290, "培根蛋吐司": 380, "總匯吐司": 580,
-      "烤花生厚片": 350, "烤奶酥厚片": 400, "烤香蒜厚片": 320, "卡啦雞腿堡": 580, "豬肉滿福堡加蛋": 380, "薯餅": 150,
+      "卡啦雞腿堡": 580, "豬肉滿福堡加蛋": 380, "薯餅": 150,
       "燒餅油條": 450, "燒餅夾蛋": 380, "燒餅夾蔥蛋": 390, "蔥燒餅": 320, "厚燒餅": 350, "蘿蔔絲酥餅": 280, "蟹殼黃(蔥肉)": 150,
-      "傳統飯糰": 480, "紫米飯糰": 480, "飯糰加蛋": 550, "鮮肉水煎包": 220, "高麗菜水煎包": 180, "小籠包(8顆)": 640, "小籠湯包(8顆)": 580,
+      "傳統飯糰": 480, "紫米飯糰": 480, "飯糰加蛋": 550, "鮮肉水煎包": 220, "高麗菜水煎包": 180, "小籠包(8顆)": 640,
       "蘿蔔糕兩片": 220, "蘿蔔糕加蛋": 340, "白饅頭": 280, "黑糖饅頭": 290, "饅頭夾蛋": 380, "肉包": 210, "菜包": 180,
-      "馬可先生燕麥豆漿(無糖)": 160, "馬可先生燕麥豆漿(微糖)": 210, "馬可先生全麥吐司(一片)": 95, "馬可先生黑麥雜糧吐司(一片)": 90, "馬可先生起士核桃吐司(一片)": 120,
-
-      // ===== 蛋品、飲品與酒水 =====
       "水煮蛋": 75, "茶葉蛋": 75, "荷包蛋": 120, "蔥花煎蛋": 140, "蒸蛋": 80, "溫泉蛋": 65, "皮蛋豆腐": 160,
       "無糖豆漿": 147, "微糖豆漿": 180, "鹹豆漿": 190, "鹹豆漿加蛋": 260, "米漿": 210,
       "全脂鮮乳": 150, "低脂鮮乳": 120, "美式黑咖啡": 15, "拿鐵咖啡": 180,
@@ -355,10 +384,24 @@
     });
 
     function autoFillCal(type) {
-      const name = document.getElementById(`name-${type}`).value.trim();
+      const rawInput = document.getElementById(`name-${type}`).value;
+      const cleanInput = rawInput.trim();
+      if (!cleanInput) return;
+
       const calInput = document.getElementById(`cal-${type}`);
-      if (calorieDictionary[name] !== undefined) {
-        calInput.value = calorieDictionary[name];
+
+      if (calorieDictionary[cleanInput] !== undefined) {
+        calInput.value = calorieDictionary[cleanInput];
+        return;
+      }
+
+      const matchedKey = Object.keys(calorieDictionary).find(key => {
+        const cleanKey = key.replace(/\(.*?\)/g, '').trim();
+        return key.includes(cleanInput) || cleanKey === cleanInput || cleanInput.includes(cleanKey);
+      });
+
+      if (matchedKey && calorieDictionary[matchedKey] !== undefined) {
+        calInput.value = calorieDictionary[matchedKey];
       }
     }
 
@@ -439,6 +482,122 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(record)
       }).catch(e => console.log("同步失敗:", e));
+    }
+
+    // 🌟 一鍵複製昨天的餐別到今天
+    function copyYesterdayMeal(type) {
+      const parts = currentDateStr.split('-');
+      const d = new Date(parts[0], parts[1] - 1, parts[2]);
+      d.setDate(d.getDate() - 1);
+      const yesterdayStr = getLocalDateString(d);
+      const yKey = `health_tracker_${yesterdayStr}`;
+      const yData = JSON.parse(localStorage.getItem(yKey) || '{}');
+
+      if (!yData[type] || yData[type].length === 0) {
+        return alert(`昨天（${yesterdayStr}）的 ${mealNames[type]} 沒有任何紀錄喔！`);
+      }
+
+      const now = new Date();
+      const timeStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+      if (!appData[type]) appData[type] = [];
+      yData[type].forEach(item => {
+        const copyItem = { date: currentDateStr, time: timeStr, meal: mealNames[type], name: item.name, cal: item.cal };
+        appData[type].unshift(copyItem);
+        syncToGoogleSheet(copyItem);
+      });
+
+      render();
+      alert(`已成功複製昨天的 ${mealNames[type]} 到今天！`);
+    }
+
+    // 🌟 展開/收合昨天飲食摘要
+    function toggleYesterdaySummary() {
+      const box = document.getElementById('yesterdayDetails');
+      const arrow = document.getElementById('yesterdayArrow');
+      if (box.style.display === 'block') {
+        box.style.display = 'none';
+        arrow.textContent = '▼';
+      } else {
+        box.style.display = 'block';
+        arrow.textContent = '▲';
+        loadYesterdaySummary();
+      }
+    }
+
+    function loadYesterdaySummary() {
+      const parts = currentDateStr.split('-');
+      const d = new Date(parts[0], parts[1] - 1, parts[2]);
+      d.setDate(d.getDate() - 1);
+      const yesterdayStr = getLocalDateString(d);
+      const yKey = `health_tracker_${yesterdayStr}`;
+      const yData = JSON.parse(localStorage.getItem(yKey) || '{}');
+
+      const box = document.getElementById('yesterdayDetails');
+      let html = `<strong>📅 【${yesterdayStr}】飲食與運動總覽：</strong><br>`;
+      let hasData = false;
+
+      const categories = ['breakfast', 'lunch', 'dinner', 'snack', 'drink'];
+      categories.forEach(type => {
+        if (yData[type] && yData[type].length > 0) {
+          hasData = true;
+          const items = yData[type].map(i => `${i.name}(+${i.cal})`).join('、');
+          html += `• <strong>${mealNames[type]}</strong>：${items}<br>`;
+        }
+      });
+
+      if (yData.sports && yData.sports.length > 0) {
+        hasData = true;
+        const sports = yData.sports.map(s => `${s.name}(-${s.burn}kcal)`).join('、');
+        html += `• <strong>運動</strong>：${sports}<br>`;
+      }
+
+      if (yData.steps) {
+        hasData = true;
+        html += `• <strong>步數</strong>：${yData.steps} 步<br>`;
+      }
+
+      if (!hasData) {
+        html += `<span style="color:#94a3b8;">昨天沒有任何紀錄。</span>`;
+      }
+
+      box.innerHTML = html;
+    }
+
+    // 🌟 渲染最近吃過的常用快速按鈕 (點擊自動填入)
+    function renderRecentChips() {
+      const categories = ['breakfast', 'lunch', 'dinner', 'snack', 'drink'];
+      categories.forEach(type => {
+        const chipBox = document.getElementById(`chips-${type}`);
+        if (!chipBox) return;
+        chipBox.innerHTML = '';
+
+        // 從歷史所有日期或當前收集最近常吃的食物品項
+        let historyNames = new Set();
+        (appData[type] || []).forEach(i => historyNames.add(i.name));
+
+        // 預設經典常吃推薦
+        const defaults = {
+          breakfast: ["紅豆吐司", "馬可先生全麥吐司", "水煮蛋", "無糖豆漿", "原味蛋餅"],
+          lunch: ["排骨便當", "健康低脂餐盒", "水餃10顆", "牛肉麵"],
+          dinner: ["蒜泥白肉", "嘴邊肉", "燙青菜", "客家小炒"],
+          snack: ["燕麥豆漿蛋糕捲", "香蕉", "茶葉蛋"],
+          drink: ["馬可先生燕麥豆漿(無糖)", "美式黑咖啡", "無糖綠茶"]
+        };
+
+        (defaults[type] || []).forEach(n => historyNames.add(n));
+
+        Array.from(historyNames).slice(0, 5).forEach(name => {
+          const btn = document.createElement('span');
+          btn.className = 'chip';
+          btn.textContent = name;
+          btn.onclick = () => {
+            document.getElementById(`name-${type}`).value = name;
+            autoFillCal(type);
+          };
+          chipBox.appendChild(btn);
+        });
+      });
     }
 
     function render() {
@@ -533,6 +692,8 @@
 
       const key = `health_tracker_${currentDateStr}`;
       localStorage.setItem(key, JSON.stringify(appData));
+
+      renderRecentChips();
     }
 
     function addWater(amount) {
@@ -641,7 +802,7 @@
       const timeStr = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
       const record = { date: currentDateStr, time: timeStr, meal: "運動燃脂", name: `${sportName} (${mins}分)`, cal: -burn, mins: mins, burn: burn };
 
-      if (!appData.sports) appData.sports = [];
+      if (!appData[type || 'sports']) appData.sports = [];
       appData.sports.unshift(record);
 
       document.getElementById('sportMins').value = '';
