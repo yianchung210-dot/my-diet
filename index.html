@@ -95,7 +95,7 @@
       <button onclick="shiftDate(1)">後一天 ▶</button>
     </div>
 
-    <!-- 頂部綜合熱量看板（含剩餘熱量與目標預算） -->
+    <!-- 頂部綜合熱量看板 -->
     <div class="summary-box">
       <div class="summary-top">
         <span id="dateShow">--</span>
@@ -128,7 +128,7 @@
       <div id="scanMsg">掃描條碼或手動記錄，自動標註所選日期並同步試算表</div>
     </div>
 
-    <!-- 1. 喝水追蹤 (快捷按鈕 + 進度條) -->
+    <!-- 1. 喝水追蹤 -->
     <div class="card">
       <div class="card-head">
         <span class="badge b-water">💧 喝水紀錄</span>
@@ -150,7 +150,7 @@
       </div>
     </div>
 
-    <!-- 2. 身體數據 (血糖、身高、體重、BMI) -->
+    <!-- 2. 身體數據 -->
     <div class="card">
       <div class="card-head">
         <span class="badge b-body">🩺 身體數據</span>
@@ -209,7 +209,7 @@
         <span style="font-size:0.85rem; color:#64748b;">小計：<strong id="sub-breakfast">0</strong> kcal</span>
       </div>
       <div class="input-row">
-        <input type="text" id="name-breakfast" list="foodSuggestions" placeholder="輸入食物 (如: 蔥燒餅)" oninput="autoFillCal('breakfast')">
+        <input type="text" id="name-breakfast" list="foodSuggestions" placeholder="輸入早餐 (如: 蛋餅、吐司、豆漿)" oninput="autoFillCal('breakfast')">
         <input type="number" id="cal-breakfast" placeholder="熱量">
         <button class="btn-add" onclick="manualAdd('breakfast')">＋</button>
       </div>
@@ -223,7 +223,7 @@
         <span style="font-size:0.85rem; color:#64748b;">小計：<strong id="sub-lunch">0</strong> kcal</span>
       </div>
       <div class="input-row">
-        <input type="text" id="name-lunch" list="foodSuggestions" placeholder="輸入食物 (如: 排骨便當)" oninput="autoFillCal('lunch')">
+        <input type="text" id="name-lunch" list="foodSuggestions" placeholder="輸入午餐 (如: 排骨便當、蒜泥白肉)" oninput="autoFillCal('lunch')">
         <input type="number" id="cal-lunch" placeholder="熱量">
         <button class="btn-add" onclick="manualAdd('lunch')">＋</button>
       </div>
@@ -233,11 +233,11 @@
     <!-- 7. 晚餐 -->
     <div class="card">
       <div class="card-head">
-        <span class="badge b-dinner">🌙 晚餐 / 熱炒</span>
+        <span class="badge b-dinner">🌙 晚餐 / 肉類料理</span>
         <span style="font-size:0.85rem; color:#64748b;">小計：<strong id="sub-dinner">0</strong> kcal</span>
       </div>
       <div class="input-row">
-        <input type="text" id="name-dinner" list="foodSuggestions" placeholder="輸入熱炒 (如: 客家小炒)" oninput="autoFillCal('dinner')">
+        <input type="text" id="name-dinner" list="foodSuggestions" placeholder="輸入晚餐/肉類 (如: 嘴邊肉、三杯雞、紅燒肉)" oninput="autoFillCal('dinner')">
         <input type="number" id="cal-dinner" placeholder="熱量">
         <button class="btn-add" onclick="manualAdd('dinner')">＋</button>
       </div>
@@ -247,11 +247,11 @@
     <!-- 8. 點心/宵夜 -->
     <div class="card">
       <div class="card-head">
-        <span class="badge b-snack">🍪 點心 / 宵夜 / 糕點</span>
+        <span class="badge b-snack">🍪 點心 / 宵夜 / 炸物</span>
         <span style="font-size:0.85rem; color:#64748b;">小計：<strong id="sub-snack">0</strong> kcal</span>
       </div>
       <div class="input-row">
-        <input type="text" id="name-snack" list="foodSuggestions" placeholder="輸入糕點 (如: 蛋黃酥、鳳梨酥)" oninput="autoFillCal('snack')">
+        <input type="text" id="name-snack" list="foodSuggestions" placeholder="輸入點心宵夜 (如: 鹹酥雞、香酥雞排)" oninput="autoFillCal('snack')">
         <input type="number" id="cal-snack" placeholder="熱量">
         <button class="btn-add" onclick="manualAdd('snack')">＋</button>
       </div>
@@ -261,11 +261,11 @@
     <!-- 9. 飲料 -->
     <div class="card">
       <div class="card-head">
-        <span class="badge b-drink">🧋 飲料 / 啤酒</span>
+        <span class="badge b-drink">🧋 飲料 / 啤酒 / 湯品</span>
         <span style="font-size:0.85rem; color:#64748b;">小計：<strong id="sub-drink">0</strong> kcal</span>
       </div>
       <div class="input-row">
-        <input type="text" id="name-drink" list="foodSuggestions" placeholder="輸入飲品 (如: 無糖豆漿、台啤)" oninput="autoFillCal('drink')">
+        <input type="text" id="name-drink" list="foodSuggestions" placeholder="輸入飲品/湯品 (如: 四神湯、貢丸湯)" oninput="autoFillCal('drink')">
         <input type="number" id="cal-drink" placeholder="熱量">
         <button class="btn-add" onclick="manualAdd('drink')">＋</button>
       </div>
@@ -277,43 +277,59 @@
   <script>
     const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbz_pceZbIkWcBtp8a9EzbPEsj1avqhcMjNs16o85SERy6vFmq6IY1iwsuT6oQb4u3g9/exec";
 
-    // 常用食物熱量字典庫
+    // 🌟 全台超完整飲食字典：肉類料理、三餐主食、小吃、熱炒與烘焙
     const calorieDictionary = {
-      "客家小炒": 480, "蔥爆牛肉": 420, "蔥爆豬肉": 450, "薑絲大腸": 380, "五更腸旺": 520,
-      "三杯雞": 550, "糖醋排骨": 580, "蒜泥白肉": 420, "鐵板牛柳": 450, "鳳梨蝦球": 460,
-      "炸蚵仔酥": 420, "炒海瓜子": 240, "塔香蛤蜊": 220, "炒花枝": 260, "豆酥鱈魚": 430,
-      "金沙豆腐": 420, "鐵板豆腐": 350, "蟹黃豆腐煲": 380, "菜脯蛋": 320, "九層塔煎蛋": 320,
-      "炒水蓮": 140, "熱炒高麗菜": 130, "炒空心菜": 130, "台灣金牌啤酒(600ml)": 210, "罐裝台啤(330ml)": 120,
-      "蔥燒餅": 320, "老麵蔥燒餅": 350, "三角蔥餅": 320, "厚燒餅": 350,
-      "蘿蔔絲酥餅": 280, "蘿蔔酥餅": 280, "蘿蔔絲餅": 280, "蟹殼黃(蔥肉)": 150, "蟹殼黃(甜糖)": 140, "胡椒餅": 380,
-      "燒餅油條": 450, "燒餅夾蛋": 380, "燒餅夾蔥蛋": 390, "燒餅夾肉排蛋": 520, "燒餅夾生菜肉排": 420,
-      "燒餅": 260, "油條": 230, "豆沙酥餅": 260, "糖膏酥餅": 280, "太陽餅": 260, "牛舌餅(厚酥)": 240,
-      "鳳梨酥": 200, "土鳳梨酥": 220, "蛋黃酥": 280, "綠豆椪": 360, "芋頭酥": 240,
-      "黑糖糕": 160, "發糕": 230, "草仔粿": 280, "紅龜粿": 250, "桂圓核桃糕": 180,
-      "老婆餅": 250, "狀元餅": 320, "沙其馬": 200, "花生糖(一塊)": 120,
-      "原味蛋塔": 220, "葡式蛋塔": 280, "起司蛋糕(切片)": 320, "提拉米蘇": 300,
-      "巧克力布朗尼": 340, "檸檬磅蛋糕": 280, "肉桂捲": 420, "司康": 280, "可頌": 240,
-      "菠蘿麵包": 380, "蔥花麵包": 260, "肉鬆麵包": 360, "克林姆麵包": 300, "紅豆麵包": 280,
-      "傳統飯糰": 480, "紫米飯糰": 480, "飯糰加蛋": 550, "鮮肉水煎包": 220, "高麗菜水煎包": 180,
-      "小籠包(8顆)": 640, "小籠湯包(8顆)": 580, "蔥油餅": 300, "蔥油餅加蛋": 420, "蔥抓餅加蛋": 450,
-      "韭菜盒": 300, "蘿蔔糕兩片": 220, "蘿蔔糕加蛋": 340, "肉包": 210, "菜包": 180, "白饅頭": 280,
-      "黑糖饅頭": 290, "饅頭夾蛋": 380, "原味蛋餅": 260, "玉米蛋餅": 300, "鮪魚蛋餅": 320, "起司蛋餅": 310, "肉鬆蛋餅": 340, "培根蛋餅": 350, "薯餅蛋餅": 400,
-      "火腿蛋吐司": 350, "肉排蛋吐司": 420, "鮪魚蛋吐司": 380, "花生厚片": 350, "奶酥厚片": 400,
-      "卡啦雞腿堡": 580, "牛肉漢堡": 450, "豬肉滿福堡加蛋": 380, "薯餅": 150,
-      "水煮蛋": 75, "茶葉蛋": 75, "荷包蛋": 120, "蔥花煎蛋": 140, "蒸蛋": 80, "溫泉蛋": 65,
-      "雞胸肉": 165, "舒肥雞胸肉": 130, "煎鮭魚": 230, "滷牛腱": 120, "皮蛋豆腐": 160, "嫩豆腐(半盒)": 80,
-      "白飯一碗": 280, "糙米飯一碗": 270, "排骨便當": 850, "炸雞腿便當": 880, "滷雞腿便當": 680,
-      "控肉便當": 900, "招牌便當": 750, "健康低脂餐盒": 520, "滷肉飯(小)": 450, "火雞肉飯": 380,
-      "水餃10顆": 500, "水餃": 50, "鍋貼10顆": 650, "牛肉麵": 750, "陽春麵": 350,
-      "麻醬麵": 520, "肉燥乾麵": 480, "炸醬麵": 500, "餛飩麵": 460, "牛肉湯餃": 600,
-      "肉羹麵": 550, "大腸蚵仔麵線": 420, "炒飯": 750, "炒麵": 680, "燙青菜": 60,
-      "炸雞排": 650, "鹹酥雞一份": 450, "甜不辣一份": 350, "地瓜球(小)": 280, "大腸包小腸": 520,
-      "蚵仔煎": 510, "肉圓一顆": 320, "章魚燒(一盒)": 320, "炸薯條": 320, "烤香腸": 240,
-      "統一布丁": 110, "豆花(含糖水花生)": 280, "原味豆花": 180, "香蕉": 90, "蘋果": 60, "綜合堅果一把": 160,
+      // ===== 🥩 經典台灣肉類料理（黑白切、家常與主菜） =====
+      "蒜泥白肉": 350, "紅燒肉": 420, "炸紅糟肉": 420, "控肉": 480, "東坡肉": 500,
+      "滷排骨": 280, "炸排骨": 380, "糖醋里肌": 420, "京醬肉絲": 380, "客家小炒": 480,
+      "嘴邊肉": 140, "肝連肉": 150, "二層肉": 210, "松阪豬": 220, "大腸頭": 260, "滷大腸": 240, "粉腸": 160, "豬舌": 150, "豬耳朵": 180,
+      "白斬雞": 240, "油雞": 260, "鹽水雞(一份)": 220, "鹹水雞(一份)": 220, "三杯雞": 520, "宮保雞丁": 360,
+      "炸大雞腿": 480, "滷大雞腿": 300, "烤雞腿": 320, "香酥雞排": 650, "炸雞排": 650, "鹹酥雞一份": 450,
+      "舒肥雞胸肉": 130, "雞胸肉": 165, "烤二節翅(2隻)": 210, "滷雞爪(3支)": 150,
+      "滷牛腱": 140, "滷牛肚": 120, "蔥爆牛肉": 420, "鐵板牛柳": 450, "黑胡椒牛肉": 430, "沙茶牛肉": 460, "牛腩切盤": 360,
+      "當歸鴨肉": 260, "煙燻鴨肉": 280, "鹹水鴨": 270, "白斬鵝肉": 320, "沙茶羊肉": 450, "蔥爆羊肉": 420,
+      "煎鮭魚": 230, "烤鯖魚": 280, "煎虱目魚肚": 360, "清蒸鱸魚": 160, "紅燒鱈魚": 260, "鳳梨蝦球": 460, "炸蚵仔酥": 420,
+
+      // ===== 午晚餐：便當、燒臘與飯麵主食 =====
+      "排骨便當": 850, "炸雞排便當": 950, "炸雞腿便當": 880, "滷雞腿便當": 680, "烤雞腿便當": 700,
+      "控肉便當": 900, "三寶飯便當": 920, "燒肉便當": 750, "招牌便當": 750, "鯖魚便當": 750,
+      "鮭魚便當": 700, "素食便當": 650, "健康低脂餐盒": 520, "滷肉飯(小)": 450, "火雞肉飯": 380,
+      "咖哩豬肉飯": 800, "牛肉燴飯": 850, "炒飯": 750, "鮭魚炒飯": 780, "炒麵": 680,
+      "牛肉麵": 750, "陽春麵": 350, "麻醬麵": 520, "肉燥乾麵": 480, "炸醬麵": 500,
+      "榨菜肉絲麵": 450, "大滷麵": 500, "涼麵(大)": 550, "涼麵(小)": 400, "餛飩麵": 460, 
+      "牛肉湯餃": 600, "肉羹麵": 550, "大腸蚵仔麵線": 420, "紅油抄手": 450,
+      "肉醬義大利麵": 650, "奶油培根義大利麵": 850,
+      "水餃10顆": 500, "韭菜水餃10顆": 550, "鍋貼10顆": 650, "燙青菜": 60,
+
+      // ===== 小火鍋、夜市小吃與湯品 =====
+      "大腸臭臭鍋(含飯)": 850, "海鮮豆腐鍋(含飯)": 700, "麻辣鍋(個人)": 900,
+      "炸臭豆腐": 550, "麻辣臭豆腐": 450, "綜合滷味(一份)": 400, "蚵仔煎": 510, "肉圓一顆": 320, 
+      "生煎包": 120, "胡椒餅": 380, "章魚燒(一盒)": 320, "大腸包小腸": 520, "烤香腸": 240, "甜不辣一份": 350, "地瓜球(小)": 280,
+      "貢丸湯": 150, "豬血湯": 120, "四神湯": 250, "酸辣湯": 180, "玉米濃湯": 200, "蛋花湯": 80, "蛤蜊湯": 70, "蘿蔔湯": 60,
+
+      // ===== 經典熱炒 =====
+      "薑絲大腸": 380, "五更腸旺": 520, "糖醋排骨": 580, "炒海瓜子": 240, "塔香蛤蜊": 220, "炒花枝": 260, 
+      "豆酥鱈魚": 430, "金沙豆腐": 420, "鐵板豆腐": 350, "蟹黃豆腐煲": 380, "菜脯蛋": 320, "九層塔煎蛋": 320,
+      "炒水蓮": 140, "熱炒高麗菜": 130, "炒空心菜": 130,
+
+      // ===== 早餐大系列（蛋餅、吐司、中西式、馬可先生） =====
+      "原味蛋餅": 260, "古早味粉漿蛋餅": 320, "玉米蛋餅": 300, "起司蛋餅": 310, "鮪魚蛋餅": 320, "肉鬆蛋餅": 340, 
+      "火腿蛋餅": 310, "培根蛋餅": 350, "豬排蛋餅": 410, "卡啦雞腿蛋餅": 520, "薯餅蛋餅": 400,
+      "白吐司(一片)": 75, "全麥吐司(一片)": 70, "生吐司(一片)": 140, "鮮奶吐司(一片)": 95,
+      "紅豆吐司(一片)": 160, "起司吐司(一片)": 150, "芋頭吐司(一片)": 150, "芝麻吐司(一片)": 170,
+      "煎蛋吐司": 240, "火腿蛋吐司": 330, "肉排蛋吐司": 420, "豬排蛋吐司": 420, "鮪魚蛋吐司": 360, "起司蛋吐司": 290, "培根蛋吐司": 380, "總匯吐司": 580,
+      "烤花生厚片": 350, "烤奶酥厚片": 400, "烤香蒜厚片": 320, "卡啦雞腿堡": 580, "豬肉滿福堡加蛋": 380, "薯餅": 150,
+      "燒餅油條": 450, "燒餅夾蛋": 380, "燒餅夾蔥蛋": 390, "蔥燒餅": 320, "厚燒餅": 350, "蘿蔔絲酥餅": 280, "蟹殼黃(蔥肉)": 150,
+      "傳統飯糰": 480, "紫米飯糰": 480, "飯糰加蛋": 550, "鮮肉水煎包": 220, "高麗菜水煎包": 180, "小籠包(8顆)": 640, "小籠湯包(8顆)": 580,
+      "蘿蔔糕兩片": 220, "蘿蔔糕加蛋": 340, "白饅頭": 280, "黑糖饅頭": 290, "饅頭夾蛋": 380, "肉包": 210, "菜包": 180,
+      "馬可先生燕麥豆漿(無糖)": 160, "馬可先生燕麥豆漿(微糖)": 210, "馬可先生全麥吐司(一片)": 95, "馬可先生黑麥雜糧吐司(一片)": 90, "馬可先生起士核桃吐司(一片)": 120,
+
+      // ===== 蛋品、飲品與酒水 =====
+      "水煮蛋": 75, "茶葉蛋": 75, "荷包蛋": 120, "蔥花煎蛋": 140, "蒸蛋": 80, "溫泉蛋": 65, "皮蛋豆腐": 160,
       "無糖豆漿": 147, "微糖豆漿": 180, "鹹豆漿": 190, "鹹豆漿加蛋": 260, "米漿": 210,
       "全脂鮮乳": 150, "低脂鮮乳": 120, "美式黑咖啡": 15, "拿鐵咖啡": 180,
-      "珍珠奶茶(全糖)": 650, "珍珠奶茶(微糖)": 480, "鮮奶茶(微糖)": 220,
-      "微糖青茶": 60, "微糖紅茶": 120, "無糖綠茶": 0, "無糖青茶": 0
+      "珍珠奶茶(全糖)": 650, "珍珠奶茶(微糖)": 480, "鮮奶茶(微糖)": 220, "微糖青茶": 60, "無糖綠茶": 0,
+      "台灣金牌啤酒(600ml)": 210, "罐裝台啤(330ml)": 120
     };
 
     const barcodeDB = {
@@ -360,7 +376,6 @@
     let currentDateStr = getLocalDateString(new Date());
     document.getElementById('targetDate').value = currentDateStr;
 
-    // 全局設定：每日預算與目標喝水量
     let dailyCalBudget = parseInt(localStorage.getItem('user_cal_budget') || '2000');
     let dailyWaterGoal = parseInt(localStorage.getItem('user_water_goal') || '2000');
 
@@ -382,7 +397,6 @@
       }
     }
 
-    // 讀取當前選取日期的資料
     function loadCurrentData() {
       const key = `health_tracker_${currentDateStr}`;
       return JSON.parse(localStorage.getItem(key) || JSON.stringify({
@@ -499,7 +513,7 @@
       document.getElementById('weightInput').value = appData.weight || '';
       document.getElementById('bmiVal').textContent = appData.bmi || '--';
 
-      // 熱量計算與剩餘額度
+      // 熱量預算與剩餘額度
       const burnTotal = sportTotal + (appData.stepBurn || 0);
       const netCalVal = intakeTotal - burnTotal;
       const remainVal = dailyCalBudget - netCalVal;
@@ -512,16 +526,15 @@
       const remainEl = document.getElementById('remainCal');
       remainEl.textContent = remainVal;
       if (remainVal < 0) {
-        remainEl.style.color = "#f87171"; // 超標警示紅字
+        remainEl.style.color = "#f87171";
       } else {
-        remainEl.style.color = "#4ade80"; // 充裕安全綠字
+        remainEl.style.color = "#4ade80";
       }
 
       const key = `health_tracker_${currentDateStr}`;
       localStorage.setItem(key, JSON.stringify(appData));
     }
 
-    // 喝水功能
     function addWater(amount) {
       appData.water = (appData.water || 0) + amount;
       const d = new Date();
@@ -544,7 +557,6 @@
       input.value = '';
     }
 
-    // 生理數據
     function saveBodyStats() {
       const sugar = document.getElementById('sugarInput').value;
       const h = parseFloat(document.getElementById('heightInput').value);
@@ -576,7 +588,6 @@
       alert(`【${currentDateStr}】生理數據已更新！BMI：${bmiStr}`);
     }
 
-    // 新增食物
     function manualAdd(type) {
       const nameEl = document.getElementById(`name-${type}`);
       const calEl = document.getElementById(`cal-${type}`);
@@ -603,7 +614,6 @@
       render();
     }
 
-    // 步數
     function saveSteps() {
       const steps = parseInt(document.getElementById('stepInput').value) || 0;
       const burn = Math.round((steps / 1000) * 35);
@@ -617,7 +627,6 @@
       alert(`【${currentDateStr}】步數已更新！消耗約 ${burn} kcal`);
     }
 
-    // 運動
     function addSport() {
       const sel = document.getElementById('sportType');
       const met = parseFloat(sel.value);
@@ -645,7 +654,6 @@
       render();
     }
 
-    // 條碼相機
     let scanner = null;
     function toggleScanner() {
       const reader = document.getElementById('reader');
