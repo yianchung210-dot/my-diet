@@ -216,7 +216,7 @@
       </div>
       <div class="recent-chips" id="chips-breakfast"></div>
       <div class="input-row">
-        <input type="text" id="name-breakfast" list="foodSuggestions" placeholder="輸入早餐 (如: 蕃茄炒蛋、紅豆吐司)" oninput="autoFillCal('breakfast')">
+        <input type="text" id="name-breakfast" list="foodSuggestions" placeholder="輸入早餐 (如: 牛肉餡餅、原味蛋餅)" oninput="autoFillCal('breakfast')">
         <input type="number" id="cal-breakfast" placeholder="熱量">
         <button class="btn-add" onclick="manualAdd('breakfast')">＋</button>
       </div>
@@ -234,7 +234,7 @@
       </div>
       <div class="recent-chips" id="chips-lunch"></div>
       <div class="input-row">
-        <input type="text" id="name-lunch" list="foodSuggestions" placeholder="輸入午餐 (如: 京醬排骨、炸雞腿)" oninput="autoFillCal('lunch')">
+        <input type="text" id="name-lunch" list="foodSuggestions" placeholder="輸入午餐 (如: 白酒蛤蜊義大利麵、正忠排骨飯)" oninput="autoFillCal('lunch')">
         <input type="number" id="cal-lunch" placeholder="熱量">
         <button class="btn-add" onclick="manualAdd('lunch')">＋</button>
       </div>
@@ -244,7 +244,7 @@
     <!-- 7. 晚餐 -->
     <div class="card">
       <div class="card-head">
-        <span class="badge b-dinner">🌙 晚餐 / 肉類料理</span>
+        <span class="badge b-dinner">🌙 晚餐 / 義大利麵與主食</span>
         <div>
           <button class="btn-copy-yesterday" onclick="copyYesterdayMeal('dinner')">📋 複製昨天晚餐</button>
           <span style="font-size:0.85rem; color:#64748b; margin-left:4px;">小計：<strong id="sub-dinner">0</strong> kcal</span>
@@ -252,7 +252,7 @@
       </div>
       <div class="recent-chips" id="chips-dinner"></div>
       <div class="input-row">
-        <input type="text" id="name-dinner" list="foodSuggestions" placeholder="輸入晚餐 (如: 糖醋排骨、烤雞腿)" oninput="autoFillCal('dinner')">
+        <input type="text" id="name-dinner" list="foodSuggestions" placeholder="輸入晚餐 (如: 青醬海鮮義大利麵、鹹水雞)" oninput="autoFillCal('dinner')">
         <input type="number" id="cal-dinner" placeholder="熱量">
         <button class="btn-add" onclick="manualAdd('dinner')">＋</button>
       </div>
@@ -262,27 +262,27 @@
     <!-- 8. 點心/宵夜 -->
     <div class="card">
       <div class="card-head">
-        <span class="badge b-snack">🍪 點心 / 宵夜 / 炸物</span>
+        <span class="badge b-snack">🍪 點心 / 宵夜 / 雞排炸物</span>
         <span style="font-size:0.85rem; color:#64748b;">小計：<strong id="sub-snack">0</strong> kcal</span>
       </div>
       <div class="recent-chips" id="chips-snack"></div>
       <div class="input-row">
-        <input type="text" id="name-snack" list="foodSuggestions" placeholder="輸入點心 (如: 鹽酥雞、瑞士妞)" oninput="autoFillCal('snack')">
+        <input type="text" id="name-snack" list="foodSuggestions" placeholder="輸入點心 (如: 炸雞排、鹹酥雞、炸百頁豆腐)" oninput="autoFillCal('snack')">
         <input type="number" id="cal-snack" placeholder="熱量">
         <button class="btn-add" onclick="manualAdd('snack')">＋</button>
       </div>
       <div class="item-list" id="list-snack"></div>
     </div>
 
-    <!-- 9. 飲料 / 沖泡飲品 / 湯品 -->
+    <!-- 9. 飲料 / 手搖飲 / 沖泡 -->
     <div class="card">
       <div class="card-head">
-        <span class="badge b-drink">🧋 飲料 / 沖泡飲 / 湯品</span>
+        <span class="badge b-drink">🧋 飲料 / 大茗 / 迷客夏 / 50嵐</span>
         <span style="font-size:0.85rem; color:#64748b;">小計：<strong id="sub-drink">0</strong> kcal</span>
       </div>
       <div class="recent-chips" id="chips-drink"></div>
       <div class="input-row">
-        <input type="text" id="name-drink" list="foodSuggestions" placeholder="輸入飲品/湯品 (如: 四神湯、玉米濃湯)" oninput="autoFillCal('drink')">
+        <input type="text" id="name-drink" list="foodSuggestions" placeholder="輸入飲料 (如: 酪梨奶蓋、大甲芋頭鮮奶、50嵐1號)" oninput="autoFillCal('drink')">
         <input type="number" id="cal-drink" placeholder="熱量">
         <button class="btn-add" onclick="manualAdd('drink')">＋</button>
       </div>
@@ -294,31 +294,79 @@
   <script>
     const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbz_pceZbIkWcBtp8a9EzbPEsj1avqhcMjNs16o85SERy6vFmq6IY1iwsuT6oQb4u3g9/exec";
 
+    // 🌟 全台超完整飲食資料庫（含義大利麵全系列、雞排炸物、鹹酥雞配料、好市多與麵食）
     const calorieDictionary = {
-      "京醬排骨": 460, "糖醋排骨": 580, "橙汁排骨": 480, "椒鹽排骨": 380, "炸排骨": 380, "滷排骨": 280,
-      "粉蒸排骨": 350, "無錫排骨": 420, "排骨便當": 850, "滷排骨便當": 780, "炸排骨便當": 880,
-      "炸雞腿": 480, "炸大雞腿": 480, "酥炸雞腿": 480, "滷雞腿": 300, "滷大雞腿": 300,
-      "烤雞腿": 320, "照燒雞腿": 330, "蜜汁雞腿": 360, "椒麻雞腿": 450, "去骨雞腿排": 290, "油雞腿": 260,
-      "炸雞腿便當": 880, "滷雞腿便當": 680, "烤雞腿便當": 700, "香酥雞排": 650, "炸雞排": 650, "鹹酥雞一份": 450,
-      "蒜泥白肉": 350, "紅燒肉": 420, "控肉": 480, "客家小炒": 480, "嘴邊肉": 140, "肝連肉": 150, "二層肉": 210,
-      "松阪豬": 220, "大腸頭": 260, "滷大腸": 240, "粉腸": 160, "滷牛腱": 140, "滷牛肚": 120, "蔥爆牛肉": 420,
-      "三杯雞": 520, "宮保雞丁": 360, "舒肥雞胸肉": 130, "煎鮭魚": 230, "烤鯖魚": 280, "煎虱目魚肚": 360,
-      "蕃茄炒蛋": 170, "番茄炒蛋": 170, "洋蔥炒蛋": 160, "九層塔炒蛋": 180, "九層塔煎蛋": 320,
-      "菜脯蛋": 320, "蔥花煎蛋": 140, "荷包蛋": 120, "水煮蛋": 75, "茶葉蛋": 75, "溫泉蛋": 65, "蒸蛋": 80,
-      "蛋花湯": 80, "紫菜蛋花湯": 85, "青菜豆腐湯": 70, "蛤蜊湯": 70, "蚵仔湯": 90, "薑絲鱸魚湯": 140,
-      "貢丸湯": 150, "福州魚丸湯": 180, "豬血湯": 120, "豬血大腸湯": 230, "餛飩湯": 200, "四神湯": 250,
-      "酸辣湯": 180, "玉米濃湯": 200, "香菇雞湯": 220, "苦瓜排骨湯": 210, "牛肉湯": 160, "味噌湯": 60,
-      "金針菇": 35, "杏鮑菇": 35, "烤杏鮑菇": 80, "三杯杏鮑菇": 160, "炸杏鮑菇": 260, "鴻喜菇": 30, "秀珍菇": 30,
-      "香菇": 35, "炒高麗菜": 130, "炒空心菜": 130, "炒水蓮": 140, "炒地瓜葉": 120,
-      "燙青菜": 60, "燙地瓜葉": 50, "生菜沙拉": 80, "純生菜沙拉": 35, "凱薩沙拉": 220,
-      "瑞士妞可可": 160, "瑞士妞": 160, "Swiss Miss": 160, "瑞士妞無加糖可可": 40,
-      "三合一咖啡": 85, "二合一咖啡": 60, "濾掛黑咖啡": 5, "桂格大燕麥片": 140, "大燕麥片": 140,
-      "沖泡黑芝麻糊": 135, "乳清蛋白粉": 120, "無糖豆漿": 147, "微糖豆漿": 180,
-      "起士核桃雜糧麵包": 160, "優格起士雜糧堡": 260, "馬可先生全麥吐司": 95, "馬可先生燕麥豆漿(無糖)": 160,
-      "紅豆吐司": 160, "起司吐司": 150, "白吐司": 75, "烤花生厚片": 350, "肉排蛋吐司": 420,
-      "控肉便當": 900, "三寶飯便當": 920, "牛肉麵": 750, "水餃10顆": 500, "鍋貼10顆": 650, "炸臭豆腐": 550,
-      "原味蛋餅": 260, "玉米蛋餅": 300, "起司蛋餅": 310, "鮪魚蛋餅": 320, "卡啦雞腿堡": 580, "豬肉滿福堡加蛋": 380,
-      "燒餅油條": 450, "傳統飯糰": 480, "水煎包": 200, "拿鐵咖啡": 180, "無糖綠茶": 0
+      // ===== 🍝 義大利麵全系列 =====
+      "白酒蛤蜊義大利麵": 480, "蒜香白酒蛤蜊麵": 480, "清炒白酒蛤蜊麵": 480, "蒜辣白酒蛤蜊義大利麵": 490,
+      "蒜香清炒海鮮義大利麵": 510, "清炒海鮮義大利麵": 510, "清炒燻雞義大利麵": 480, "蒜香培根義大利麵": 520,
+      "肉醬義大利麵": 620, "波隆那肉醬義大利麵": 620, "紅醬肉醬麵": 620, "紅醬海鮮義大利麵": 580,
+      "紅醬雞肉義大利麵": 600, "茄汁海鮮義大利麵": 580, "茄汁牛肉義大利麵": 640,
+      "白醬培根義大利麵": 820, "奶油培根義大利麵": 820, "白醬培根麵": 820, "白醬海鮮義大利麵": 760,
+      "白醬燻雞義大利麵": 750, "奶油海鮮義大利麵": 760, "奶油蛤蜊義大利麵": 720,
+      "青醬海鮮義大利麵": 780, "青醬蛤蜊義大利麵": 780, "青醬雞肉義大利麵": 750, "青醬培根義大利麵": 800,
+      "焗烤牛肉千層麵": 860, "焗烤千層麵": 860, "焗烤海鮮飯": 820, "明太子義大利麵": 680,
+
+      // ===== 🍗 雞排、鹹酥雞與炸物小吃專區 =====
+      "炸雞排": 650, "香酥雞排": 650, "傳統雞排": 650, "雞排": 650,
+      "脆皮雞排": 700, "派克雞排": 700, "碳烤雞排": 750, "起司雞排": 850,
+      "鹹酥雞一份": 450, "鹹酥雞": 450, "炸鹽酥雞": 450,
+      "炸百頁豆腐": 380, "炸百頁": 380, "百頁豆腐(炸)": 380,
+      "炸四季豆": 140, "鹹酥雞四季豆": 140, "四季豆(炸)": 140,
+      "炸魷魚": 350, "深海魷魚": 350, "炸花枝丸(3顆)": 210, "花枝丸(炸)": 210,
+      "炸甜不辣一份": 320, "甜不辣(炸)": 320, "炸米血": 260, "米血(炸)": 260,
+      "炸銀絲卷": 420, "銀絲卷加煉乳": 420, "炸湯圓一份": 360, "炸皮蛋": 180,
+
+      // ===== 🛒 Costco 好市多熟食與烘焙專區 =====
+      "Costco牛肉捲": 820, "好市多牛肉捲": 820, "牛肉捲": 820,
+      "Costco雞肉捲": 760, "好市多雞肉捲": 760, "雞肉捲": 760,
+      "Costco凱薩沙拉": 780, "好市多凱薩沙拉": 780, "好市多沙拉": 780,
+      "Costco烤雞腿": 320, "Costco烤大雞腿": 320, "好市多烤雞腿": 320,
+      "Costco烤全雞": 1500, "好市多烤雞": 1500, "Costco蛤蜊濃湯": 320,
+      "Costco單片披薩": 680, "好市多披薩": 680, "Costco熱狗": 560,
+      "Costco貝果": 290, "好市多貝果": 290, "Costco可頌": 280,
+
+      // ===== 🥗 鹹水雞 / 鹽水雞專區 =====
+      "鹹水雞": 220, "鹽水雞": 220, "鹹水雞一份": 220, "鹽水雞(一份)": 220,
+      "鹽水雞胸": 130, "鹹水雞雞胸": 130, "鹽水雞腿": 230, "鹹水雞雞腿": 230,
+      "鹹水雞筍片": 40, "鹹水雞青花菜": 35, "鹹水雞米血": 120, "鹹水雞豆皮": 130,
+      "鹹水雞鳥蛋": 80, "鹹水雞甜不辣": 110, "鹹水雞小黃瓜": 30,
+
+      // ===== 🥟 餡餅與中式餅類 =====
+      "牛肉餡餅": 350, "豬肉餡餅": 320, "蘿蔔絲餡餅": 260, "韭菜盒子": 300,
+      "蔥油餅": 350, "豬肉蔥餅": 320, "蔥抓餅加蛋": 380, "紅豆餅": 190, "奶油餅": 210,
+
+      // ===== 🍜 傳統麵店乾麵與牛肉麵 =====
+      "麻醬麵": 520, "炸醬麵": 500, "肉燥乾麵": 480, "乾麵": 480, "福州乾拌麵": 380,
+      "紅油抄手": 450, "涼麵(大)": 550, "涼麵(小)": 400, "涼麵": 450,
+      "牛肉麵": 750, "紅燒牛肉麵": 780, "清燉牛肉麵": 580, "陽春麵": 350,
+      "榨菜肉絲麵": 450, "餛飩麵": 460, "大滷麵": 520, "大腸蚵仔麵線": 420,
+
+      // ===== 🍢 麵攤黑白切 =====
+      "嘴邊肉": 140, "骨仔肉": 150, "肝連肉": 150, "二層肉": 210, "松阪豬": 220,
+      "大腸頭": 260, "滷大腸": 240, "粉腸": 160, "豬耳朵": 180, "油豆腐(2塊)": 120,
+      "豆乾(2片)": 70, "海帶(一條)": 20, "皮蛋豆腐": 160, "燙青菜": 60, "燙青菜加肉燥": 110,
+
+      // ===== 🥟 八方雲集專區 =====
+      "八方招牌鍋貼": 65, "招牌鍋貼": 65, "韭菜鍋貼": 65, "鍋貼10顆": 650,
+      "八方招牌水餃": 55, "招牌水餃": 55, "韭菜水餃": 55, "水餃10顆": 550,
+      "八方酸辣湯": 160, "八方玉米濃湯": 180, "八方古早味紅茶": 110,
+
+      // ===== 🍱 便當與港式燒臘 =====
+      "正忠排骨飯": 890, "正忠炸雞腿飯": 960, "便當大爺排骨飯": 820, "便當大爺雞腿飯": 880,
+      "三寶飯便當": 920, "三寶飯": 920, "脆皮燒肉便當": 880, "蜜汁叉燒便當": 820,
+      "排骨便當": 850, "炸雞腿便當": 880, "滷雞腿便當": 680, "京醬排骨": 460, "糖醋排骨": 580,
+
+      // ===== 🥑 手搖飲名店 =====
+      "大茗酪梨奶蓋紅玉": 320, "酪梨奶蓋紅玉": 320, "大茗烤糖蕎麥凍奶青": 310, "蘋果玉露青": 190,
+      "迷客夏珍珠紅茶拿鐵": 360, "迷客夏大甲芋頭鮮奶": 380, "一沐日逮丸奶茶": 450,
+      "50嵐1號": 420, "50嵐波霸奶茶": 480, "麻古楊枝甘露": 490, "得正春烏龍": 0,
+
+      // ===== 夜市小吃、家常菜與早餐 =====
+      "地瓜球(小)": 280, "地瓜球": 280, "蚵仔煎": 510, "大腸包小腸": 520, "炸臭豆腐": 550, "烤鳥蛋(一串)": 140,
+      "蛋花湯": 80, "蛤蜊湯": 70, "貢丸湯": 150, "四神湯": 250, "香菇雞湯": 220,
+      "蕃茄炒蛋": 170, "番茄炒蛋": 170, "洋蔥炒蛋": 160, "荷包蛋": 120, "水煮蛋": 75,
+      "炒高麗菜": 130, "炒水蓮": 140, "紅豆吐司": 160, "原味蛋餅": 260,
+      "無糖豆漿": 147, "美式黑咖啡": 15, "拿鐵咖啡": 180, "瑞士妞可可": 160
     };
 
     const baseBarcodeDB = {
@@ -453,7 +501,6 @@
       render();
     }
 
-    // 🌟 全欄位精準同步函數
     function syncToGoogleSheet(record) {
       fetch(GOOGLE_SHEET_URL, {
         method: "POST",
@@ -552,11 +599,11 @@
         (appData[type] || []).forEach(i => historyNames.add(i.name));
 
         const defaults = {
-          breakfast: ["蕃茄炒蛋", "生菜沙拉", "紅豆吐司", "桂格大燕麥片", "三合一咖啡"],
-          lunch: ["京醬排骨", "炸雞腿", "蕃茄炒蛋", "炒高麗菜", "貢丸湯"],
-          dinner: ["糖醋排骨", "烤雞腿", "蒜泥白肉", "香菇雞湯", "炒水蓮"],
-          snack: ["炸杏鮑菇", "鹹酥雞一份", "瑞士妞可可", "燕麥豆漿蛋糕捲"],
-          drink: ["四神湯", "玉米濃湯", "瑞士妞", "乳清蛋白粉", "桂格大燕麥片"]
+          breakfast: ["牛肉餡餅", "Costco貝果", "八方水餃10顆", "無糖豆漿", "美式黑咖啡"],
+          lunch: ["白酒蛤蜊義大利麵", "Costco牛肉捲", "正忠排骨飯", "麻醬麵", "牛肉麵"],
+          dinner: ["青醬海鮮義大利麵", "肉醬義大利麵", "鹹水雞", "便當大爺雞腿飯", "燙青菜"],
+          snack: ["炸雞排", "鹹酥雞一份", "炸百頁豆腐", "炸四季豆", "地瓜球"],
+          drink: ["Costco蛤蜊濃湯", "大茗酪梨奶蓋紅玉", "迷客夏珍珠紅茶拿鐵", "50嵐1號", "無糖青茶"]
         };
 
         (defaults[type] || []).forEach(n => historyNames.add(n));
@@ -693,7 +740,6 @@
       input.value = '';
     }
 
-    // 🌟 身體數據：確保 10 個欄位全部以乾淨字串傳遞
     function saveBodyStats() {
       const sugar = document.getElementById('sugarInput').value.trim();
       const h = parseFloat(document.getElementById('heightInput').value);
@@ -860,7 +906,7 @@
 
       const pick = prompt(`商品：${name} (${cal} kcal)\n請選擇要記錄在：\n1. 早餐\n2. 午餐\n3. 晚餐\n4. 點心\n5. 飲料`, "1");
       const map = { "1": "breakfast", "2": "lunch", "3": "dinner", "4": "snack", "5": "drink" };
-      const target = map[pick] || "breakfast";
+      const target = map[pick] || "lunch";
 
       const d = new Date();
       const timeStr = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
