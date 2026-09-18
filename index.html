@@ -26,7 +26,8 @@
 
     .summary-box { background: linear-gradient(135deg, #1e3a8a, #2563eb); color: white; border-radius: 18px; padding: 16px; box-shadow: 0 4px 12px rgba(37,99,235,0.25); }
     .summary-top { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; opacity: 0.9; }
-    .budget-tag { background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; }
+    .budget-tag { background: rgba(255,255,255,0.25); padding: 3px 10px; border-radius: 8px; cursor: pointer; font-size: 0.78rem; font-weight: bold; border: 1px solid rgba(255,255,255,0.3); }
+    .budget-tag:active { background: rgba(255,255,255,0.4); }
     .net-cal-wrap { text-align: center; margin: 8px 0; }
     .net-cal-title { font-size: 0.8rem; opacity: 0.85; margin-bottom: 2px; }
     .net-cal { font-size: 2.3rem; font-weight: 800; }
@@ -36,7 +37,6 @@
     .stat-label { font-size: 0.7rem; opacity: 0.85; }
     .stat-val { font-size: 0.95rem; font-weight: 700; margin-top: 2px; }
 
-    /* 蛋白質進度條區塊 */
     .protein-box { margin-top: 10px; padding-top: 8px; border-top: 1px dashed rgba(255,255,255,0.25); font-size: 0.75rem; }
     .protein-top { display: flex; justify-content: space-between; margin-bottom: 4px; }
     .protein-bar-bg { width: 100%; height: 8px; background: rgba(255,255,255,0.25); border-radius: 6px; overflow: hidden; }
@@ -105,6 +105,24 @@
     .autocomplete-item:hover, .autocomplete-item:active { background-color: #eff6ff; color: #1d4ed8; font-weight: bold; }
     .autocomplete-cal { color: #059669; font-size: 0.8rem; font-weight: bold; }
 
+    /* 彈出式 TDEE 計算器 Modal */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(15, 23, 42, 0.6); display: none; justify-content: center; align-items: center;
+      z-index: 9999; padding: 16px;
+    }
+    .modal-card {
+      background: white; width: 100%; max-width: 380px; border-radius: 18px; padding: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2); display: flex; flex-direction: column; gap: 12px;
+    }
+    .modal-head { display: flex; justify-content: space-between; align-items: center; font-size: 1.05rem; font-weight: bold; color: #1e293b; }
+    .modal-close { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #94a3b8; }
+    .modal-field { display: flex; flex-direction: column; gap: 4px; }
+    .modal-field label { font-size: 0.78rem; font-weight: bold; color: #475569; }
+    .calc-result-box {
+      background: #f1f5f9; border-radius: 10px; padding: 10px; font-size: 0.82rem; color: #334155; line-height: 1.6;
+    }
+
     .backup-footer { text-align: center; margin-top: 10px; font-size: 0.78rem; color: #64748b; display: flex; justify-content: center; gap: 12px; }
     .backup-link { color: #2563eb; text-decoration: underline; cursor: pointer; font-weight: bold; }
 
@@ -115,6 +133,71 @@
 <body>
 
   <div id="syncToast">🔄 雲端同步中...</div>
+
+  <!-- 🌟 BMR / TDEE 智慧計算彈窗 -->
+  <div class="modal-overlay" id="calcModal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <span>⚙️ TDEE / 目標熱量試算器</span>
+        <button class="modal-close" onclick="closeCalcModal()">✕</button>
+      </div>
+      
+      <div class="grid-2" style="margin-bottom:0;">
+        <div class="modal-field">
+          <label>性別</label>
+          <select id="calcGender">
+            <option value="male">男性</option>
+            <option value="female">女性</option>
+          </select>
+        </div>
+        <div class="modal-field">
+          <label>年齡 (歲)</label>
+          <input type="number" id="calcAge" placeholder="如: 35" value="35">
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-bottom:0;">
+        <div class="modal-field">
+          <label>身高 (cm)</label>
+          <input type="number" id="calcHeight" placeholder="如: 175">
+        </div>
+        <div class="modal-field">
+          <label>體重 (kg)</label>
+          <input type="number" id="calcWeight" placeholder="如: 70">
+        </div>
+      </div>
+
+      <div class="modal-field">
+        <label>日常活動量</label>
+        <select id="calcActivity">
+          <option value="1.2">久坐型（辦公室內勤、無運動習慣）</option>
+          <option value="1.375" selected>輕度活動（每週運動 1~3 天或通勤散步）</option>
+          <option value="1.55">中度活動（每週規律運動 3~5 天）</option>
+          <option value="1.725">高度活動（每週高強度運動 6~7 天）</option>
+        </select>
+      </div>
+
+      <div class="modal-field">
+        <label>目標方向</label>
+        <select id="calcGoal">
+          <option value="-400" selected>健康減重（每日熱量赤字 -400 kcal，建議）</option>
+          <option value="-600">積極減脂（每日熱量赤字 -600 kcal）</option>
+          <option value="0">維持體重（吃滿維持熱量 TDEE）</option>
+          <option value="300">乾淨增肌 / 增重（每日熱量盈餘 +300 kcal）</option>
+          <option value="500">積極增重（每日熱量盈餘 +500 kcal）</option>
+        </select>
+      </div>
+
+      <div class="calc-result-box" id="calcPreview">
+        請點擊下方計算按鈕開始試算
+      </div>
+
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-purple" style="flex:1;" onclick="doCalculate()">🧮 試算熱量</button>
+        <button class="btn btn-add" style="flex:1.2;" onclick="applyCalculatedBudget()">套用為今日目標</button>
+      </div>
+    </div>
+  </div>
 
   <div class="container">
 
@@ -127,11 +210,11 @@
       <button onclick="shiftDate(1)">後一天 ▶</button>
     </div>
 
-    <!-- 頂部總覽（含蛋白質進度） -->
+    <!-- 頂部總覽 -->
     <div class="summary-box">
       <div class="summary-top">
         <span id="dateShow">--</span>
-        <span class="budget-tag" onclick="editBudget()">⚙️ 目標預算: <span id="budgetVal">2000</span> kcal</span>
+        <span class="budget-tag" onclick="openCalcModal()">⚙️ 目標預算: <span id="budgetVal">2000</span> kcal</span>
       </div>
       <div class="net-cal-wrap">
         <div class="net-cal-title">今日剩餘可攝取額度</div>
@@ -364,7 +447,7 @@
   <script>
     const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbz_pceZbIkWcBtp8a9EzbPEsj1avqhcMjNs16o85SERy6vFmq6IY1iwsuT6oQb4u3g9/exec";
 
-    // 🌟 全台超完整飲食資料庫（含每份蛋白質估算，單位: g）
+    // 🌟 全台超完整飲食資料庫
     const calorieDictionary = {
       // 蛋白質主食與蛋豆肉
       "水煮蛋": { cal: 75, p: 7 }, "荷包蛋": { cal: 120, p: 7 }, "茶葉蛋": { cal: 75, p: 7 },
@@ -466,6 +549,7 @@
 
     let baseCaloriesMap = {};
     let baseProteinMap = {};
+    let calculatedTargetCal = 2000;
 
     function showToast(msg, isSuccess = false) {
       const toast = document.getElementById('syncToast');
@@ -475,7 +559,6 @@
       setTimeout(() => { toast.style.display = 'none'; }, 2000);
     }
 
-    // 📡 斷網離線佇列同步處理
     function syncToGoogleSheet(record) {
       showToast("🔄 雲端同步中...");
       if (!navigator.onLine) {
@@ -503,7 +586,6 @@
       localStorage.setItem('pending_sync_queue', JSON.stringify(pending));
     }
 
-    // 監聽連上網路時自動清空佇列
     window.addEventListener('online', () => {
       const pending = JSON.parse(localStorage.getItem('pending_sync_queue') || '[]');
       if (pending.length > 0) {
@@ -600,7 +682,6 @@
       }
     }
 
-    // ⌨️ 按 Enter 直接新增
     function handleEnterAdd(e, type) {
       if (e.key === 'Enter') {
         e.preventDefault();
@@ -630,13 +711,57 @@
     let dailyWaterGoal = parseInt(localStorage.getItem('user_water_goal') || '2000');
     let dailyProteinGoal = parseInt(localStorage.getItem('user_protein_goal') || '80');
 
-    function editBudget() {
-      const val = prompt('請輸入每日目標熱量預算 (kcal):', dailyCalBudget);
-      if (val && !isNaN(val)) {
-        dailyCalBudget = parseInt(val);
-        localStorage.setItem('user_cal_budget', dailyCalBudget);
-        render();
+    // 🌟 TDEE 計算器 Modal 操作邏輯
+    function openCalcModal() {
+      // 自動預填當前輸入的身高與體重
+      if (appData.height) document.getElementById('calcHeight').value = appData.height;
+      if (appData.weight) document.getElementById('calcWeight').value = appData.weight;
+      document.getElementById('calcModal').style.display = 'flex';
+      doCalculate();
+    }
+
+    function closeCalcModal() {
+      document.getElementById('calcModal').style.display = 'none';
+    }
+
+    function doCalculate() {
+      const gender = document.getElementById('calcGender').value;
+      const age = parseFloat(document.getElementById('calcAge').value) || 35;
+      const h = parseFloat(document.getElementById('calcHeight').value) || 175;
+      const w = parseFloat(document.getElementById('calcWeight').value) || 70;
+      const act = parseFloat(document.getElementById('calcActivity').value) || 1.375;
+      const goalOffset = parseFloat(document.getElementById('calcGoal').value) || 0;
+
+      // Mifflin-St Jeor 公式
+      let bmr = (10 * w) + (6.25 * h) - (5 * age);
+      bmr = (gender === 'male') ? bmr + 5 : bmr - 161;
+      bmr = Math.round(bmr);
+
+      const tdee = Math.round(bmr * act);
+      let target = tdee + goalOffset;
+
+      // 減重防呆安全機制：熱量攝取不可低於基礎代謝 BMR
+      let warning = '';
+      if (goalOffset < 0 && target < bmr) {
+        target = bmr;
+        warning = '<br><span style="color:#e11d48; font-size:0.75rem;">⚠️ 已啟動保護機制：目標熱量不應低於 BMR 基礎代謝！</span>';
       }
+
+      calculatedTargetCal = Math.round(target);
+
+      document.getElementById('calcPreview').innerHTML = `
+        • 基礎代謝 (BMR)：<strong>${bmr}</strong> kcal<br>
+        • 維持熱量 (TDEE)：<strong>${tdee}</strong> kcal<br>
+        👉 <strong>建議每日目標熱量：<span style="color:#2563eb; font-size:1.1rem;">${calculatedTargetCal}</span> kcal</strong>${warning}
+      `;
+    }
+
+    function applyCalculatedBudget() {
+      dailyCalBudget = calculatedTargetCal;
+      localStorage.setItem('user_cal_budget', dailyCalBudget);
+      closeCalcModal();
+      render();
+      showToast(`已成功套用目標熱量：${dailyCalBudget} kcal`, true);
     }
 
     function editWaterGoal() {
@@ -718,7 +843,6 @@
       showToast(`已複製昨日 ${mealNames[type]}`, true);
     }
 
-    // 🗑️ 一鍵清空該餐
     function clearMeal(type) {
       if (!appData[type] || appData[type].length === 0) return;
       if (confirm(`確定要清空今天的 ${mealNames[type]} 紀錄嗎？`)) {
@@ -881,7 +1005,6 @@
       document.getElementById('weightInput').value = appData.weight || '';
       document.getElementById('bmiVal').textContent = appData.bmi || '--';
 
-      // 蛋白質計算與進度條
       document.getElementById('curProtein').textContent = Math.round(proteinTotal);
       document.getElementById('goalProtein').textContent = dailyProteinGoal;
       const protPct = Math.min(100, Math.round((proteinTotal / dailyProteinGoal) * 100));
@@ -1110,7 +1233,6 @@
       syncToGoogleSheet(record);
     }
 
-    // 💾 匯出備份檔案
     function exportBackup() {
       const backupData = {
         user_cal_budget: dailyCalBudget,
@@ -1132,7 +1254,6 @@
       a.click();
     }
 
-    // 📤 匯入備份檔案
     function importBackup(event) {
       const file = event.target.files[0];
       if (!file) return;
