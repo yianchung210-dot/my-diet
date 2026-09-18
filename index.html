@@ -269,7 +269,7 @@
       </div>
       <div class="recent-chips" id="chips-lunch"></div>
       <div class="input-row">
-        <input type="text" id="name-lunch" placeholder="輸入午餐 (如: 炒高麗菜、炒水蓮、正忠排骨)" oninput="handleSmartInput('lunch')" autocomplete="off">
+        <input type="text" id="name-lunch" placeholder="輸入午餐 (如: 筍乾、炒高麗菜、正忠排骨)" oninput="handleSmartInput('lunch')" autocomplete="off">
         <input type="number" id="cal-lunch" placeholder="熱量">
         <button class="btn-add" onclick="manualAdd('lunch')">＋</button>
         <div class="autocomplete-box" id="suggest-lunch"></div>
@@ -280,7 +280,7 @@
     <!-- 7. 晚餐 -->
     <div class="card">
       <div class="card-head">
-        <span class="badge b-dinner">🌙 晚餐 / 炒青菜與主食</span>
+        <span class="badge b-dinner">🌙 晚餐 / 筍乾百頁與熱炒</span>
         <div>
           <button class="btn-copy-yesterday" onclick="copyYesterdayMeal('dinner')">📋 複製昨天晚餐</button>
           <span style="font-size:0.85rem; color:#64748b; margin-left:4px;">小計：<strong id="sub-dinner">0</strong> kcal</span>
@@ -288,7 +288,7 @@
       </div>
       <div class="recent-chips" id="chips-dinner"></div>
       <div class="input-row">
-        <input type="text" id="name-dinner" placeholder="輸入晚餐 (如: 燙地瓜葉、鹹蛋苦瓜、三杯雞)" oninput="handleSmartInput('dinner')" autocomplete="off">
+        <input type="text" id="name-dinner" placeholder="輸入晚餐 (如: 滷百頁、控肉筍乾、三杯雞)" oninput="handleSmartInput('dinner')" autocomplete="off">
         <input type="number" id="cal-dinner" placeholder="熱量">
         <button class="btn-add" onclick="manualAdd('dinner')">＋</button>
         <div class="autocomplete-box" id="suggest-dinner"></div>
@@ -299,12 +299,12 @@
     <!-- 8. 點心/宵夜 -->
     <div class="card">
       <div class="card-head">
-        <span class="badge b-snack">🍪 點心 / 宵夜 / 糕點大餅</span>
+        <span class="badge b-snack">🍪 點心 / 宵夜 / 炸雞排</span>
         <span style="font-size:0.85rem; color:#64748b;">小計：<strong id="sub-snack">0</strong> kcal</span>
       </div>
       <div class="recent-chips" id="chips-snack"></div>
       <div class="input-row">
-        <input type="text" id="name-snack" placeholder="輸入點心 (如: 沙西餅、麻糬酥、大餅)" oninput="handleSmartInput('snack')" autocomplete="off">
+        <input type="text" id="name-snack" placeholder="輸入點心 (如: 炸雞排、沙西餅、麻糬酥)" oninput="handleSmartInput('snack')" autocomplete="off">
         <input type="number" id="cal-snack" placeholder="熱量">
         <button class="btn-add" onclick="manualAdd('snack')">＋</button>
         <div class="autocomplete-box" id="suggest-snack"></div>
@@ -333,8 +333,15 @@
   <script>
     const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbz_pceZbIkWcBtp8a9EzbPEsj1avqhcMjNs16o85SERy6vFmq6IY1iwsuT6oQb4u3g9/exec";
 
-    // 🌟 全台超完整飲食資料庫（已納入沙西餅、麻糬酥、傳統大餅與中式糕點）
+    // 🌟 全台超完整飲食資料庫（已完整納入筍乾、百頁、炸雞排、沙西餅與麻糬酥）
     const calorieDictionary = {
+      // 🍗 雞排與百頁專區
+      "炸雞排": 650, "香酥雞排": 650, "脆皮雞排": 700, "碳烤雞排": 750, "起司雞排": 850,
+      "百頁豆腐": 200, "滷百頁": 200, "炒百頁": 220, "炸百頁豆腐": 380, "炸百頁": 380,
+
+      // 🥬 筍乾與配菜專區
+      "筍乾": 160, "滷筍乾": 160, "控肉筍乾": 180, "筍乾控肉": 180,
+
       // 🥮 沙西餅、麻糬酥、大餅與中式糕點專區
       "沙西餅": 260, "沙西餅(單個)": 260,
       "麻糬酥": 320, "芋頭麻糬酥": 300, "紅豆麻糬酥": 320, "麻糬酥(單顆)": 320, "Q餅": 400, "咖哩滷肉Q餅": 420,
@@ -375,9 +382,8 @@
       "白醬培根義大利麵": 820, "奶油培根義大利麵": 820, "白醬海鮮義大利麵": 760,
       "青醬海鮮義大利麵": 780, "青醬蛤蜊義大利麵": 780, "青醬雞肉義大利麵": 750, "焗烤牛肉千層麵": 860,
 
-      // 雞排炸物與小吃
-      "炸雞排": 650, "香酥雞排": 650, "脆皮雞排": 700, "碳烤雞排": 750, "起司雞排": 850,
-      "鹹酥雞一份": 450, "炸百頁豆腐": 380, "炸四季豆": 140, "炸魷魚": 350,
+      // 鹹酥雞其他炸物
+      "鹹酥雞一份": 450, "炸四季豆": 140, "炸魷魚": 350,
       "炸甜不辣一份": 320, "炸米血": 260, "炸銀絲卷": 420, "地瓜球(小)": 280, "地瓜球": 280,
 
       // Costco 好市多
@@ -658,9 +664,9 @@
 
         const defaults = {
           breakfast: ["芝麻吐司", "馬可先生無糖黑豆漿", "生菜沙拉", "八方水餃10顆", "美式黑咖啡"],
-          lunch: ["炒高麗菜", "炒水蓮", "三杯杏鮑菇", "白酒蛤蜊義大利麵", "正忠排骨飯"],
-          dinner: ["燙地瓜葉", "鹹蛋苦瓜", "三杯雞", "鹹水雞", "便當大爺雞腿飯"],
-          snack: ["沙西餅", "麻糬酥", "蛋黃酥", "大餅(1/8塊)", "地瓜球"],
+          lunch: ["筍乾", "炒高麗菜", "炒水蓮", "白酒蛤蜊義大利麵", "正忠排骨飯"],
+          dinner: ["滷百頁", "控肉筍乾", "三杯雞", "鹹水雞", "便當大爺雞腿飯"],
+          snack: ["沙西餅", "麻糬酥", "炸雞排", "大餅(1/8塊)", "地瓜球"],
           drink: ["Costco蛤蜊濃湯", "大茗酪梨奶蓋紅玉", "迷客夏珍珠紅茶拿鐵", "50嵐1號", "無糖青茶"]
         };
 
