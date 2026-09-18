@@ -10,7 +10,6 @@
     body { background: #f8fafc; padding: 14px 10px 80px; display: flex; justify-content: center; }
     .container { width: 100%; max-width: 440px; display: flex; flex-direction: column; gap: 12px; }
 
-    /* 雲端同步提示 Toast */
     #syncToast {
       position: fixed; top: 12px; left: 50%; transform: translateX(-50%);
       background: rgba(15, 23, 42, 0.9); color: #f8fafc; font-size: 0.78rem; font-weight: bold;
@@ -26,8 +25,7 @@
 
     .summary-box { background: linear-gradient(135deg, #1e3a8a, #2563eb); color: white; border-radius: 18px; padding: 16px; box-shadow: 0 4px 12px rgba(37,99,235,0.25); }
     .summary-top { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; opacity: 0.9; }
-    .budget-tag { background: rgba(255,255,255,0.25); padding: 3px 10px; border-radius: 8px; cursor: pointer; font-size: 0.78rem; font-weight: bold; border: 1px solid rgba(255,255,255,0.3); }
-    .budget-tag:active { background: rgba(255,255,255,0.4); }
+    .budget-tag { background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; }
     .net-cal-wrap { text-align: center; margin: 8px 0; }
     .net-cal-title { font-size: 0.8rem; opacity: 0.85; margin-bottom: 2px; }
     .net-cal { font-size: 2.3rem; font-weight: 800; }
@@ -51,8 +49,8 @@
     .btn-copy-yesterday { background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; font-size: 0.72rem; padding: 2px 6px; border-radius: 6px; cursor: pointer; }
     .btn-clear-meal { background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; font-size: 0.72rem; padding: 2px 6px; border-radius: 6px; cursor: pointer; margin-left: 4px; }
     
-    .recent-chips { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 6px; }
-    .chip { background: #f8fafc; border: 1px solid #cbd5e1; color: #475569; font-size: 0.75rem; padding: 2px 8px; border-radius: 12px; cursor: pointer; }
+    .recent-chips { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
+    .chip { background: #f8fafc; border: 1px solid #cbd5e1; color: #475569; font-size: 0.75rem; padding: 3px 8px; border-radius: 12px; cursor: pointer; }
     .chip:active { background: #e2e8f0; }
 
     .badge { padding: 4px 10px; border-radius: 8px; color: white; font-size: 0.85rem; font-weight: bold; }
@@ -72,14 +70,16 @@
     .btn-quick-water { background: #f0f9ff; border: 1.5px solid #bae6fd; color: #0369a1; border-radius: 8px; padding: 8px 4px; font-weight: bold; font-size: 0.8rem; cursor: pointer; }
     .btn-quick-water:active { background: #e0f2fe; }
 
-    .input-row { display: grid; grid-template-columns: 1.6fr 0.7fr 0.9fr auto; gap: 4px; margin-bottom: 6px; position: relative; }
+    .meal-input-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; position: relative; }
+    .input-row-sub { display: grid; grid-template-columns: 1fr 1.3fr auto; gap: 6px; align-items: center; }
     .grid-2 { display: grid; grid-template-columns: 1.4fr 1fr; gap: 6px; margin-bottom: 6px; }
     .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 8px; }
-    input, select { width: 100%; padding: 8px 8px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; outline: none; background: #fff; }
+    
+    input, select { width: 100%; padding: 8px 10px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; outline: none; background: #fff; }
     input:focus, select:focus { border-color: #2563eb; }
     
-    button.btn { border: none; border-radius: 8px; font-weight: bold; cursor: pointer; padding: 8px 10px; font-size: 0.85rem; }
-    .btn-add { background: #2563eb; color: white; padding: 0 10px; }
+    button.btn { border: none; border-radius: 8px; font-weight: bold; cursor: pointer; padding: 8px 12px; font-size: 0.85rem; }
+    .btn-add { background: #2563eb; color: white; padding: 8px 16px; font-size: 0.9rem; white-space: nowrap; }
     .btn-cam { width: 100%; background: #ea580c; color: white; padding: 10px; font-size: 0.9rem; }
     .btn-green { width: 100%; background: #16a34a; color: white; }
     .btn-purple { width: 100%; background: #8b5cf6; color: white; }
@@ -92,36 +92,18 @@
     .del-btn { background: none; border: none; color: #ef4444; font-size: 0.8rem; cursor: pointer; padding-left: 6px; }
 
     .autocomplete-box {
-      position: absolute; top: 40px; left: 0; right: 120px;
+      position: absolute; top: 38px; left: 0; right: 0;
       background: #ffffff; border: 1.5px solid #3b82f6; border-radius: 8px;
-      max-height: 180px; overflow-y: auto; z-index: 1000;
-      box-shadow: 0 6px 16px rgba(0,0,0,0.12); display: none;
+      max-height: 200px; overflow-y: auto; z-index: 1000;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15); display: none;
     }
     .autocomplete-item {
-      padding: 9px 12px; font-size: 0.85rem; color: #1e293b; cursor: pointer;
+      padding: 10px 12px; font-size: 0.88rem; color: #1e293b; cursor: pointer;
       display: flex; justify-content: space-between; border-bottom: 1px solid #f1f5f9;
     }
     .autocomplete-item:last-child { border-bottom: none; }
     .autocomplete-item:hover, .autocomplete-item:active { background-color: #eff6ff; color: #1d4ed8; font-weight: bold; }
-    .autocomplete-cal { color: #059669; font-size: 0.8rem; font-weight: bold; }
-
-    /* 彈出式 TDEE 計算器 Modal */
-    .modal-overlay {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(15, 23, 42, 0.6); display: none; justify-content: center; align-items: center;
-      z-index: 9999; padding: 16px;
-    }
-    .modal-card {
-      background: white; width: 100%; max-width: 380px; border-radius: 18px; padding: 20px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2); display: flex; flex-direction: column; gap: 12px;
-    }
-    .modal-head { display: flex; justify-content: space-between; align-items: center; font-size: 1.05rem; font-weight: bold; color: #1e293b; }
-    .modal-close { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #94a3b8; }
-    .modal-field { display: flex; flex-direction: column; gap: 4px; }
-    .modal-field label { font-size: 0.78rem; font-weight: bold; color: #475569; }
-    .calc-result-box {
-      background: #f1f5f9; border-radius: 10px; padding: 10px; font-size: 0.82rem; color: #334155; line-height: 1.6;
-    }
+    .autocomplete-cal { color: #059669; font-size: 0.82rem; font-weight: bold; }
 
     .backup-footer { text-align: center; margin-top: 10px; font-size: 0.78rem; color: #64748b; display: flex; justify-content: center; gap: 12px; }
     .backup-link { color: #2563eb; text-decoration: underline; cursor: pointer; font-weight: bold; }
@@ -134,71 +116,6 @@
 
   <div id="syncToast">🔄 雲端同步中...</div>
 
-  <!-- 🌟 BMR / TDEE 智慧計算彈窗 -->
-  <div class="modal-overlay" id="calcModal">
-    <div class="modal-card">
-      <div class="modal-head">
-        <span>⚙️ TDEE / 目標熱量試算器</span>
-        <button class="modal-close" onclick="closeCalcModal()">✕</button>
-      </div>
-      
-      <div class="grid-2" style="margin-bottom:0;">
-        <div class="modal-field">
-          <label>性別</label>
-          <select id="calcGender">
-            <option value="male">男性</option>
-            <option value="female">女性</option>
-          </select>
-        </div>
-        <div class="modal-field">
-          <label>年齡 (歲)</label>
-          <input type="number" id="calcAge" placeholder="如: 35" value="35">
-        </div>
-      </div>
-
-      <div class="grid-2" style="margin-bottom:0;">
-        <div class="modal-field">
-          <label>身高 (cm)</label>
-          <input type="number" id="calcHeight" placeholder="如: 175">
-        </div>
-        <div class="modal-field">
-          <label>體重 (kg)</label>
-          <input type="number" id="calcWeight" placeholder="如: 70">
-        </div>
-      </div>
-
-      <div class="modal-field">
-        <label>日常活動量</label>
-        <select id="calcActivity">
-          <option value="1.2">久坐型（辦公室內勤、無運動習慣）</option>
-          <option value="1.375" selected>輕度活動（每週運動 1~3 天或通勤散步）</option>
-          <option value="1.55">中度活動（每週規律運動 3~5 天）</option>
-          <option value="1.725">高度活動（每週高強度運動 6~7 天）</option>
-        </select>
-      </div>
-
-      <div class="modal-field">
-        <label>目標方向</label>
-        <select id="calcGoal">
-          <option value="-400" selected>健康減重（每日熱量赤字 -400 kcal，建議）</option>
-          <option value="-600">積極減脂（每日熱量赤字 -600 kcal）</option>
-          <option value="0">維持體重（吃滿維持熱量 TDEE）</option>
-          <option value="300">乾淨增肌 / 增重（每日熱量盈餘 +300 kcal）</option>
-          <option value="500">積極增重（每日熱量盈餘 +500 kcal）</option>
-        </select>
-      </div>
-
-      <div class="calc-result-box" id="calcPreview">
-        請點擊下方計算按鈕開始試算
-      </div>
-
-      <div style="display:flex; gap:8px;">
-        <button class="btn btn-purple" style="flex:1;" onclick="doCalculate()">🧮 試算熱量</button>
-        <button class="btn btn-add" style="flex:1.2;" onclick="applyCalculatedBudget()">套用為今日目標</button>
-      </div>
-    </div>
-  </div>
-
   <div class="container">
 
     <div class="date-nav">
@@ -210,11 +127,14 @@
       <button onclick="shiftDate(1)">後一天 ▶</button>
     </div>
 
-    <!-- 頂部總覽 -->
+    <!-- 頂部總覽（含智慧 TDEE 試算按鈕） -->
     <div class="summary-box">
       <div class="summary-top">
         <span id="dateShow">--</span>
-        <span class="budget-tag" onclick="openCalcModal()">⚙️ 目標預算: <span id="budgetVal">2000</span> kcal</span>
+        <div style="display:flex; gap:4px;">
+          <span class="budget-tag" onclick="calcTDEEGoal()">🪄 智慧目標試算</span>
+          <span class="budget-tag" onclick="editBudget()">⚙️ <span id="budgetVal">2000</span> kcal</span>
+        </div>
       </div>
       <div class="net-cal-wrap">
         <div class="net-cal-title">今日剩餘可攝取額度</div>
@@ -273,9 +193,9 @@
         <button class="btn-quick-water" onclick="addWater(500)">＋500ml 🧴<br><span style="font-size:0.7rem; font-weight:normal;">寶特瓶</span></button>
         <button class="btn-quick-water" onclick="addWater(800)">＋800ml 🍶<br><span style="font-size:0.7rem; font-weight:normal;">大水壺</span></button>
       </div>
-      <div class="input-row" style="margin-bottom:0;">
+      <div style="display:grid; grid-template-columns: 2fr 1fr; gap:6px;">
         <input type="number" id="customWater" placeholder="自訂毫升數 (ml)" onkeydown="if(event.key==='Enter') addCustomWater()">
-        <button class="btn btn-sky" onclick="addCustomWater()" style="grid-column: span 3;">記錄飲水</button>
+        <button class="btn btn-sky" onclick="addCustomWater()">記錄飲水</button>
       </div>
     </div>
 
@@ -291,7 +211,7 @@
         <input type="number" id="weightInput" placeholder="體重 (kg)">
       </div>
       <button class="btn btn-teal" onclick="saveBodyStats()">儲存當日生理數據</button>
-      <div style="font-size:0.75rem; color:#64748b; margin-top:6px; text-align:right;">即時同步至 Google 試算表（獨立欄位）</div>
+      <div style="font-size:0.75rem; color:#64748b; margin-top:6px; text-align:right;">即時同步至 Google 試算表</div>
     </div>
 
     <!-- 3. 每日步數 -->
@@ -300,7 +220,7 @@
         <span class="badge b-step">👟 每日步數</span>
         <span style="font-size:0.85rem; color:#64748b;">消耗：<strong id="sub-steps" style="color:#8b5cf6;">0</strong> kcal</span>
       </div>
-      <div class="input-row" style="grid-template-columns: 2fr 1fr auto;">
+      <div style="display:grid; grid-template-columns: 2fr 1fr auto; gap:6px;">
         <input type="number" id="stepInput" placeholder="輸入步數 (如: 6000)" onkeydown="if(event.key==='Enter') saveSteps()">
         <span style="font-size:0.8rem; line-height:36px; color:#64748b;">步</span>
         <button class="btn btn-purple" onclick="saveSteps()">更新</button>
@@ -342,12 +262,15 @@
         </div>
       </div>
       <div class="recent-chips" id="chips-breakfast"></div>
-      <div class="input-row">
-        <input type="text" id="name-breakfast" placeholder="輸入早餐" oninput="handleSmartInput('breakfast')" onkeydown="handleEnterAdd(event, 'breakfast')" autocomplete="off">
-        <input type="number" id="qty-breakfast" value="1" step="0.5" min="0.5" placeholder="份數" oninput="updateTotalCal('breakfast')" onkeydown="handleEnterAdd(event, 'breakfast')">
-        <input type="number" id="cal-breakfast" placeholder="熱量" onkeydown="handleEnterAdd(event, 'breakfast')">
-        <button class="btn-add" onclick="manualAdd('breakfast')">＋</button>
+      
+      <div class="meal-input-group">
+        <input type="text" id="name-breakfast" placeholder="🔍 輸入食物名稱 (如: 芝麻吐司、水煮蛋)" oninput="handleSmartInput('breakfast')" onkeydown="handleEnterAdd(event, 'breakfast')" autocomplete="off">
         <div class="autocomplete-box" id="suggest-breakfast"></div>
+        <div class="input-row-sub">
+          <input type="number" id="qty-breakfast" value="1" step="0.5" min="0.1" placeholder="份數" oninput="updateTotalCal('breakfast')" onkeydown="handleEnterAdd(event, 'breakfast')">
+          <input type="number" id="cal-breakfast" placeholder="🔥 熱量 (kcal)" oninput="onManualCalChange('breakfast')" onkeydown="handleEnterAdd(event, 'breakfast')">
+          <button class="btn btn-add" onclick="manualAdd('breakfast')">＋ 新增</button>
+        </div>
       </div>
       <div class="item-list" id="list-breakfast"></div>
     </div>
@@ -363,12 +286,15 @@
         </div>
       </div>
       <div class="recent-chips" id="chips-lunch"></div>
-      <div class="input-row">
-        <input type="text" id="name-lunch" placeholder="輸入午餐" oninput="handleSmartInput('lunch')" onkeydown="handleEnterAdd(event, 'lunch')" autocomplete="off">
-        <input type="number" id="qty-lunch" value="1" step="0.5" min="0.5" placeholder="份數" oninput="updateTotalCal('lunch')" onkeydown="handleEnterAdd(event, 'lunch')">
-        <input type="number" id="cal-lunch" placeholder="熱量" onkeydown="handleEnterAdd(event, 'lunch')">
-        <button class="btn-add" onclick="manualAdd('lunch')">＋</button>
+      
+      <div class="meal-input-group">
+        <input type="text" id="name-lunch" placeholder="🔍 輸入食物名稱 (如: 炒芥藍、正忠排骨)" oninput="handleSmartInput('lunch')" onkeydown="handleEnterAdd(event, 'lunch')" autocomplete="off">
         <div class="autocomplete-box" id="suggest-lunch"></div>
+        <div class="input-row-sub">
+          <input type="number" id="qty-lunch" value="1" step="0.5" min="0.1" placeholder="份數" oninput="updateTotalCal('lunch')" onkeydown="handleEnterAdd(event, 'lunch')">
+          <input type="number" id="cal-lunch" placeholder="🔥 熱量 (kcal)" oninput="onManualCalChange('lunch')" onkeydown="handleEnterAdd(event, 'lunch')">
+          <button class="btn btn-add" onclick="manualAdd('lunch')">＋ 新增</button>
+        </div>
       </div>
       <div class="item-list" id="list-lunch"></div>
     </div>
@@ -384,12 +310,15 @@
         </div>
       </div>
       <div class="recent-chips" id="chips-dinner"></div>
-      <div class="input-row">
-        <input type="text" id="name-dinner" placeholder="輸入晚餐" oninput="handleSmartInput('dinner')" onkeydown="handleEnterAdd(event, 'dinner')" autocomplete="off">
-        <input type="number" id="qty-dinner" value="1" step="0.5" min="0.5" placeholder="份數" oninput="updateTotalCal('dinner')" onkeydown="handleEnterAdd(event, 'dinner')">
-        <input type="number" id="cal-dinner" placeholder="熱量" onkeydown="handleEnterAdd(event, 'dinner')">
-        <button class="btn-add" onclick="manualAdd('dinner')">＋</button>
+      
+      <div class="meal-input-group">
+        <input type="text" id="name-dinner" placeholder="🔍 輸入食物名稱 (如: 燙芥藍、三杯雞)" oninput="handleSmartInput('dinner')" onkeydown="handleEnterAdd(event, 'dinner')" autocomplete="off">
         <div class="autocomplete-box" id="suggest-dinner"></div>
+        <div class="input-row-sub">
+          <input type="number" id="qty-dinner" value="1" step="0.5" min="0.1" placeholder="份數" oninput="updateTotalCal('dinner')" onkeydown="handleEnterAdd(event, 'dinner')">
+          <input type="number" id="cal-dinner" placeholder="🔥 熱量 (kcal)" oninput="onManualCalChange('dinner')" onkeydown="handleEnterAdd(event, 'dinner')">
+          <button class="btn btn-add" onclick="manualAdd('dinner')">＋ 新增</button>
+        </div>
       </div>
       <div class="item-list" id="list-dinner"></div>
     </div>
@@ -404,12 +333,15 @@
         </div>
       </div>
       <div class="recent-chips" id="chips-snack"></div>
-      <div class="input-row">
-        <input type="text" id="name-snack" placeholder="輸入點心" oninput="handleSmartInput('snack')" onkeydown="handleEnterAdd(event, 'snack')" autocomplete="off">
-        <input type="number" id="qty-snack" value="1" step="0.5" min="0.5" placeholder="份數" oninput="updateTotalCal('snack')" onkeydown="handleEnterAdd(event, 'snack')">
-        <input type="number" id="cal-snack" placeholder="熱量" onkeydown="handleEnterAdd(event, 'snack')">
-        <button class="btn-add" onclick="manualAdd('snack')">＋</button>
+      
+      <div class="meal-input-group">
+        <input type="text" id="name-snack" placeholder="🔍 輸入食物名稱 (如: 炸雞排、蛋黃酥)" oninput="handleSmartInput('snack')" onkeydown="handleEnterAdd(event, 'snack')" autocomplete="off">
         <div class="autocomplete-box" id="suggest-snack"></div>
+        <div class="input-row-sub">
+          <input type="number" id="qty-snack" value="1" step="0.5" min="0.1" placeholder="份數" oninput="updateTotalCal('snack')" onkeydown="handleEnterAdd(event, 'snack')">
+          <input type="number" id="cal-snack" placeholder="🔥 熱量 (kcal)" oninput="onManualCalChange('snack')" onkeydown="handleEnterAdd(event, 'snack')">
+          <button class="btn-add" onclick="manualAdd('snack')">＋ 新增</button>
+        </div>
       </div>
       <div class="item-list" id="list-snack"></div>
     </div>
@@ -424,17 +356,20 @@
         </div>
       </div>
       <div class="recent-chips" id="chips-drink"></div>
-      <div class="input-row">
-        <input type="text" id="name-drink" placeholder="輸入飲料" oninput="handleSmartInput('drink')" onkeydown="handleEnterAdd(event, 'drink')" autocomplete="off">
-        <input type="number" id="qty-drink" value="1" step="0.5" min="0.5" placeholder="份數" oninput="updateTotalCal('drink')" onkeydown="handleEnterAdd(event, 'drink')">
-        <input type="number" id="cal-drink" placeholder="熱量" onkeydown="handleEnterAdd(event, 'drink')">
-        <button class="btn-add" onclick="manualAdd('drink')">＋</button>
+      
+      <div class="meal-input-group">
+        <input type="text" id="name-drink" placeholder="🔍 輸入飲料 (如: 馬可先生無糖黑豆漿)" oninput="handleSmartInput('drink')" onkeydown="handleEnterAdd(event, 'drink')" autocomplete="off">
         <div class="autocomplete-box" id="suggest-drink"></div>
+        <div class="input-row-sub">
+          <input type="number" id="qty-drink" value="1" step="0.5" min="0.1" placeholder="份數" oninput="updateTotalCal('drink')" onkeydown="handleEnterAdd(event, 'drink')">
+          <input type="number" id="cal-drink" placeholder="🔥 熱量 (kcal)" oninput="onManualCalChange('drink')" onkeydown="handleEnterAdd(event, 'drink')">
+          <button class="btn-add" onclick="manualAdd('drink')">＋ 新增</button>
+        </div>
       </div>
       <div class="item-list" id="list-drink"></div>
     </div>
 
-    <!-- 底部備份與匯出區 -->
+    <!-- 底部備份 -->
     <div class="backup-footer">
       <span class="backup-link" onclick="exportBackup()">📥 匯出手機備份檔</span>
       <span>|</span>
@@ -449,24 +384,19 @@
 
     // 🌟 全台超完整飲食資料庫
     const calorieDictionary = {
-      // 蛋白質主食與蛋豆肉
       "水煮蛋": { cal: 75, p: 7 }, "荷包蛋": { cal: 120, p: 7 }, "茶葉蛋": { cal: 75, p: 7 },
       "舒肥雞沙拉": { cal: 180, p: 25 }, "雞胸肉生菜沙拉": { cal: 180, p: 25 },
       "無糖豆漿": { cal: 147, p: 15 }, "馬可先生無糖黑豆漿": { cal: 170, p: 16 }, "無糖黑豆漿": { cal: 170, p: 16 }, "馬可先生黑豆漿": { cal: 170, p: 16 },
       "嘴邊肉": { cal: 140, p: 18 }, "骨仔肉": { cal: 150, p: 17 }, "肝連肉": { cal: 150, p: 18 }, "松阪豬": { cal: 220, p: 16 },
 
-      // 🥬 芥藍菜與蔬菜專區
       "炒芥藍菜": { cal: 130, p: 3 }, "炒芥藍": { cal: 130, p: 3 }, "蒜炒芥藍": { cal: 130, p: 3 }, "熱炒芥藍": { cal: 130, p: 3 },
       "燙芥藍菜": { cal: 50, p: 3 }, "燙芥藍": { cal: 50, p: 3 }, "沙茶牛肉炒芥藍": { cal: 480, p: 24 },
 
-      // 🍗 雞排與百頁專區
       "炸雞排": { cal: 650, p: 35 }, "香酥雞排": { cal: 650, p: 35 }, "脆皮雞排": { cal: 700, p: 35 }, "碳烤雞排": { cal: 750, p: 35 }, "起司雞排": { cal: 850, p: 38 },
       "百頁豆腐": { cal: 200, p: 12 }, "滷百頁": { cal: 200, p: 12 }, "炒百頁": { cal: 220, p: 12 }, "炸百頁豆腐": { cal: 380, p: 12 }, "炸百頁": { cal: 380, p: 12 },
 
-      // 🥬 筍乾與配菜專區
       "筍乾": { cal: 160, p: 2 }, "滷筍乾": { cal: 160, p: 2 }, "控肉筍乾": { cal: 180, p: 8 }, "筍乾控肉": { cal: 180, p: 8 },
 
-      // 🥮 沙西餅、麻糬酥、大餅與中式糕點專區
       "沙西餅": { cal: 260, p: 4 }, "沙西餅(單個)": { cal: 260, p: 4 },
       "麻糬酥": { cal: 320, p: 4 }, "芋頭麻糬酥": { cal: 300, p: 4 }, "紅豆麻糬酥": { cal: 320, p: 4 }, "麻糬酥(單顆)": { cal: 320, p: 4 }, "Q餅": { cal: 400, p: 8 }, "咖哩滷肉Q餅": { cal: 420, p: 9 },
       "中式大餅": { cal: 300, p: 5 }, "大餅(1/8塊)": { cal: 280, p: 4 }, "魯肉豆沙大餅": { cal: 300, p: 6 }, "芝麻核桃大餅": { cal: 320, p: 5 }, "冬瓜肉餅": { cal: 310, p: 5 },
@@ -476,11 +406,9 @@
       "太陽餅": { cal: 280, p: 3 }, "太陽餅(單顆)": { cal: 280, p: 3 }, "老婆餅": { cal: 260, p: 3 }, "老婆餅(單顆)": { cal: 260, p: 3 },
       "芋頭酥": { cal: 300, p: 4 }, "芋頭酥(單顆)": { cal: 300, p: 4 }, "綠豆黃": { cal: 190, p: 3 }, "綠豆黃(單顆)": { cal: 190, p: 3 },
 
-      // 吐司與早餐烘焙
       "芝麻吐司": { cal: 180, p: 5 }, "芝麻厚片吐司": { cal: 320, p: 7 }, "芝麻抹醬吐司": { cal: 180, p: 5 },
       "紅豆吐司": { cal: 160, p: 4 }, "起司吐司": { cal: 150, p: 6 }, "原味蛋餅": { cal: 260, p: 10 }, "起司蛋餅": { cal: 320, p: 14 },
 
-      // 蔬菜專區
       "炒高麗菜": { cal: 130, p: 2 }, "熱炒高麗菜": { cal: 130, p: 2 }, "炒空心菜": { cal: 130, p: 2 }, "熱炒空心菜": { cal: 130, p: 2 },
       "炒水蓮": { cal: 140, p: 2 }, "水蓮": { cal: 140, p: 2 }, "炒地瓜葉": { cal: 120, p: 3 }, "地瓜葉": { cal: 120, p: 3 },
       "炒菠菜": { cal: 120, p: 3 }, "菠菜": { cal: 120, p: 3 }, "炒大陸妹": { cal: 110, p: 2 }, "炒福山萵苣": { cal: 110, p: 2 },
@@ -495,44 +423,35 @@
       "和風沙拉": { cal: 80, p: 1 }, "和風生菜沙拉": { cal: 80, p: 1 }, "凱薩沙拉": { cal: 220, p: 4 }, "千島沙拉": { cal: 200, p: 2 }, "胡麻沙拉": { cal: 180, p: 3 },
       "Costco凱薩沙拉": { cal: 780, p: 32 },
 
-      // 三杯料理專區
       "三杯杏鮑菇": { cal: 160, p: 4 }, "三杯雞": { cal: 520, p: 36 }, "三杯中卷": { cal: 260, p: 28 }, "三杯透抽": { cal: 260, p: 28 }, "三杯花枝": { cal: 260, p: 28 },
       "三杯田雞": { cal: 280, p: 30 }, "三杯米血": { cal: 380, p: 6 }, "三杯豆腐": { cal: 240, p: 14 }, "三杯百頁豆腐": { cal: 420, p: 14 },
 
-      // 義大利麵系列
       "白酒蛤蜊義大利麵": { cal: 480, p: 22 }, "蒜香白酒蛤蜊麵": { cal: 480, p: 22 }, "蒜辣白酒蛤蜊義大利麵": { cal: 490, p: 22 }, "蒜香清炒海鮮義大利麵": { cal: 510, p: 25 },
       "肉醬義大利麵": { cal: 620, p: 20 }, "波隆那肉醬義大利麵": { cal: 620, p: 20 }, "紅醬海鮮義大利麵": { cal: 580, p: 26 }, "紅醬雞肉義大利麵": { cal: 600, p: 28 },
       "白醬培根義大利麵": { cal: 820, p: 18 }, "奶油培根義大利麵": { cal: 820, p: 18 }, "白醬海鮮義大利麵": { cal: 760, p: 25 },
       "青醬海鮮義大利麵": { cal: 780, p: 26 }, "青醬蛤蜊義大利麵": { cal: 780, p: 22 }, "青醬雞肉義大利麵": { cal: 750, p: 30 }, "焗烤牛肉千層麵": { cal: 860, p: 32 },
 
-      // 鹹酥雞其他炸物
       "鹹酥雞一份": { cal: 450, p: 20 }, "炸四季豆": { cal: 140, p: 2 }, "炸魷魚": { cal: 350, p: 22 },
       "炸甜不辣一份": { cal: 320, p: 8 }, "炸米血": { cal: 260, p: 4 }, "炸銀絲卷": { cal: 420, p: 6 }, "地瓜球(小)": { cal: 280, p: 1 }, "地瓜球": { cal: 280, p: 1 },
 
-      // Costco 好市多
       "Costco牛肉捲": { cal: 820, p: 36 }, "好市多牛肉捲": { cal: 820, p: 36 }, "Costco雞肉捲": { cal: 760, p: 34 }, "好市多雞肉捲": { cal: 760, p: 34 },
       "Costco烤雞腿": { cal: 320, p: 28 }, "Costco烤全雞": { cal: 1500, p: 110 }, "Costco蛤蜊濃湯": { cal: 320, p: 10 }, "Costco單片披薩": { cal: 680, p: 24 },
       "Costco熱狗": { cal: 560, p: 18 }, "Costco貝果": { cal: 290, p: 10 }, "Costco可頌": { cal: 280, p: 5 },
 
-      // 鹹水雞與餡餅
       "鹹水雞": { cal: 220, p: 22 }, "鹽水雞": { cal: 220, p: 22 }, "鹽水雞胸": { cal: 130, p: 24 }, "鹽水雞腿": { cal: 230, p: 20 }, "鹹水雞筍片": { cal: 40, p: 1 }, "鹹水雞青花菜": { cal: 35, p: 2 },
       "牛肉餡餅": { cal: 350, p: 14 }, "豬肉餡餅": { cal: 320, p: 12 }, "蘿蔔絲餡餅": { cal: 260, p: 5 }, "韭菜盒子": { cal: 300, p: 8 }, "蔥油餅": { cal: 350, p: 6 }, "紅豆餅": { cal: 190, p: 4 },
 
-      // 傳統麵店與黑白切
       "麻醬麵": { cal: 520, p: 12 }, "炸醬麵": { cal: 500, p: 14 }, "肉燥乾麵": { cal: 480, p: 12 }, "紅油抄手": { cal: 450, p: 15 }, "涼麵": { cal: 450, p: 11 },
       "牛肉麵": { cal: 750, p: 30 }, "紅燒牛肉麵": { cal: 780, p: 30 }, "清燉牛肉麵": { cal: 580, p: 30 }, "陽春麵": { cal: 350, p: 9 }, "榨菜肉絲麵": { cal: 450, p: 14 }, "餛飩麵": { cal: 460, p: 16 },
       "滷蛋": { cal: 75, p: 7 }, "油豆腐(2塊)": { cal: 120, p: 6 }, "大腸頭": { cal: 260, p: 12 },
 
-      // 便當、港式燒臘與八方雲集
       "正忠排骨飯": { cal: 890, p: 32 }, "正忠炸雞腿飯": { cal: 960, p: 36 }, "便當大爺排骨飯": { cal: 820, p: 30 }, "便當大爺雞腿飯": { cal: 880, p: 34 },
       "三寶飯便當": { cal: 920, p: 36 }, "三寶飯": { cal: 920, p: 36 }, "脆皮燒肉便當": { cal: 880, p: 28 }, "蜜汁叉燒便當": { cal: 820, p: 30 }, "京醬排骨": { cal: 460, p: 22 }, "糖醋排骨": { cal: 580, p: 20 },
       "八方鍋貼10顆": { cal: 650, p: 20 }, "八方水餃10顆": { cal: 550, p: 22 }, "八方酸辣湯": { cal: 160, p: 6 }, "八方玉米濃湯": { cal: 180, p: 4 },
 
-      // 手搖名店
       "大茗酪梨奶蓋紅玉": { cal: 320, p: 3 }, "酪梨奶蓋紅玉": { cal: 320, p: 3 }, "大茗烤糖蕎麥凍奶青": { cal: 310, p: 2 }, "迷客夏珍珠紅茶拿鐵": { cal: 360, p: 6 },
       "迷客夏大甲芋頭鮮奶": { cal: 380, p: 7 }, "一沐日逮丸奶茶": { cal: 450, p: 3 }, "50嵐1號": { cal: 420, p: 2 }, "50嵐波霸奶茶": { cal: 480, p: 3 }, "麻古楊枝甘露": { cal: 490, p: 2 }, "得正春烏龍": { cal: 0, p: 0 },
 
-      // 家常熱炒、湯品與飲品
       "蛋花湯": { cal: 80, p: 6 }, "蛤蜊湯": { cal: 70, p: 8 }, "貢丸湯": { cal: 150, p: 7 }, "四神湯": { cal: 250, p: 12 }, "香菇雞湯": { cal: 220, p: 18 },
       "蕃茄炒蛋": { cal: 170, p: 9 }, "番茄炒蛋": { cal: 170, p: 9 }, "洋蔥炒蛋": { cal: 160, p: 8 },
       "美式黑咖啡": { cal: 15, p: 0 }, "拿鐵咖啡": { cal: 180, p: 8 }, "瑞士妞可可": { cal: 160, p: 4 }, "無糖青茶": { cal: 0, p: 0 }
@@ -549,7 +468,6 @@
 
     let baseCaloriesMap = {};
     let baseProteinMap = {};
-    let calculatedTargetCal = 2000;
 
     function showToast(msg, isSuccess = false) {
       const toast = document.getElementById('syncToast');
@@ -614,6 +532,73 @@
       localStorage.setItem('custom_barcode_db', JSON.stringify(custom));
     }
 
+    // 🌟 核心：根據體重與目標試算 TDEE / 減脂 / 增肌熱量建議
+    function calcTDEEGoal() {
+      const userW = parseFloat(appData.weight) || 0;
+      const userH = parseFloat(appData.height) || 0;
+
+      if (!userW) {
+        return alert('請先在下方「🩺 身體數據」填寫並儲存體重（若有身高更準確），才能計算個人化代謝熱量！');
+      }
+
+      const h = userH > 0 ? userH : 170; // 預設身高
+      const age = parseInt(localStorage.getItem('user_age') || '35');
+      const gender = localStorage.getItem('user_gender') || 'male';
+
+      // 1. 計算 BMR (Mifflin-St Jeor 公式)
+      let bmr = Math.round((10 * userW) + (6.25 * h) - (5 * age) + (gender === 'male' ? 5 : -161));
+
+      // 2. 選擇生活活動量
+      const actChoice = prompt(
+        `【個人化代謝試算】\n目前體重: ${userW} kg | 身高: ${h} cm\n基礎代謝率 (BMR) 約: ${bmr} kcal\n\n請選擇您的「日常活動量」：\n1. 久坐辦公型 (上班族/公務員/少動) - 係數 1.2\n2. 輕度活動 (每週輕運動 1~3 天，如快走/匹克球) - 係數 1.375\n3. 中度運動 (每週規律運動 3~5 天) - 係數 1.55`,
+        "1"
+      );
+      if (!actChoice) return;
+
+      const actMultipliers = { "1": 1.2, "2": 1.375, "3": 1.55 };
+      const mult = actMultipliers[actChoice] || 1.2;
+      const tdee = Math.round(bmr * mult);
+
+      // 3. 選擇增重或減脂目標
+      const goalChoice = prompt(
+        `您的每日維持體重消耗 (TDEE) 為：${tdee} kcal\n\n請選擇您的健康目標：\n1. 穩健減脂 (熱量赤字 -400 kcal，每週約減0.4kg)\n2. 積極減脂 (熱量赤字 -500 kcal，適合大基數)\n3. 維持目前體重 (熱量平衡)\n4. 增肌增重 (熱量盈餘 +350 kcal，搭配重訓)`,
+        "1"
+      );
+      if (!goalChoice) return;
+
+      let targetCal = tdee;
+      let targetDesc = "維持體重";
+      let recommendedProtein = Math.round(userW * 1.5); // 預設建議蛋白質 (每公斤體重 1.5g)
+
+      if (goalChoice === "1") {
+        targetCal = tdee - 400;
+        targetDesc = "穩健減脂";
+        recommendedProtein = Math.round(userW * 1.6);
+      } else if (goalChoice === "2") {
+        targetCal = Math.max(bmr, tdee - 500); // 減脂不低於基礎代謝
+        targetDesc = "積極減脂";
+        recommendedProtein = Math.round(userW * 1.8);
+      } else if (goalChoice === "3") {
+        targetCal = tdee;
+        targetDesc = "維持體重";
+        recommendedProtein = Math.round(userW * 1.2);
+      } else if (goalChoice === "4") {
+        targetCal = tdee + 350;
+        targetDesc = "增肌增重";
+        recommendedProtein = Math.round(userW * 1.8);
+      }
+
+      dailyCalBudget = targetCal;
+      dailyProteinGoal = recommendedProtein;
+      localStorage.setItem('user_cal_budget', dailyCalBudget);
+      localStorage.setItem('user_protein_goal', dailyProteinGoal);
+
+      render();
+      alert(
+        `🎯 目標已自動套用！\n--------------------------\n• 目標設定：【${targetDesc}】\n• 建議每日攝取上限：${targetCal} kcal\n• 建議每日蛋白質：${recommendedProtein} g\n\n頂部的熱量預算與蛋白質進度條已同步更新！`
+      );
+    }
+
     function handleSmartInput(type) {
       const inputEl = document.getElementById(`name-${type}`);
       const calEl = document.getElementById(`cal-${type}`);
@@ -675,10 +660,23 @@
     }
 
     function updateTotalCal(type) {
-      const baseCal = baseCaloriesMap[type] || parseFloat(document.getElementById(`cal-${type}`).value) || 0;
       const qty = parseFloat(document.getElementById(`qty-${type}`).value) || 1;
+      let baseCal = baseCaloriesMap[type];
+      if (!baseCal) {
+        const curCal = parseFloat(document.getElementById(`cal-${type}`).value) || 0;
+        baseCal = curCal / qty;
+        baseCaloriesMap[type] = baseCal;
+      }
       if (baseCal > 0) {
         document.getElementById(`cal-${type}`).value = Math.round(baseCal * qty);
+      }
+    }
+
+    function onManualCalChange(type) {
+      const qty = parseFloat(document.getElementById(`qty-${type}`).value) || 1;
+      const curCal = parseFloat(document.getElementById(`cal-${type}`).value) || 0;
+      if (qty > 0) {
+        baseCaloriesMap[type] = curCal / qty;
       }
     }
 
@@ -690,7 +688,7 @@
     }
 
     document.addEventListener('click', (e) => {
-      if (!e.target.closest('.input-row')) {
+      if (!e.target.closest('.meal-input-group')) {
         document.querySelectorAll('.autocomplete-box').forEach(box => box.style.display = 'none');
       }
     });
@@ -711,57 +709,13 @@
     let dailyWaterGoal = parseInt(localStorage.getItem('user_water_goal') || '2000');
     let dailyProteinGoal = parseInt(localStorage.getItem('user_protein_goal') || '80');
 
-    // 🌟 TDEE 計算器 Modal 操作邏輯
-    function openCalcModal() {
-      // 自動預填當前輸入的身高與體重
-      if (appData.height) document.getElementById('calcHeight').value = appData.height;
-      if (appData.weight) document.getElementById('calcWeight').value = appData.weight;
-      document.getElementById('calcModal').style.display = 'flex';
-      doCalculate();
-    }
-
-    function closeCalcModal() {
-      document.getElementById('calcModal').style.display = 'none';
-    }
-
-    function doCalculate() {
-      const gender = document.getElementById('calcGender').value;
-      const age = parseFloat(document.getElementById('calcAge').value) || 35;
-      const h = parseFloat(document.getElementById('calcHeight').value) || 175;
-      const w = parseFloat(document.getElementById('calcWeight').value) || 70;
-      const act = parseFloat(document.getElementById('calcActivity').value) || 1.375;
-      const goalOffset = parseFloat(document.getElementById('calcGoal').value) || 0;
-
-      // Mifflin-St Jeor 公式
-      let bmr = (10 * w) + (6.25 * h) - (5 * age);
-      bmr = (gender === 'male') ? bmr + 5 : bmr - 161;
-      bmr = Math.round(bmr);
-
-      const tdee = Math.round(bmr * act);
-      let target = tdee + goalOffset;
-
-      // 減重防呆安全機制：熱量攝取不可低於基礎代謝 BMR
-      let warning = '';
-      if (goalOffset < 0 && target < bmr) {
-        target = bmr;
-        warning = '<br><span style="color:#e11d48; font-size:0.75rem;">⚠️ 已啟動保護機制：目標熱量不應低於 BMR 基礎代謝！</span>';
+    function editBudget() {
+      const val = prompt('請輸入每日目標熱量預算 (kcal):', dailyCalBudget);
+      if (val && !isNaN(val)) {
+        dailyCalBudget = parseInt(val);
+        localStorage.setItem('user_cal_budget', dailyCalBudget);
+        render();
       }
-
-      calculatedTargetCal = Math.round(target);
-
-      document.getElementById('calcPreview').innerHTML = `
-        • 基礎代謝 (BMR)：<strong>${bmr}</strong> kcal<br>
-        • 維持熱量 (TDEE)：<strong>${tdee}</strong> kcal<br>
-        👉 <strong>建議每日目標熱量：<span style="color:#2563eb; font-size:1.1rem;">${calculatedTargetCal}</span> kcal</strong>${warning}
-      `;
-    }
-
-    function applyCalculatedBudget() {
-      dailyCalBudget = calculatedTargetCal;
-      localStorage.setItem('user_cal_budget', dailyCalBudget);
-      closeCalcModal();
-      render();
-      showToast(`已成功套用目標熱量：${dailyCalBudget} kcal`, true);
     }
 
     function editWaterGoal() {
