@@ -75,7 +75,7 @@
     .time-tag { font-size: 0.72rem; color: #64748b; margin-left: 6px; background: #e2e8f0; padding: 1px 4px; border-radius: 4px; }
     .del-btn { background: none; border: none; color: #ef4444; font-size: 0.8rem; cursor: pointer; padding-left: 6px; }
 
-    /* 🌟 自製浮動自動篩選下拉選單樣式 */
+    /* 自製浮動自動篩選下拉選單樣式 */
     .autocomplete-box {
       position: absolute;
       top: 40px;
@@ -250,7 +250,7 @@
       </div>
       <div class="recent-chips" id="chips-breakfast"></div>
       <div class="input-row">
-        <input type="text" id="name-breakfast" placeholder="輸入早餐 (如: 生菜沙拉、牛肉餡餅)" oninput="handleSmartInput('breakfast')" autocomplete="off">
+        <input type="text" id="name-breakfast" placeholder="輸入早餐 (如: 芝麻吐司、馬可先生無糖黑豆漿)" oninput="handleSmartInput('breakfast')" autocomplete="off">
         <input type="number" id="cal-breakfast" placeholder="熱量">
         <button class="btn-add" onclick="manualAdd('breakfast')">＋</button>
         <div class="autocomplete-box" id="suggest-breakfast"></div>
@@ -320,7 +320,7 @@
       </div>
       <div class="recent-chips" id="chips-drink"></div>
       <div class="input-row">
-        <input type="text" id="name-drink" placeholder="輸入飲料 (如: 酪梨奶蓋、大甲芋頭鮮奶、50嵐1號)" oninput="handleSmartInput('drink')" autocomplete="off">
+        <input type="text" id="name-drink" placeholder="輸入飲料 (如: 馬可先生無糖黑豆漿、酪梨奶蓋)" oninput="handleSmartInput('drink')" autocomplete="off">
         <input type="number" id="cal-drink" placeholder="熱量">
         <button class="btn-add" onclick="manualAdd('drink')">＋</button>
         <div class="autocomplete-box" id="suggest-drink"></div>
@@ -333,8 +333,13 @@
   <script>
     const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbz_pceZbIkWcBtp8a9EzbPEsj1avqhcMjNs16o85SERy6vFmq6IY1iwsuT6oQb4u3g9/exec";
 
-    // 🌟 全台超完整飲食資料庫
+    // 🌟 全台超完整飲食資料庫（已納入芝麻吐司與馬可先生無糖黑豆漿）
     const calorieDictionary = {
+      // 吐司與早餐烘焙
+      "芝麻吐司": 180, "芝麻厚片吐司": 320, "芝麻抹醬吐司": 180,
+      "紅豆吐司": 160, "起司吐司": 150, "原味蛋餅": 260, "起司蛋餅": 320,
+      "無糖豆漿": 147, "馬可先生無糖黑豆漿": 170, "無糖黑豆漿": 170, "馬可先生黑豆漿": 170,
+
       // 蔬菜專區
       "炒高麗菜": 130, "熱炒高麗菜": 130, "炒空心菜": 130, "熱炒空心菜": 130,
       "炒水蓮": 140, "水蓮": 140, "炒地瓜葉": 120, "地瓜葉": 120,
@@ -391,7 +396,7 @@
       // 家常熱炒、湯品與飲品
       "蛋花湯": 80, "蛤蜊湯": 70, "貢丸湯": 150, "四神湯": 250, "香菇雞湯": 220,
       "蕃茄炒蛋": 170, "番茄炒蛋": 170, "洋蔥炒蛋": 160, "荷包蛋": 120, "水煮蛋": 75,
-      "無糖豆漿": 147, "美式黑咖啡": 15, "拿鐵咖啡": 180, "瑞士妞可可": 160, "無糖青茶": 0
+      "美式黑咖啡": 15, "拿鐵咖啡": 180, "瑞士妞可可": 160, "無糖青茶": 0
     };
 
     const baseBarcodeDB = {
@@ -414,28 +419,25 @@
       localStorage.setItem('custom_barcode_db', JSON.stringify(custom));
     }
 
-    // 🌟 全新「打字自動篩選」智慧下拉選單系統
+    // 智慧下拉選單篩選函式
     function handleSmartInput(type) {
       const inputEl = document.getElementById(`name-${type}`);
       const calEl = document.getElementById(`cal-${type}`);
       const suggestBox = document.getElementById(`suggest-${type}`);
       const query = inputEl.value.trim();
 
-      // 1. 若內容被刪空，熱量清空且收合選單
       if (!query) {
         calEl.value = '';
         suggestBox.style.display = 'none';
         return;
       }
 
-      // 2. 比對字典庫（支援番/蕃通同字）
       const altQuery = query.includes('蕃') ? query.replace(/蕃/g, '番') : query.replace(/番/g, '蕃');
       const matches = Object.keys(calorieDictionary).filter(key => {
         return key.toLowerCase().includes(query.toLowerCase()) || 
                key.toLowerCase().includes(altQuery.toLowerCase());
       });
 
-      // 3. 渲染篩選結果下拉框
       if (matches.length > 0) {
         suggestBox.innerHTML = '';
         matches.slice(0, 8).forEach(item => {
@@ -443,7 +445,6 @@
           itemDiv.className = 'autocomplete-item';
           itemDiv.innerHTML = `<span>${item}</span><span class="autocomplete-cal">${calorieDictionary[item]} kcal</span>`;
           
-          // 點選項目瞬間填入品名與熱量
           itemDiv.onmousedown = (e) => {
             e.preventDefault();
             selectFoodItem(type, item, calorieDictionary[item]);
@@ -455,24 +456,21 @@
         suggestBox.style.display = 'none';
       }
 
-      // 4. 嚴格比對：只有完全打出全名時才自動帶出熱量，打字途中保持安靜
       if (calorieDictionary[query] !== undefined) {
         calEl.value = calorieDictionary[query];
       } else if (calorieDictionary[altQuery] !== undefined) {
         calEl.value = calorieDictionary[altQuery];
       } else {
-        calEl.value = ''; // 打字途中不胡亂預填
+        calEl.value = '';
       }
     }
 
-    // 點選下拉選項
     function selectFoodItem(type, name, cal) {
       document.getElementById(`name-${type}`).value = name;
       document.getElementById(`cal-${type}`).value = cal;
       document.getElementById(`suggest-${type}`).style.display = 'none';
     }
 
-    // 點擊網頁其他空白處時自動收合下拉選單
     document.addEventListener('click', (e) => {
       if (!e.target.closest('.input-row')) {
         document.querySelectorAll('.autocomplete-box').forEach(box => {
@@ -649,7 +647,7 @@
         (appData[type] || []).forEach(i => historyNames.add(i.name));
 
         const defaults = {
-          breakfast: ["生菜沙拉", "牛肉餡餅", "八方水餃10顆", "無糖豆漿", "美式黑咖啡"],
+          breakfast: ["芝麻吐司", "馬可先生無糖黑豆漿", "生菜沙拉", "八方水餃10顆", "美式黑咖啡"],
           lunch: ["炒高麗菜", "炒水蓮", "三杯杏鮑菇", "白酒蛤蜊義大利麵", "正忠排骨飯"],
           dinner: ["燙地瓜葉", "鹹蛋苦瓜", "三杯雞", "鹹水雞", "便當大爺雞腿飯"],
           snack: ["炸雞排", "鹹酥雞一份", "炸百頁豆腐", "炸四季豆", "地瓜球"],
