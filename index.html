@@ -56,14 +56,15 @@
     .btn-quick-water { background: #f0f9ff; border: 1.5px solid #bae6fd; color: #0369a1; border-radius: 8px; padding: 8px 4px; font-weight: bold; font-size: 0.8rem; cursor: pointer; }
     .btn-quick-water:active { background: #e0f2fe; }
 
-    .input-row { display: grid; grid-template-columns: 2fr 1fr auto; gap: 6px; margin-bottom: 6px; position: relative; }
+    /* 🌟 調整輸入列：名稱(1.6fr) | 份數(0.7fr) | 熱量(0.9fr) | 按鈕(auto) */
+    .input-row { display: grid; grid-template-columns: 1.6fr 0.7fr 0.9fr auto; gap: 4px; margin-bottom: 6px; position: relative; }
     .grid-2 { display: grid; grid-template-columns: 1.4fr 1fr; gap: 6px; margin-bottom: 6px; }
     .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 8px; }
-    input, select { width: 100%; padding: 8px 10px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; outline: none; background: #fff; }
+    input, select { width: 100%; padding: 8px 8px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; outline: none; background: #fff; }
     input:focus, select:focus { border-color: #2563eb; }
     
-    button.btn { border: none; border-radius: 8px; font-weight: bold; cursor: pointer; padding: 8px 12px; font-size: 0.85rem; }
-    .btn-add { background: #2563eb; color: white; padding: 0 14px; }
+    button.btn { border: none; border-radius: 8px; font-weight: bold; cursor: pointer; padding: 8px 10px; font-size: 0.85rem; }
+    .btn-add { background: #2563eb; color: white; padding: 0 10px; }
     .btn-cam { width: 100%; background: #ea580c; color: white; padding: 10px; font-size: 0.9rem; }
     .btn-green { width: 100%; background: #16a34a; color: white; }
     .btn-purple { width: 100%; background: #8b5cf6; color: white; }
@@ -80,7 +81,7 @@
       position: absolute;
       top: 40px;
       left: 0;
-      right: 90px;
+      right: 120px;
       background: #ffffff;
       border: 1.5px solid #3b82f6;
       border-radius: 8px;
@@ -183,7 +184,7 @@
       </div>
       <div class="input-row" style="margin-bottom:0;">
         <input type="number" id="customWater" placeholder="自訂毫升數 (ml)">
-        <button class="btn btn-sky" onclick="addCustomWater()" style="grid-column: span 2;">記錄飲水</button>
+        <button class="btn btn-sky" onclick="addCustomWater()" style="grid-column: span 3;">記錄飲水</button>
       </div>
     </div>
 
@@ -208,8 +209,8 @@
         <span class="badge b-step">👟 每日步數</span>
         <span style="font-size:0.85rem; color:#64748b;">消耗：<strong id="sub-steps" style="color:#8b5cf6;">0</strong> kcal</span>
       </div>
-      <div class="input-row">
-        <input type="number" id="stepInput" placeholder="輸入步數 (例如: 6000)">
+      <div class="input-row" style="grid-template-columns: 2fr 1fr auto;">
+        <input type="number" id="stepInput" placeholder="輸入步數 (如: 6000)">
         <span style="font-size:0.8rem; line-height:36px; color:#64748b;">步</span>
         <button class="btn btn-purple" onclick="saveSteps()">更新</button>
       </div>
@@ -250,7 +251,8 @@
       </div>
       <div class="recent-chips" id="chips-breakfast"></div>
       <div class="input-row">
-        <input type="text" id="name-breakfast" placeholder="輸入早餐 (如: 芝麻吐司、蛋黃酥)" oninput="handleSmartInput('breakfast')" autocomplete="off">
+        <input type="text" id="name-breakfast" placeholder="輸入早餐" oninput="handleSmartInput('breakfast')" autocomplete="off">
+        <input type="number" id="qty-breakfast" value="1" step="0.5" min="0.5" placeholder="份數" oninput="updateTotalCal('breakfast')">
         <input type="number" id="cal-breakfast" placeholder="熱量">
         <button class="btn-add" onclick="manualAdd('breakfast')">＋</button>
         <div class="autocomplete-box" id="suggest-breakfast"></div>
@@ -269,7 +271,8 @@
       </div>
       <div class="recent-chips" id="chips-lunch"></div>
       <div class="input-row">
-        <input type="text" id="name-lunch" placeholder="輸入午餐 (如: 筍乾、炒高麗菜、正忠排骨)" oninput="handleSmartInput('lunch')" autocomplete="off">
+        <input type="text" id="name-lunch" placeholder="輸入午餐" oninput="handleSmartInput('lunch')" autocomplete="off">
+        <input type="number" id="qty-lunch" value="1" step="0.5" min="0.5" placeholder="份數" oninput="updateTotalCal('lunch')">
         <input type="number" id="cal-lunch" placeholder="熱量">
         <button class="btn-add" onclick="manualAdd('lunch')">＋</button>
         <div class="autocomplete-box" id="suggest-lunch"></div>
@@ -280,7 +283,7 @@
     <!-- 7. 晚餐 -->
     <div class="card">
       <div class="card-head">
-        <span class="badge b-dinner">🌙 晚餐 / 筍乾百頁與熱炒</span>
+        <span class="badge b-dinner">🌙 晚餐 / 炒青菜與主食</span>
         <div>
           <button class="btn-copy-yesterday" onclick="copyYesterdayMeal('dinner')">📋 複製昨天晚餐</button>
           <span style="font-size:0.85rem; color:#64748b; margin-left:4px;">小計：<strong id="sub-dinner">0</strong> kcal</span>
@@ -288,7 +291,8 @@
       </div>
       <div class="recent-chips" id="chips-dinner"></div>
       <div class="input-row">
-        <input type="text" id="name-dinner" placeholder="輸入晚餐 (如: 滷百頁、控肉筍乾、三杯雞)" oninput="handleSmartInput('dinner')" autocomplete="off">
+        <input type="text" id="name-dinner" placeholder="輸入晚餐" oninput="handleSmartInput('dinner')" autocomplete="off">
+        <input type="number" id="qty-dinner" value="1" step="0.5" min="0.5" placeholder="份數" oninput="updateTotalCal('dinner')">
         <input type="number" id="cal-dinner" placeholder="熱量">
         <button class="btn-add" onclick="manualAdd('dinner')">＋</button>
         <div class="autocomplete-box" id="suggest-dinner"></div>
@@ -304,7 +308,8 @@
       </div>
       <div class="recent-chips" id="chips-snack"></div>
       <div class="input-row">
-        <input type="text" id="name-snack" placeholder="輸入點心 (如: 炸雞排、沙西餅、麻糬酥)" oninput="handleSmartInput('snack')" autocomplete="off">
+        <input type="text" id="name-snack" placeholder="輸入點心" oninput="handleSmartInput('snack')" autocomplete="off">
+        <input type="number" id="qty-snack" value="1" step="0.5" min="0.5" placeholder="份數" oninput="updateTotalCal('snack')">
         <input type="number" id="cal-snack" placeholder="熱量">
         <button class="btn-add" onclick="manualAdd('snack')">＋</button>
         <div class="autocomplete-box" id="suggest-snack"></div>
@@ -320,7 +325,8 @@
       </div>
       <div class="recent-chips" id="chips-drink"></div>
       <div class="input-row">
-        <input type="text" id="name-drink" placeholder="輸入飲料 (如: 馬可先生無糖黑豆漿、酪梨奶蓋)" oninput="handleSmartInput('drink')" autocomplete="off">
+        <input type="text" id="name-drink" placeholder="輸入飲料" oninput="handleSmartInput('drink')" autocomplete="off">
+        <input type="number" id="qty-drink" value="1" step="0.5" min="0.5" placeholder="份數" oninput="updateTotalCal('drink')">
         <input type="number" id="cal-drink" placeholder="熱量">
         <button class="btn-add" onclick="manualAdd('drink')">＋</button>
         <div class="autocomplete-box" id="suggest-drink"></div>
@@ -333,8 +339,12 @@
   <script>
     const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbz_pceZbIkWcBtp8a9EzbPEsj1avqhcMjNs16o85SERy6vFmq6IY1iwsuT6oQb4u3g9/exec";
 
-    // 🌟 全台超完整飲食資料庫（已完整納入筍乾、百頁、炸雞排、沙西餅與麻糬酥）
+    // 🌟 全台超完整飲食資料庫
     const calorieDictionary = {
+      // 🥬 芥藍菜與蔬菜專區
+      "炒芥藍菜": 130, "炒芥藍": 130, "蒜炒芥藍": 130, "熱炒芥藍": 130,
+      "燙芥藍菜": 50, "燙芥藍": 50, "沙茶牛肉炒芥藍": 480,
+
       // 🍗 雞排與百頁專區
       "炸雞排": 650, "香酥雞排": 650, "脆皮雞排": 700, "碳烤雞排": 750, "起司雞排": 850,
       "百頁豆腐": 200, "滷百頁": 200, "炒百頁": 220, "炸百頁豆腐": 380, "炸百頁": 380,
@@ -361,7 +371,7 @@
       "炒高麗菜": 130, "熱炒高麗菜": 130, "炒空心菜": 130, "熱炒空心菜": 130,
       "炒水蓮": 140, "水蓮": 140, "炒地瓜葉": 120, "地瓜葉": 120,
       "炒菠菜": 120, "菠菜": 120, "炒大陸妹": 110, "炒福山萵苣": 110,
-      "炒小白菜": 100, "炒青江菜": 100, "炒油菜": 100, "炒豆苗": 140, "炒芥藍": 120,
+      "炒小白菜": 100, "炒青江菜": 100, "炒油菜": 100, "炒豆苗": 140,
       "炒絲瓜": 110, "蛤蜊絲瓜": 130, "炒苦瓜": 120, "鹹蛋苦瓜": 180,
       "開陽白菜": 160, "扁魚白菜滷": 220, "白菜滷": 180, "炒野蓮": 140, "炒蘆筍": 110,
       "燙青菜": 60, "燙地瓜葉": 50, "燙空心菜": 50, "燙大陸妹": 45, "燙高麗菜": 50, "燙花椰菜": 40,
@@ -398,7 +408,7 @@
       // 傳統麵店與黑白切
       "麻醬麵": 520, "炸醬麵": 500, "肉燥乾麵": 480, "紅油抄手": 450, "涼麵": 450,
       "牛肉麵": 750, "紅燒牛肉麵": 780, "清燉牛肉麵": 580, "陽春麵": 350, "榨菜肉絲麵": 450, "餛飩麵": 460,
-      "嘴邊肉": 140, "骨仔肉": 150, "肝連肉": 150, "松阪豬": 220, "大腸頭": 260, "滷蛋": 75, "油豆腐(2塊)": 120,
+      "嘴邊肉": 140, "骨仔肉": 150, "肝連nod肉": 150, "松阪豬": 220, "大腸頭": 260, "滷蛋": 75, "油豆腐(2塊)": 120,
 
       // 便當、港式燒臘與八方雲集
       "正忠排骨飯": 890, "正忠炸雞腿飯": 960, "便當大爺排骨飯": 820, "便當大爺雞腿飯": 880,
@@ -424,6 +434,8 @@
       "4710085121010": { name: "統一布丁", cal: 110 }
     };
 
+    let baseCaloriesMap = {}; // 用來暫存當前選中食物的單份基本熱量
+
     function getLearnedBarcodeDB() {
       const custom = JSON.parse(localStorage.getItem('custom_barcode_db') || '{}');
       return { ...baseBarcodeDB, ...custom };
@@ -439,11 +451,13 @@
     function handleSmartInput(type) {
       const inputEl = document.getElementById(`name-${type}`);
       const calEl = document.getElementById(`cal-${type}`);
+      const qtyEl = document.getElementById(`qty-${type}`);
       const suggestBox = document.getElementById(`suggest-${type}`);
       const query = inputEl.value.trim();
 
       if (!query) {
         calEl.value = '';
+        baseCaloriesMap[type] = 0;
         suggestBox.style.display = 'none';
         return;
       }
@@ -472,19 +486,37 @@
         suggestBox.style.display = 'none';
       }
 
+      let baseCal = undefined;
       if (calorieDictionary[query] !== undefined) {
-        calEl.value = calorieDictionary[query];
+        baseCal = calorieDictionary[query];
       } else if (calorieDictionary[altQuery] !== undefined) {
-        calEl.value = calorieDictionary[altQuery];
+        baseCal = calorieDictionary[altQuery];
+      }
+
+      if (baseCal !== undefined) {
+        baseCaloriesMap[type] = baseCal;
+        const qty = parseFloat(qtyEl.value) || 1;
+        calEl.value = Math.round(baseCal * qty);
       } else {
-        calEl.value = '';
+        baseCaloriesMap[type] = 0;
       }
     }
 
     function selectFoodItem(type, name, cal) {
       document.getElementById(`name-${type}`).value = name;
-      document.getElementById(`cal-${type}`).value = cal;
+      baseCaloriesMap[type] = cal;
+      const qty = parseFloat(document.getElementById(`qty-${type}`).value) || 1;
+      document.getElementById(`cal-${type}`).value = Math.round(cal * qty);
       document.getElementById(`suggest-${type}`).style.display = 'none';
+    }
+
+    // 當份數改變時自動重新計算總熱量
+    function updateTotalCal(type) {
+      const baseCal = baseCaloriesMap[type] || parseFloat(document.getElementById(`cal-${type}`).value) || 0;
+      const qty = parseFloat(document.getElementById(`qty-${type}`).value) || 1;
+      if (baseCal > 0) {
+        document.getElementById(`cal-${type}`).value = Math.round(baseCal * qty);
+      }
     }
 
     document.addEventListener('click', (e) => {
@@ -664,8 +696,8 @@
 
         const defaults = {
           breakfast: ["芝麻吐司", "馬可先生無糖黑豆漿", "生菜沙拉", "八方水餃10顆", "美式黑咖啡"],
-          lunch: ["筍乾", "炒高麗菜", "炒水蓮", "白酒蛤蜊義大利麵", "正忠排骨飯"],
-          dinner: ["滷百頁", "控肉筍乾", "三杯雞", "鹹水雞", "便當大爺雞腿飯"],
+          lunch: ["炒芥藍菜", "筍乾", "炒水蓮", "白酒蛤蜊義大利麵", "正忠排骨飯"],
+          dinner: ["燙芥藍菜", "滷百頁", "控肉筍乾", "三杯雞", "便當大爺雞腿飯"],
           snack: ["沙西餅", "麻糬酥", "炸雞排", "大餅(1/8塊)", "地瓜球"],
           drink: ["Costco蛤蜊濃湯", "大茗酪梨奶蓋紅玉", "迷客夏珍珠紅茶拿鐵", "50嵐1號", "無糖青茶"]
         };
@@ -841,21 +873,28 @@
 
     function manualAdd(type) {
       const nameEl = document.getElementById(`name-${type}`);
+      const qtyEl = document.getElementById(`qty-${type}`);
       const calEl = document.getElementById(`cal-${type}`);
-      const name = nameEl.value.trim();
+      
+      const rawName = nameEl.value.trim();
+      const qty = parseFloat(qtyEl.value) || 1;
       const cal = calEl.value;
 
-      if (!name || !cal) return alert('請輸入食物名稱與熱量');
+      if (!rawName || !cal) return alert('請輸入食物名稱與熱量');
+
+      const displayName = qty !== 1 ? `${rawName} (${qty}份)` : rawName;
 
       const d = new Date();
       const timeStr = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
-      const record = { date: currentDateStr, time: timeStr, meal: mealNames[type], name: name, cal: Math.round(Number(cal)), sugar: "", height: "", weight: "", bmi: "", water: "" };
+      const record = { date: currentDateStr, time: timeStr, meal: mealNames[type], name: displayName, cal: Math.round(Number(cal)), sugar: "", height: "", weight: "", bmi: "", water: "" };
 
       if (!appData[type]) appData[type] = [];
       appData[type].unshift(record);
 
       nameEl.value = '';
+      qtyEl.value = '1';
       calEl.value = '';
+      baseCaloriesMap[type] = 0;
       render();
       syncToGoogleSheet(record);
     }
