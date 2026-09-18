@@ -250,7 +250,7 @@
       </div>
       <div class="recent-chips" id="chips-breakfast"></div>
       <div class="input-row">
-        <input type="text" id="name-breakfast" placeholder="輸入早餐 (如: 芝麻吐司、馬可先生無糖黑豆漿)" oninput="handleSmartInput('breakfast')" autocomplete="off">
+        <input type="text" id="name-breakfast" placeholder="輸入早餐 (如: 芝麻吐司、蛋黃酥)" oninput="handleSmartInput('breakfast')" autocomplete="off">
         <input type="number" id="cal-breakfast" placeholder="熱量">
         <button class="btn-add" onclick="manualAdd('breakfast')">＋</button>
         <div class="autocomplete-box" id="suggest-breakfast"></div>
@@ -299,12 +299,12 @@
     <!-- 8. 點心/宵夜 -->
     <div class="card">
       <div class="card-head">
-        <span class="badge b-snack">🍪 點心 / 宵夜 / 炸物</span>
+        <span class="badge b-snack">🍪 點心 / 宵夜 / 糕點大餅</span>
         <span style="font-size:0.85rem; color:#64748b;">小計：<strong id="sub-snack">0</strong> kcal</span>
       </div>
       <div class="recent-chips" id="chips-snack"></div>
       <div class="input-row">
-        <input type="text" id="name-snack" placeholder="輸入點心 (如: 炸雞排、鹹酥雞、地瓜球)" oninput="handleSmartInput('snack')" autocomplete="off">
+        <input type="text" id="name-snack" placeholder="輸入點心 (如: 沙西餅、麻糬酥、大餅)" oninput="handleSmartInput('snack')" autocomplete="off">
         <input type="number" id="cal-snack" placeholder="熱量">
         <button class="btn-add" onclick="manualAdd('snack')">＋</button>
         <div class="autocomplete-box" id="suggest-snack"></div>
@@ -333,8 +333,18 @@
   <script>
     const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbz_pceZbIkWcBtp8a9EzbPEsj1avqhcMjNs16o85SERy6vFmq6IY1iwsuT6oQb4u3g9/exec";
 
-    // 🌟 全台超完整飲食資料庫（已納入芝麻吐司與馬可先生無糖黑豆漿）
+    // 🌟 全台超完整飲食資料庫（已納入沙西餅、麻糬酥、傳統大餅與中式糕點）
     const calorieDictionary = {
+      // 🥮 沙西餅、麻糬酥、大餅與中式糕點專區
+      "沙西餅": 260, "沙西餅(單個)": 260,
+      "麻糬酥": 320, "芋頭麻糬酥": 300, "紅豆麻糬酥": 320, "麻糬酥(單顆)": 320, "Q餅": 400, "咖哩滷肉Q餅": 420,
+      "中式大餅": 300, "大餅(1/8塊)": 280, "魯肉豆沙大餅": 300, "芝麻核桃大餅": 320, "冬瓜肉餅": 310,
+      "蛋黃酥": 320, "紅豆沙蛋黃酥": 320, "棗泥蛋黃酥": 340, "蓮蓉蛋黃酥": 350, "蛋黃酥(單顆)": 320,
+      "綠豆椪": 400, "綠豆椪(單顆)": 400, "綠豆椪(含肉燥)": 420,
+      "鳳梨酥": 220, "鳳梨酥(單顆)": 220, "土鳳梨酥": 240,
+      "太陽餅": 280, "太陽餅(單顆)": 280, "老婆餅": 260, "老婆餅(單顆)": 260,
+      "芋頭酥": 300, "芋頭酥(單顆)": 300, "綠豆黃": 190, "綠豆黃(單顆)": 190,
+
       // 吐司與早餐烘焙
       "芝麻吐司": 180, "芝麻厚片吐司": 320, "芝麻抹醬吐司": 180,
       "紅豆吐司": 160, "起司吐司": 150, "原味蛋餅": 260, "起司蛋餅": 320,
@@ -650,7 +660,7 @@
           breakfast: ["芝麻吐司", "馬可先生無糖黑豆漿", "生菜沙拉", "八方水餃10顆", "美式黑咖啡"],
           lunch: ["炒高麗菜", "炒水蓮", "三杯杏鮑菇", "白酒蛤蜊義大利麵", "正忠排骨飯"],
           dinner: ["燙地瓜葉", "鹹蛋苦瓜", "三杯雞", "鹹水雞", "便當大爺雞腿飯"],
-          snack: ["炸雞排", "鹹酥雞一份", "炸百頁豆腐", "炸四季豆", "地瓜球"],
+          snack: ["沙西餅", "麻糬酥", "蛋黃酥", "大餅(1/8塊)", "地瓜球"],
           drink: ["Costco蛤蜊濃湯", "大茗酪梨奶蓋紅玉", "迷客夏珍珠紅茶拿鐵", "50嵐1號", "無糖青茶"]
         };
 
