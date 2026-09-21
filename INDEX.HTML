@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>健康熱量與生活日記 v6.3</title>
+  <script src="https://unpkg.com/html5-qrcode"></script>
+  <style>
+    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 0; }
+    body { background: #f8fafc; padding: 14px 10px 80px; display: flex; justify-content: center; }
+    .container { width: 100%; max-width: 440px; display: flex; flex-direction: column; gap: 12px; }
+
+    #syncToast {
+      position: fixed; top: 12px; left: 50%; transform: translateX(-50%);
+      background: rgba(15, 23, 42, 0.95); color: #f8fafc; font-size: 0.8rem; font-weight: bold;
+      padding: 7px 16px; border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+      z-index: 999999; display: none; align-items: center; gap: 6px;
+    }
+
+    .date-nav { display: flex; align-items: center; justify-content: space-between; background: white; padding: 8px 12px; border-radius: 14px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+    .date-nav button { background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 8px; padding: 6px 10px; font-size: 0.8rem; font-weight: bold; cursor: pointer; color: #334155; }
+    .date-nav button:active { background: #e2e8f0; }
+    .date-picker-wrap { display: flex; align-items: center; gap: 6px; }
+    .date-picker-wrap input[type="date"] { padding: 5px 8px; font-size: 0.85rem; font-weight: bold; border: 1.5px solid #cbd5e1; border-radius: 8px; outline: none; background: #fff; color: #1e293b; }
+
+    .summary-box { background: linear-gradient(135deg, #1e3a8a, #2563eb); color: white; border-radius: 18px; padding: 16px; box-shadow: 0 4px 12px rgba(37,99,235,0.25); }
+    .summary-top { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; opacity: 0.9; }
+    .budget-tag { background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; }
+    .net-cal-wrap { text-align: center; margin: 8px 0; }
+    .net-cal-title { font-size: 0.8rem; opacity: 0.85; margin-bottom: 2px; }
+    .net-cal { font-size: 2.3rem; font-weight: 800; }
+    .net-cal span { font-size: 1rem; font-weight: normal; }
+    
+    .stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 10px; text-align: center; }
+    .stat-label { font-size: 0.7rem; opacity: 0.85; }
+    .stat-val { font-size: 0.95rem; font-weight: 700; margin-top: 2px; }
+
+    .protein-box { margin-top: 10px; padding-top: 8px; border-top: 1px dashed rgba(255,255,255,0.25); font-size: 0.75rem; }
+    .protein-top { display: flex; justify-content: space-between; margin-bottom: 4px; }
+    .protein-bar-bg { width: 100%; height: 8px; background: rgba(255,255,255,0.25); border-radius: 6px; overflow: hidden; }
+    .protein-bar-fill { height: 100%; background: #38bdf8; width: 0%; transition: width 0.3s; }
+
+    .card { background: white; border-radius: 14px; padding: 14px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+    .card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-weight: bold; }
+    
+    .btn-copy-yesterday { background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; font-size: 0.72rem; padding: 2px 6px; border-radius: 6px; cursor: pointer; }
+    .btn-clear-meal { background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; font-size: 0.72rem; padding: 2px 6px; border-radius: 6px; cursor: pointer; margin-left: 4px; }
+    
+    .quick-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+    .q-btn { background: #f1f5f9; border: 1.5px solid #cbd5e1; color: #1e293b; font-size: 0.75rem; font-weight: 600; padding: 4px 10px; border-radius: 8px; cursor: pointer; }
+    .q-btn:active { background: #e2e8f0; }
+    .q-highlight { background: #fef3c7; border-color: #f59e0b; color: #b45309; }
+    .q-green { background: #f0fdf4; border-color: #86efac; color: #166534; }
+    .q-blue { background: #eff6ff; border-color: #93c5fd; color: #1d4ed8; }
+    .q-orange { background: #fff7ed; border-color: #fdba74; color: #c2410c; }
+    .q-red { background: #fdf2f8; border-color: #f472b6; color: #9d174d; }
+    .q-purple { background: #faf5ff; border-color: #d8b4fe; color: #6b21a8; }
+
+    .badge { padding: 4px 10px; border-radius: 8px; color: white; font-size: 0.85rem; font-weight: bold; }
+    .b-water { background: #0284c7; }
+    .b-body { background: #0d9488; }
+    .b-step { background: #8b5cf6; }
+    .b-sport { background: #16a34a; }
+    .b-breakfast { background: #f59e0b; }
+    .b-lunch { background: #ef4444; }
+    .b-dinner { background: #6366f1; }
+    .b-snack { background: #10b981; }
+    .b-drink { background: #06b6d4; }
+
+    .water-progress-bg { width: 100%; height: 14px; background: #e0f2fe; border-radius: 10px; overflow: hidden; margin: 8px 0; }
+    .water-progress-fill { height: 100%; background: linear-gradient(90deg, #38bdf8, #0284c7); width: 0%; transition: width 0.3s; }
+    .quick-water-btns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 6px; }
+    .btn-quick-water { background: #f0f9ff; border: 1.5px solid #bae6fd; color: #0369a1; border-radius: 8px; padding: 8px 4px; font-weight: bold; font-size: 0.8rem; cursor: pointer; }
+    
+    .meal-input-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; }
+    .input-row-sub { display: grid; grid-template-columns: 1fr 1.3fr auto; gap: 6px; align-items: center; }
+    .grid-2 { display: grid; grid-template-columns: 1.4fr 1fr; gap: 6px; margin-bottom: 6px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 8px; }
+    
+    input, select { width: 100%; padding: 8px 10px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; outline: none; background: #fff; }
+    input:focus, select:focus { border-color: #2563eb; }
+    
+    button.btn { border: none; border-radius: 8px; font-weight: bold; cursor: pointer; padding: 8px 12px; font-size: 0.85rem; }
+    .btn-add { background: #2563eb; color: white; padding: 8px 16px; font-size: 0.9rem; white-space: nowrap; }
+    .btn-cam { width: 100%; background: #ea580c; color: white; padding: 10px; font-size: 0.9rem; }
+    .btn-green { width: 100%; background: #16a34a; color: white; }
+    .btn-purple { width: 100%; background: #8b5cf6; color: white; }
+    .btn-teal { width: 100%; background: #0d9488; color: white; }
+    .btn-sky { width: 100%; background: #0284c7; color: white; }
+
+    .item-list { display: flex; flex-direction: column; gap: 4px; }
+    .item-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 8px; background: #f8fafc; border-radius: 6px; font-size: 0.85rem; }
+    .time-tag { font-size: 0.72rem; color: #64748b; margin-left: 6px; background: #e2e8f0; padding: 1px 4px; border-radius: 4px; }
+    .del-btn { background: none; border: none; color: #ef4444; font-size: 0.8rem; cursor: pointer; padding-left: 6px; }
+
+    .backup-footer { text-align: center; margin-top: 10px; font-size: 0.78rem; color: #64748b; display: flex; justify-content: center; gap: 12px; }
+    .backup-link { color: #2563eb; text-decoration: underline; cursor: pointer; font-weight: bold; }
+
+    #reader { border-radius: 10px; overflow: hidden; margin-top: 8px; display: none; }
+    #scanMsg { font-size: 0.8rem; color: #64748b; margin-top: 6px; text-align: center; }
+  </style>
+</head>
+<body>
+
+  <div id="syncToast">🔄 雲端同步中...</div>
+
+  <!-- 🌟 原生 Datalist 系統：新增魯味 / 滷菜全系列 -->
+  <datalist id="foodDatalist">
+    <option value="滷味">綜合滷味一份 (180 kcal)</option>
+    <option value="魯味">綜合滷味一份 (180 kcal)</option>
+    <option value="滷蛋">滷蛋一顆 (75 kcal / 蛋白質7g)</option>
+    <option value="滷豆干">滷小方豆干3塊 (135 kcal / 蛋白質14g)</option>
+    <option value="滷海帶">滷海帶一條 (20 kcal)</option>
+    <option value="滷白蘿蔔">滷菜頭/白蘿蔔 (35 kcal)</option>
+    <option value="滷牛腱">滷牛腱一份 (160 kcal / 高蛋白26g)</option>
+    <option value="滷花干">滷花干一塊 (180 kcal)</option>
+    <option value="滷米血">滷米血一塊 (140 kcal)</option>
+    <option value="滷百頁豆腐">滷百頁豆腐 (200 kcal)</option>
+    <option value="滷雞腿">便當滷大雞腿 (300 kcal / 蛋白質24g)</option>
+    <option value="滷排骨">便當滷排骨 (340 kcal / 蛋白質20g)</option>
+    <option value="滷肉飯">小碗滷肉飯 (420 kcal)</option>
+    <option value="白飯">白飯一碗 (280 kcal)</option>
+    <option value="嘴邊肉">嘴邊肉 (140 kcal / 蛋白質18g)</option>
+    <option value="肝連肉">肝連肉 (150 kcal / 蛋白質18g)</option>
+    <option value="松阪豬">松阪豬肉 (220 kcal / 蛋白質16g)</option>
+    <option value="雞胸肉">舒肥雞胸肉 (140 kcal / 蛋白質26g)</option>
+    <option value="關東煮">綜合關東煮 (180 kcal)</option>
+    <option value="旗魚黑輪">旗魚黑輪一串 (160 kcal)</option>
+    <option value="炒菠菜">炒菠菜 (120 kcal)</option>
+    <option value="燙菠菜">燙菠菜 (45 kcal)</option>
+    <option value="炒敏豆">炒敏豆 / 炒四季豆 (110 kcal)</option>
+    <option value="台南水晶餃">台南大水晶餃 (200 kcal / 顆)</option>
+    <option value="奇亞籽">奇亞籽 / 鼠尾草籽 1匙 (60 kcal)</option>
+    <option value="水煮蛋">水煮蛋 (75 kcal)</option>
+    <option value="炒芥藍菜">炒芥藍菜 (130 kcal)</option>
+    <option value="炸雞排">炸雞排 (650 kcal)</option>
+    <option value="筍乾">筍乾 (160 kcal)</option>
+  </datalist>
+
+  <div class="container">
+
+    <div class="date-nav">
+      <button onclick="shiftDate(-1)">◀ 前一天</button>
+      <div class="date-picker-wrap">
+        <input type="date" id="targetDate" onchange="onDateChanged()">
+        <button onclick="setToday()" style="padding:4px 8px;">今天</button>
+      </div>
+      <button onclick="shiftDate(1)">後一天 ▶</button>
+    </div>
+
+    <!-- 頂部總覽 -->
+    <div class="summary-box">
+      <div class="summary-top">
+        <span id="dateShow">--</span>
+        <div style="display:flex; gap:4px;">
+          <span class="budget-tag" onclick="calcTDEEGoal()">🪄 智慧目標試算</span>
+          <span class="budget-tag" onclick="editBudget()">⚙️ <span id="budgetVal">2000</span> kcal</span>
+        </div>
+      </div>
+      <div class="net-cal-wrap">
+        <div class="net-cal-title">今日剩餘可攝取額度</div>
+        <div class="net-cal" id="remainCalBox"><span id="remainCal">2000</span> <span>kcal</span></div>
+      </div>
+      <div class="stats-row">
+        <div>
+          <div class="stat-label">飲食攝取 (+)</div>
+          <div class="stat-val" id="totalIntake">0</div>
+        </div>
+        <div>
+          <div class="stat-label">運動步數 (-)</div>
+          <div class="stat-val" id="totalBurn">0</div>
+        </div>
+        <div>
+          <div class="stat-label">當日淨值</div>
+          <div class="stat-val" id="netCal">0</div>
+        </div>
+      </div>
+      <div class="protein-box">
+        <div class="protein-top">
+          <span>🍗 今日蛋白質: <strong id="curProtein">0</strong>g / 目標 <span id="goalProtein" onclick="editProteinGoal()" style="cursor:pointer; text-decoration:underline;">80</span>g</span>
+          <span id="proteinPct">0%</span>
+        </div>
+        <div class="protein-bar-bg">
+          <div class="protein-bar-fill" id="proteinBar"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <button class="btn btn-cam" id="camBtn" onclick="toggleScanner()">📷 點此開啟相機掃條碼</button>
+      <div id="reader"></div>
+      <div id="scanMsg">掃描條碼：新商品手動輸入一次，系統將自學永久記憶！</div>
+    </div>
+
+    <!-- 1. 喝水追蹤 -->
+    <div class="card">
+      <div class="card-head">
+        <span class="badge b-water">💧 喝水紀錄</span>
+        <span style="font-size:0.85rem; color:#64748b;">已喝：<strong id="waterCur" style="color:#0284c7;">0</strong> / <span id="waterGoal" onclick="editWaterGoal()" style="cursor:pointer; text-decoration:underline;">2000</span> ml</span>
+      </div>
+      <div class="water-progress-bg">
+        <div class="water-progress-fill" id="waterBar"></div>
+      </div>
+      <div class="quick-water-btns">
+        <button class="btn-quick-water" onclick="addWater(250)">＋250ml 🥛</button>
+        <button class="btn-quick-water" onclick="addWater(500)">＋500ml 🧴</button>
+        <button class="btn-quick-water" onclick="addWater(800)">＋800ml 🍶</button>
+      </div>
+      <div style="display:grid; grid-template-columns: 2fr 1fr; gap:6px;">
+        <input type="number" id="customWater" placeholder="自訂毫升數 (ml)" onkeydown="if(event.key==='Enter') addCustomWater()">
+        <button class="btn btn-sky" onclick="addCustomWater()">記錄飲水</button>
+      </div>
+    </div>
+
+    <!-- 2. 身體數據 -->
+    <div class="card">
+      <div class="card-head">
+        <span class="badge b-body">🩺 身體數據</span>
+        <span style="font-size:0.85rem; color:#64748b;">BMI：<strong id="bmiVal" style="color:#0d9488;">--</strong></span>
+      </div>
+      <div class="grid-3">
+        <input type="number" id="sugarInput" placeholder="血糖 (mg/dL)">
+        <input type="number" id="heightInput" placeholder="身高 (cm)">
+        <input type="number" id="weightInput" placeholder="體重 (kg)">
+      </div>
+      <button class="btn btn-teal" onclick="saveBodyStats()">儲存當日生理數據</button>
+    </div>
+
+    <!-- 3. 每日步數 -->
+    <div class="card">
+      <div class="card-head">
+        <span class="badge b-step">👟 每日步數</span>
+        <span style="font-size:0.85rem; color:#64748b;">消耗：<strong id="sub-steps" style="color:#8b5cf6;">0</strong> kcal</span>
+      </div>
+      <div style="display:grid; grid-template-columns: 2fr 1fr auto; gap:6px;">
+        <input type="number" id="stepInput" placeholder="輸入步數 (如: 6000)" onkeydown="if(event.key==='Enter') saveSteps()">
+        <span style="font-size:0.8rem; line-height:36px; color:#64748b;">步</span>
+        <button class="btn btn-purple" onclick="saveSteps()">更新</button>
+      </div>
+    </div>
+
+    <!-- 4. 運動燃脂 -->
+    <div class="card">
+      <div class="card-head">
+        <span class="badge b-sport">🏃 運動燃脂</span>
+        <span style="font-size:0.85rem; color:#64748b;">消耗：<strong id="sub-sport" style="color:#16a34a;">0</strong> kcal</span>
+      </div>
+      <div class="grid-2">
+        <select id="sportType">
+          <option value="5.0">超慢跑 (5.0 MET)</option>
+          <option value="6.0">匹克球 (6.0 MET)</option>
+          <option value="5.5">重量訓練 (5.5 MET)</option>
+          <option value="8.0">慢跑 (8.0 MET)</option>
+          <option value="4.0">快走 (4.0 MET)</option>
+        </select>
+        <input type="number" id="sportMins" placeholder="分鐘 (如: 30)" onkeydown="if(event.key==='Enter') addSport()">
+      </div>
+      <button class="btn btn-green" onclick="addSport()">＋ 紀錄運動</button>
+      <div class="item-list" id="list-sport" style="margin-top:8px;"></div>
+    </div>
+
+    <!-- 5. 早餐 -->
+    <div class="card">
+      <div class="card-head">
+        <span class="badge b-breakfast">🌅 早餐</span>
+        <div>
+          <button class="btn-copy-yesterday" onclick="copyYesterdayMeal('breakfast')">📋 複製昨天</button>
+          <button class="btn-clear-meal" onclick="clearMeal('breakfast')">清空</button>
+          <span style="font-size:0.85rem; color:#64748b; margin-left:4px;">小計：<strong id="sub-breakfast">0</strong> kcal</span>
+        </div>
+      </div>
+      
+      <div class="quick-chips">
+        <button class="q-btn q-purple" onclick="quickFill('breakfast', '滷蛋', 75, 7)">🥚 滷蛋 (+75)</button>
+        <button class="q-btn q-blue" onclick="quickFill('breakfast', '白飯', 280, 6)">🍚 白飯 (+280)</button>
+        <button class="q-btn q-orange" onclick="quickFill('breakfast', '舒肥雞胸肉', 140, 26)">🍗 雞胸肉</button>
+        <button class="q-btn q-highlight" onclick="quickFill('breakfast', '奇亞籽', 60, 3)">🌱 奇亞籽</button>
+      </div>
+
+      <div class="meal-input-group">
+        <input type="text" id="name-breakfast" list="foodDatalist" placeholder="🔍 點此選擇或輸入 (如: 滷蛋、白飯)" oninput="onFoodSelected('breakfast')" onkeydown="handleEnterAdd(event, 'breakfast')" autocomplete="off">
+        <div class="input-row-sub">
+          <input type="number" id="qty-breakfast" value="1" step="0.5" min="0.1" placeholder="份數" oninput="updateTotalCal('breakfast')" onkeydown="handleEnterAdd(event, 'breakfast')">
+          <input type="number" id="cal-breakfast" placeholder="🔥 熱量 (kcal)" oninput="onManualCalChange('breakfast')" onkeydown="handleEnterAdd(event, 'breakfast')">
+          <button class="btn btn-add" onclick="manualAdd('breakfast')">＋ 新增</button>
+        </div>
+      </div>
+      <div class="item-list" id="list-breakfast"></div>
+    </div>
+
+    <!-- 6. 午餐 -->
+    <div class="card">
+      <div class="card-head">
+        <span class="badge b-lunch">☀️ 午餐</span>
+        <div>
+          <button class="btn-copy-yesterday" onclick="copyYesterdayMeal('lunch')">📋 複製昨天</button>
+          <button class="btn-clear-meal" onclick="clearMeal('lunch')">清空</button>
+          <span style="font-size:0.85rem; color:#64748b; margin-left:4px;">小計：<strong id="sub-lunch">0</strong> kcal</span>
+        </div>
+      </div>
+
+      <div class="quick-chips">
+        <button class="q-btn q-purple" onclick="quickFill('lunch', '綜合滷味', 180, 10)">🍲 滷味一份 (+180)</button>
+        <button class="q-btn q-purple" onclick="quickFill('lunch', '滷蛋豆干', 210, 21)">🥚 蛋豆干 (+210)</button>
+        <button class="q-btn q-purple" onclick="quickFill('lunch', '滷牛腱', 160, 26)">🥩 滷牛腱 (+160)</button>
+        <button class="q-btn q-blue" onclick="quickFill('lunch', '白飯', 280, 6)">🍚 白飯 (+280)</button>
+        <button class="q-btn q-red" onclick="quickFill('lunch', '嘴邊肉', 140, 18)">嘴邊肉</button>
+        <button class="q-btn q-green" onclick="quickFill('lunch', '炒菠菜', 120, 3)">炒菠菜</button>
+      </div>
+
+      <div class="meal-input-group">
+        <input type="text" id="name-lunch" list="foodDatalist" placeholder="🔍 點此選擇或輸入 (如: 滷味、魯蛋、白飯)" oninput="onFoodSelected('lunch')" onkeydown="handleEnterAdd(event, 'lunch')" autocomplete="off">
+        <div class="input-row-sub">
+          <input type="number" id="qty-lunch" value="1" step="0.5" min="0.1" placeholder="份數" oninput="updateTotalCal('lunch')" onkeydown="handleEnterAdd(event, 'lunch')">
+          <input type="number" id="cal-lunch" placeholder="🔥 熱量 (kcal)" oninput="onManualCalChange('lunch')" onkeydown="handleEnterAdd(event, 'lunch')">
+          <button class="btn btn-add" onclick="manualAdd('lunch')">＋ 新增</button>
+        </div>
+      </div>
+      <div class="item-list" id="list-lunch"></div>
+    </div>
+
+    <!-- 7. 晚餐 -->
+    <div class="card">
+      <div class="card-head">
+        <span class="badge b-dinner">🌙 晚餐</span>
+        <div>
+          <button class="btn-copy-yesterday" onclick="copyYesterdayMeal('dinner')">📋 複製昨天</button>
+          <button class="btn-clear-meal" onclick="clearMeal('dinner')">清空</button>
+          <span style="font-size:0.85rem; color:#64748b; margin-left:4px;">小計：<strong id="sub-dinner">0</strong> kcal</span>
+        </div>
+      </div>
+
+      <div class="quick-chips">
+        <button class="q-btn q-purple" onclick="quickFill('dinner', '綜合滷味', 180, 10)">🍲 滷味一份 (+180)</button>
+        <button class="q-btn q-purple" onclick="quickFill('dinner', '滷白蘿蔔', 35, 1)">滷菜頭 (+35)</button>
+        <button class="q-btn q-purple" onclick="quickFill('dinner', '滷海帶', 20, 1)">滷海帶 (+20)</button>
+        <button class="q-btn q-blue" onclick="quickFill('dinner', '白飯', 280, 6)">🍚 白飯 (+280)</button>
+        <button class="q-btn q-red" onclick="quickFill('dinner', '肝連肉', 150, 18)">肝連肉</button>
+        <button class="q-btn q-green" onclick="quickFill('dinner', '燙菠菜', 45, 3)">燙菠菜</button>
+      </div>
+
+      <div class="meal-input-group">
+        <input type="text" id="name-dinner" list="foodDatalist" placeholder="🔍 點此選擇或輸入 (如: 滷海帶、滷花干)" oninput="onFoodSelected('dinner')" onkeydown="handleEnterAdd(event, 'dinner')" autocomplete="off">
+        <div class="input-row-sub">
+          <input type="number" id="qty-dinner" value="1" step="0.5" min="0.1" placeholder="份數" oninput="updateTotalCal('dinner')" onkeydown="handleEnterAdd(event, 'dinner')">
+          <input type="number" id="cal-dinner" placeholder="🔥 熱量 (kcal)" oninput="onManualCalChange('dinner')" onkeydown="handleEnterAdd(event, 'dinner')">
+          <button class="btn btn-add" onclick="manualAdd('dinner')">＋ 新增</button>
+        </div>
+      </div>
+      <div class="item-list" id="list-dinner"></div>
+    </div>
+
+    <!-- 8. 點心/宵夜 -->
+    <div class="card">
+      <div class="card-head">
+        <span class="badge b-snack">🍪 點心 / 宵夜</span>
+        <div>
+          <button class="btn-clear-meal" onclick="clearMeal('snack')">清空</button>
+          <span style="font-size:0.85rem; color:#64748b; margin-left:4px;">小計：<strong id="sub-snack">0</strong> kcal</span>
+        </div>
+      </div>
+
+      <div class="quick-chips">
+        <button class="q-btn q-purple" onclick="quickFill('snack', '綜合滷味', 180, 10)">🍲 熱滷味 (+180)</button>
+        <button class="q-btn q-purple" onclick="quickFill('snack', '滷米血', 140, 2)">滷米血 (+140)</button>
+        <button class="q-btn q-highlight" onclick="quickFill('snack', '旗魚黑輪', 160, 8)">🥢 旗魚黑輪</button>
+        <button class="q-btn q-highlight" onclick="quickFill('snack', '炸雞排', 650, 35)">炸雞排</button>
+      </div>
+
+      <div class="meal-input-group">
+        <input type="text" id="name-snack" list="foodDatalist" placeholder="🔍 點此選擇點心" oninput="onFoodSelected('snack')" onkeydown="handleEnterAdd(event, 'snack')" autocomplete="off">
+        <div class="input-row-sub">
+          <input type="number" id="qty-snack" value="1" step="0.5" min="0.1" placeholder="份數" oninput="updateTotalCal('snack')" onkeydown="handleEnterAdd(event, 'snack')">
+          <input type="number" id="cal-snack" placeholder="🔥 熱量 (kcal)" oninput="onManualCalChange('snack')" onkeydown="handleEnterAdd(event, 'snack')">
+          <button class="btn btn-add" onclick="manualAdd('snack')">＋ 新增</button>
+        </div>
+      </div>
+      <div class="item-list" id="list-snack"></div>
+    </div>
+
+    <!-- 9. 飲料 -->
+    <div class="card">
+      <div class="card-head">
+        <span class="badge b-drink">🧋 飲料 / 沖泡</span>
+        <div>
+          <button class="btn-clear-meal" onclick="clearMeal('drink')">清空</button>
+          <span style="font-size:0.85rem; color:#64748b; margin-left:4px;">小計：<strong id="sub-drink">0</strong> kcal</span>
+        </div>
+      </div>
+
+      <div class="quick-chips">
+        <button class="q-btn q-highlight" onclick="quickFill('drink', '奇亞籽水', 60, 3)">🌱 奇亞籽水 (+60)</button>
+        <button class="q-btn" onclick="quickFill('drink', '馬可先生無糖黑豆漿', 170, 16)">黑豆漿</button>
+      </div>
+
+      <div class="meal-input-group">
+        <input type="text" id="name-drink" list="foodDatalist" placeholder="🔍 點此選擇飲料" oninput="onFoodSelected('drink')" onkeydown="handleEnterAdd(event, 'drink')" autocomplete="off">
+        <div class="input-row-sub">
+          <input type="number" id="qty-drink" value="1" step="0.5" min="0.1" placeholder="份數" oninput="updateTotalCal('drink')" onkeydown="handleEnterAdd(event, 'drink')">
+          <input type="number" id="cal-drink" placeholder="🔥 熱量 (kcal)" oninput="onManualCalChange('drink')" onkeydown="handleEnterAdd(event, 'drink')">
+          <button class="btn btn-add" onclick="manualAdd('drink')">＋ 新增</button>
+        </div>
+      </div>
+      <div class="item-list" id="list-drink"></div>
+    </div>
+
+    <!-- 底部備份 -->
+    <div class="backup-footer">
+      <span class="backup-link" onclick="exportBackup()">📥 匯出手機備份檔</span>
+      <span>|</span>
+      <span class="backup-link" onclick="document.getElementById('importFile').click()">📤 匯入備份還原</span>
+      <input type="file" id="importFile" style="display:none" accept=".json" onchange="importBackup(event)">
+    </div>
+
+  </div>
+
+  <script>
+    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbz_pceZbIkWcBtp8a9EzbPEsj1avqhcMjNs16o85SERy6vFmq6IY1iwsuT6oQb4u3g9/exec";
+
+    const calorieDictionary = {
+      // 🍲 滷味 / 魯菜專區（支援「滷」與「魯」）
+      "滷味": { cal: 180, p: 10 }, "魯味": { cal: 180, p: 10 }, "綜合滷味": { cal: 180, p: 10 },
+      "滷蛋": { cal: 75, p: 7 }, "魯蛋": { cal: 75, p: 7 },
+      "滷豆干": { cal: 135, p: 14 }, "魯豆干": { cal: 135, p: 14 }, "豆干": { cal: 135, p: 14 },
+      "滷蛋豆干": { cal: 210, p: 21 }, "魯蛋豆干": { cal: 210, p: 21 },
+      "滷牛腱": { cal: 160, p: 26 }, "魯牛腱": { cal: 160, p: 26 }, "牛腱": { cal: 160, p: 26 },
+      "滷海帶": { cal: 20, p: 1 }, "魯海帶": { cal: 20, p: 1 }, "海帶": { cal: 20, p: 1 },
+      "滷白蘿蔔": { cal: 35, p: 1 }, "魯白蘿蔔": { cal: 35, p: 1 }, "滷菜頭": { cal: 35, p: 1 },
+      "滷花干": { cal: 180, p: 10 }, "魯花干": { cal: 180, p: 10 }, "花干": { cal: 180, p: 10 },
+      "滷米血": { cal: 140, p: 2 }, "魯米血": { cal: 140, p: 2 },
+      "滷百頁豆腐": { cal: 200, p: 12 }, "魯百頁豆腐": { cal: 200, p: 12 }, "滷百頁": { cal: 200, p: 12 }, "百頁豆腐": { cal: 200, p: 12 },
+      "滷油豆腐": { cal: 120, p: 6 }, "油豆腐": { cal: 120, p: 6 },
+      "滷大腸": { cal: 260, p: 12 }, "大腸頭": { cal: 260, p: 12 },
+      "滷雞腿": { cal: 300, p: 24 }, "魯雞腿": { cal: 300, p: 24 },
+      "滷排骨": { cal: 340, p: 20 }, "魯排骨": { cal: 340, p: 20 },
+      "滷肉飯": { cal: 420, p: 12 }, "魯肉飯": { cal: 420, p: 12 },
+      "滷肉燥": { cal: 120, p: 5 }, "肉燥": { cal: 120, p: 5 },
+      "筍乾": { cal: 160, p: 2 }, "滷筍乾": { cal: 160, p: 2 }, "控肉筍乾": { cal: 180, p: 8 },
+
+      // 🥩 豬肉專區
+      "豬肉": { cal: 180, p: 22 }, "嘴邊肉": { cal: 140, p: 18 }, "肝連肉": { cal: 150, p: 18 }, "骨仔肉": { cal: 150, p: 17 },
+      "松阪豬": { cal: 220, p: 16 }, "炸排骨": { cal: 450, p: 22 }, "豬排": { cal: 180, p: 22 }, "蒜泥白肉": { cal: 280, p: 15 },
+      "控肉": { cal: 320, p: 12 }, "鹹蛋蒸肉": { cal: 300, p: 18 }, "鹹蛋蒸肉餅": { cal: 300, p: 18 },
+
+      // 🍗 雞肉專區
+      "雞肉": { cal: 140, p: 26 }, "雞胸肉": { cal: 140, p: 26 }, "舒肥雞胸肉": { cal: 140, p: 26 }, "水煮雞胸肉": { cal: 130, p: 28 },
+      "舒肥雞沙拉": { cal: 180, p: 25 }, "鹽水雞胸": { cal: 130, p: 24 }, "鹽水雞腿": { cal: 230, p: 20 },
+      "炸雞腿": { cal: 480, p: 25 }, "烤雞腿": { cal: 320, p: 26 }, "炸雞排": { cal: 650, p: 35 }, "三杯雞": { cal: 520, p: 36 },
+
+      // 🍚 主食與家常
+      "白飯": { cal: 280, p: 6 }, "白飯一碗": { cal: 280, p: 6 }, "白飯(半碗)": { cal: 140, p: 3 },
+      "關東煮": { cal: 180, p: 8 }, "綜合關東煮": { cal: 180, p: 8 }, "旗魚黑輪": { cal: 160, p: 8 }, "包蛋旗魚黑輪": { cal: 130, p: 6 },
+
+      // 🥬 蔬菜專區
+      "炒菠菜": { cal: 120, p: 3 }, "菠菜": { cal: 120, p: 3 }, "燙菠菜": { cal: 45, p: 3 },
+      "炒敏豆": { cal: 110, p: 2 }, "敏豆": { cal: 110, p: 2 }, "四季豆": { cal: 110, p: 2 }, "燙敏豆": { cal: 40, p: 2 },
+      "水煮毛豆": { cal: 125, p: 13 }, "毛豆": { cal: 125, p: 13 },
+      "炒芥藍菜": { cal: 130, p: 3 }, "炒芥藍": { cal: 130, p: 3 }, "燙芥藍菜": { cal: 50, p: 3 },
+      "炒高麗菜": { cal: 130, p: 2 }, "炒水蓮": { cal: 140, p: 2 }, "燙地瓜葉": { cal: 50, p: 3 },
+
+      // 🥟 水晶餃專區
+      "台南水晶餃": { cal: 200, p: 6 }, "祿記水晶餃": { cal: 200, p: 6 }, "水晶餃": { cal: 60, p: 2 }, "客家水晶餃": { cal: 120, p: 4 },
+
+      // 🌱 奇亞籽專區
+      "奇亞籽": { cal: 60, p: 3 }, "奇芽籽": { cal: 60, p: 3 }, "奇亞籽水": { cal: 60, p: 3 }, "奇亞籽無糖豆漿": { cal: 200, p: 18 },
+
+      // 蛋豆飲品
+      "水煮蛋": { cal: 75, p: 7 }, "荷包蛋": { cal: 120, p: 7 }, "茶葉蛋": { cal: 75, p: 7 },
+      "無糖豆漿": { cal: 147, p: 15 }, "馬可先生無糖黑豆漿": { cal: 170, p: 16 }, "無糖黑豆漿": { cal: 170, p: 16 },
+      "芝麻吐司": { cal: 180, p: 5 }, "正忠排骨飯": { cal: 890, p: 32 }
+    };
+
+    let baseCaloriesMap = {};
+    let baseProteinMap = {};
+
+    function quickFill(type, name, cal, p) {
+      document.getElementById(`name-${type}`).value = name;
+      baseCaloriesMap[type] = cal;
+      baseProteinMap[type] = p;
+      const qty = parseFloat(document.getElementById(`qty-${type}`).value) || 1;
+      document.getElementById(`cal-${type}`).value = Math.round(cal * qty);
+    }
+
+    function onFoodSelected(type) {
+      const val = document.getElementById(`name-${type}`).value.trim();
+      // 支援「魯」與「滷」、「奇芽」與「奇亞」自動通同比對
+      const norm = val.replace(/魯/g, '滷').replace(/奇芽/g, '奇亞').replace(/臺/g, '台');
+      
+      const targetKey = Object.keys(calorieDictionary).find(k => k === val || k.replace(/魯/g, '滷') === norm);
+      if (targetKey) {
+        const info = calorieDictionary[targetKey];
+        baseCaloriesMap[type] = info.cal;
+        baseProteinMap[type] = info.p || 0;
+        const qty = parseFloat(document.getElementById(`qty-${type}`).value) || 1;
+        document.getElementById(`cal-${type}`).value = Math.round(info.cal * qty);
+      }
+    }
+
+    function updateTotalCal(type) {
+      const qty = parseFloat(document.getElementById(`qty-${type}`).value) || 1;
+      let baseCal = baseCaloriesMap[type];
+      if (!baseCal) {
+        const curCal = parseFloat(document.getElementById(`cal-${type}`).value) || 0;
+        baseCal = curCal / qty;
+        baseCaloriesMap[type] = baseCal;
+      }
+      if (baseCal > 0) {
+        document.getElementById(`cal-${type}`).value = Math.round(baseCal * qty);
+      }
+    }
+
+    function onManualCalChange(type) {
+      const qty = parseFloat(document.getElementById(`qty-${type}`).value) || 1;
+      const curCal = parseFloat(document.getElementById(`cal-${type}`).value) || 0;
+      if (qty > 0) baseCaloriesMap[type] = curCal / qty;
+    }
+
+    function handleEnterAdd(e, type) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        manualAdd(type);
+      }
+    }
+
+    function showToast(msg, isSuccess = false) {
+      const toast = document.getElementById('syncToast');
+      toast.textContent = msg;
+      toast.style.background = isSuccess ? 'rgba(22, 101, 52, 0.95)' : 'rgba(15, 23, 42, 0.95)';
+      toast.style.display = 'flex';
+      setTimeout(() => { toast.style.display = 'none'; }, 2000);
+    }
+
+    function syncToGoogleSheet(record) {
+      showToast("🔄 雲端同步中...");
+      if (!navigator.onLine) {
+        showToast("⚠️ 離線中，已排入補送佇列");
+        return;
+      }
+      fetch(GOOGLE_SHEET_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(record)
+      }).then(() => {
+        showToast("✅ 已同步至試算表", true);
+      }).catch(() => {
+        showToast("⚠️ 網路不穩，已暫存待補送");
+      });
+    }
+
+    const mealNames = { breakfast: "早餐", lunch: "午餐", dinner: "晚餐", snack: "點心", drink: "飲料" };
+
+    function getLocalDateString(d) {
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    let currentDateStr = getLocalDateString(new Date());
+    document.getElementById('targetDate').value = currentDateStr;
+
+    let dailyCalBudget = parseInt(localStorage.getItem('user_cal_budget') || '2000');
+    let dailyWaterGoal = parseInt(localStorage.getItem('user_water_goal') || '2000');
+    let dailyProteinGoal = parseInt(localStorage.getItem('user_protein_goal') || '80');
+
+    function editBudget() {
+      const val = prompt('請輸入每日目標熱量預算 (kcal):', dailyCalBudget);
+      if (val && !isNaN(val)) {
+        dailyCalBudget = parseInt(val);
+        localStorage.setItem('user_cal_budget', dailyCalBudget);
+        render();
+      }
+    }
+
+    function editWaterGoal() {
+      const val = prompt('請設定每日目標飲水量 (ml):', dailyWaterGoal);
+      if (val && !isNaN(val)) {
+        dailyWaterGoal = parseInt(val);
+        localStorage.setItem('user_water_goal', dailyWaterGoal);
+        render();
+      }
+    }
+
+    function editProteinGoal() {
+      const val = prompt('請設定每日目標蛋白質 (g):', dailyProteinGoal);
+      if (val && !isNaN(val)) {
+        dailyProteinGoal = parseInt(val);
+        localStorage.setItem('user_protein_goal', dailyProteinGoal);
+        render();
+      }
+    }
+
+    function calcTDEEGoal() {
+      const userW = parseFloat(appData.weight) || 0;
+      const userH = parseFloat(appData.height) || 170;
+      if (!userW) return alert('請先在「🩺 身體數據」儲存體重！');
+
+      const bmr = Math.round((10 * userW) + (6.25 * userH) - (5 * 35) + 5);
+      const actChoice = prompt(`【代謝試算】\n體重: ${userW}kg | 身高: ${userH}cm\nBMR 約: ${bmr} kcal\n\n選擇活動量：\n1. 久坐辦公 (1.2)\n2. 輕度活動 (1.375)\n3. 中度運動 (1.55)`, "1");
+      if (!actChoice) return;
+
+      const mults = { "1": 1.2, "2": 1.375, "3": 1.55 };
+      const tdee = Math.round(bmr * (mults[actChoice] || 1.2));
+
+      const goal = prompt(`您的 TDEE 為 ${tdee} kcal\n\n選擇目標：\n1. 穩健減脂 (-400 kcal)\n2. 積極減脂 (-500 kcal)\n3. 維持體重\n4. 增肌增重 (+350 kcal)`, "1");
+      if (!goal) return;
+
+      let target = tdee;
+      let p = Math.round(userW * 1.5);
+      if (goal === "1") { target = tdee - 400; p = Math.round(userW * 1.6); }
+      else if (goal === "2") { target = tdee - 500; p = Math.round(userW * 1.8); }
+      else if (goal === "4") { target = tdee + 350; p = Math.round(userW * 1.8); }
+
+      dailyCalBudget = target;
+      dailyProteinGoal = p;
+      localStorage.setItem('user_cal_budget', target);
+      localStorage.setItem('user_protein_goal', p);
+      render();
+      alert(`🎯 已套用！每日熱量上限：${target} kcal | 蛋白質：${p} g`);
+    }
+
+    function loadCurrentData() {
+      const key = `health_tracker_${currentDateStr}`;
+      return JSON.parse(localStorage.getItem(key) || JSON.stringify({
+        breakfast: [], lunch: [], dinner: [], snack: [], drink: [], sports: [],
+        steps: 0, stepBurn: 0, water: 0, sugar: '', height: '', weight: '', bmi: '--'
+      }));
+    }
+
+    let appData = loadCurrentData();
+
+    function onDateChanged() {
+      currentDateStr = document.getElementById('targetDate').value;
+      appData = loadCurrentData();
+      render();
+    }
+
+    function shiftDate(offset) {
+      const parts = currentDateStr.split('-');
+      const d = new Date(parts[0], parts[1] - 1, parts[2]);
+      d.setDate(d.getDate() + offset);
+      currentDateStr = getLocalDateString(d);
+      document.getElementById('targetDate').value = currentDateStr;
+      appData = loadCurrentData();
+      render();
+    }
+
+    function setToday() {
+      currentDateStr = getLocalDateString(new Date());
+      document.getElementById('targetDate').value = currentDateStr;
+      appData = loadCurrentData();
+      render();
+    }
+
+    function copyYesterdayMeal(type) {
+      const parts = currentDateStr.split('-');
+      const d = new Date(parts[0], parts[1] - 1, parts[2]);
+      d.setDate(d.getDate() - 1);
+      const yesterdayStr = getLocalDateString(d);
+      const yKey = `health_tracker_${yesterdayStr}`;
+      const yData = JSON.parse(localStorage.getItem(yKey) || '{}');
+
+      if (!yData[type] || yData[type].length === 0) {
+        return alert(`昨天沒有 ${mealNames[type]} 紀錄！`);
+      }
+
+      const now = new Date();
+      const timeStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+      if (!appData[type]) appData[type] = [];
+      yData[type].forEach(item => {
+        const copyItem = { date: currentDateStr, time: timeStr, meal: mealNames[type], name: item.name, cal: item.cal, p: item.p || 0 };
+        appData[type].unshift(copyItem);
+        syncToGoogleSheet(copyItem);
+      });
+
+      render();
+      showToast(`已複製昨日 ${mealNames[type]}`, true);
+    }
+
+    function clearMeal(type) {
+      if (!appData[type] || appData[type].length === 0) return;
+      if (confirm(`確定要清空今天的 ${mealNames[type]} 嗎？`)) {
+        appData[type] = [];
+        render();
+        showToast(`已清空 ${mealNames[type]}`);
+      }
+    }
+
+    function render() {
+      const parts = currentDateStr.split('-');
+      document.getElementById('dateShow').textContent = `${parseInt(parts[1])}月${parseInt(parts[2])}日 紀錄`;
+
+      let intakeTotal = 0;
+      let proteinTotal = 0;
+      const categories = ['breakfast', 'lunch', 'dinner', 'snack', 'drink'];
+
+      categories.forEach(type => {
+        const listEl = document.getElementById(`list-${type}`);
+        listEl.innerHTML = '';
+        let sub = 0;
+
+        (appData[type] || []).forEach((item, idx) => {
+          sub += item.cal;
+          proteinTotal += (item.p || 0);
+          const row = document.createElement('div');
+          row.className = 'item-row';
+          row.innerHTML = `
+            <div>
+              <strong>${item.name}</strong>
+              <span class="time-tag">⏰ ${item.time}</span>
+            </div>
+            <div>
+              <strong>+${item.cal}</strong> kcal
+              <button class="del-btn" onclick="removeFood('${type}', ${idx})">✕</button>
+            </div>
+          `;
+          listEl.appendChild(row);
+        });
+
+        document.getElementById(`sub-${type}`).textContent = sub;
+        intakeTotal += sub;
+      });
+
+      const sportListEl = document.getElementById('list-sport');
+      sportListEl.innerHTML = '';
+      let sportTotal = 0;
+
+      (appData.sports || []).forEach((s, idx) => {
+        sportTotal += s.burn;
+        const row = document.createElement('div');
+        row.className = 'item-row';
+        row.innerHTML = `
+          <div>
+            <strong>${s.name} (${s.mins}分)</strong>
+            <span class="time-tag">⏰ ${s.time}</span>
+          </div>
+          <div>
+            <strong style="color:#16a34a;">-${s.burn}</strong> kcal
+            <button class="del-btn" onclick="removeSport(${idx})">✕</button>
+          </div>
+        `;
+        sportListEl.appendChild(row);
+      });
+
+      document.getElementById('sub-sport').textContent = sportTotal;
+      document.getElementById('stepInput').value = appData.steps || '';
+      document.getElementById('sub-steps').textContent = appData.stepBurn || 0;
+
+      const curWater = appData.water || 0;
+      document.getElementById('waterCur').textContent = curWater;
+      document.getElementById('waterGoal').textContent = dailyWaterGoal;
+      const waterPct = Math.min(100, Math.round((curWater / dailyWaterGoal) * 100));
+      document.getElementById('waterBar').style.width = `${waterPct}%`;
+
+      document.getElementById('sugarInput').value = appData.sugar || '';
+      document.getElementById('heightInput').value = appData.height || '';
+      document.getElementById('weightInput').value = appData.weight || '';
+      document.getElementById('bmiVal').textContent = appData.bmi || '--';
+
+      document.getElementById('curProtein').textContent = Math.round(proteinTotal);
+      document.getElementById('goalProtein').textContent = dailyProteinGoal;
+      const protPct = Math.min(100, Math.round((proteinTotal / dailyProteinGoal) * 100));
+      document.getElementById('proteinBar').style.width = `${protPct}%`;
+      document.getElementById('proteinPct').textContent = `${protPct}%`;
+
+      const burnTotal = sportTotal + (appData.stepBurn || 0);
+      const netCalVal = intakeTotal - burnTotal;
+      const remainVal = dailyCalBudget - netCalVal;
+
+      document.getElementById('budgetVal').textContent = dailyCalBudget;
+      document.getElementById('totalIntake').textContent = `${intakeTotal} kcal`;
+      document.getElementById('totalBurn').textContent = `${burnTotal} kcal`;
+      document.getElementById('netCal').textContent = `${netCalVal} kcal`;
+
+      const remainEl = document.getElementById('remainCal');
+      remainEl.textContent = remainVal;
+      remainEl.style.color = remainVal < 0 ? "#f87171" : "#4ade80";
+
+      const key = `health_tracker_${currentDateStr}`;
+      localStorage.setItem(key, JSON.stringify(appData));
+    }
+
+    function addWater(amount) {
+      appData.water = (appData.water || 0) + amount;
+      const d = new Date();
+      const timeStr = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+      render();
+      syncToGoogleSheet({
+        date: currentDateStr, time: timeStr, meal: "喝水紀錄",
+        name: `補充水分 +${amount}ml (當日累計: ${appData.water}ml)`,
+        cal: "", sugar: "", height: "", weight: "", bmi: "", water: appData.water
+      });
+    }
+
+    function addCustomWater() {
+      const input = document.getElementById('customWater');
+      const val = parseInt(input.value);
+      if (!val || val <= 0) return alert('請輸入毫升數');
+      addWater(val);
+      input.value = '';
+    }
+
+    function saveBodyStats() {
+      const sugar = document.getElementById('sugarInput').value.trim();
+      const h = parseFloat(document.getElementById('heightInput').value);
+      const w = parseFloat(document.getElementById('weightInput').value);
+      let bmiStr = '--';
+
+      if (h > 0 && w > 0) {
+        const hm = h / 100;
+        bmiStr = (w / (hm * hm)).toFixed(1);
+      }
+
+      appData.sugar = sugar;
+      appData.height = h || '';
+      appData.weight = w || '';
+      appData.bmi = bmiStr;
+
+      const d = new Date();
+      const timeStr = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+      render();
+      syncToGoogleSheet({
+        date: currentDateStr, time: timeStr, meal: "身體數據", name: "身體量測紀錄",
+        cal: "", sugar: sugar ? String(sugar) : "", height: h ? String(h) : "",
+        weight: w ? String(w) : "", bmi: bmiStr !== "--" ? String(bmiStr) : "", water: ""
+      });
+      alert(`生理數據已送出！BMI: ${bmiStr}`);
+    }
+
+    function manualAdd(type) {
+      const nameEl = document.getElementById(`name-${type}`);
+      const qtyEl = document.getElementById(`qty-${type}`);
+      const calEl = document.getElementById(`cal-${type}`);
+      
+      const rawName = nameEl.value.trim();
+      const qty = parseFloat(qtyEl.value) || 1;
+      const cal = calEl.value;
+
+      if (!rawName || !cal) return alert('請輸入食物名稱與熱量');
+
+      const displayName = qty !== 1 ? `${rawName} (${qty}份)` : rawName;
+      const baseP = baseProteinMap[type] || 0;
+      const totalP = Math.round(baseP * qty);
+
+      const d = new Date();
+      const timeStr = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+      const record = { date: currentDateStr, time: timeStr, meal: mealNames[type], name: displayName, cal: Math.round(Number(cal)), p: totalP, sugar: "", height: "", weight: "", bmi: "", water: "" };
+
+      if (!appData[type]) appData[type] = [];
+      appData[type].unshift(record);
+
+      nameEl.value = '';
+      qtyEl.value = '1';
+      calEl.value = '';
+      baseCaloriesMap[type] = 0;
+      baseProteinMap[type] = 0;
+      render();
+      syncToGoogleSheet(record);
+    }
+
+    function removeFood(type, idx) {
+      appData[type].splice(idx, 1);
+      render();
+    }
+
+    function saveSteps() {
+      const steps = parseInt(document.getElementById('stepInput').value) || 0;
+      const burn = Math.round((steps / 1000) * 35);
+      appData.steps = steps;
+      appData.stepBurn = burn;
+      const d = new Date();
+      const timeStr = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+      render();
+      syncToGoogleSheet({ date: currentDateStr, time: timeStr, meal: "步數紀錄", name: `${steps} 步`, cal: -burn, sugar: "", height: "", weight: "", bmi: "", water: "" });
+      alert(`步數已更新！消耗約 ${burn} kcal`);
+    }
+
+    function addSport() {
+      const sel = document.getElementById('sportType');
+      const met = parseFloat(sel.value);
+      const sportName = sel.options[sel.selectedIndex].text.split(' ')[0];
+      const mins = parseFloat(document.getElementById('sportMins').value) || 0;
+      if (mins <= 0) return alert('請填寫分鐘數');
+
+      const userW = parseFloat(appData.weight) || 65;
+      const burn = Math.round(met * userW * (mins / 60));
+      const d = new Date();
+      const timeStr = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+      const record = { date: currentDateStr, time: timeStr, meal: "運動燃脂", name: `${sportName} (${mins}分)`, cal: -burn, sugar: "", height: "", weight: "", bmi: "", water: "" };
+
+      if (!appData.sports) appData.sports = [];
+      appData.sports.unshift(record);
+      document.getElementById('sportMins').value = '';
+      render();
+      syncToGoogleSheet(record);
+    }
+
+    function removeSport(idx) {
+      appData.sports.splice(idx, 1);
+      render();
+    }
+
+    let scanner = null;
+    function toggleScanner() {
+      const reader = document.getElementById('reader');
+      const btn = document.getElementById('camBtn');
+      if (reader.style.display === 'block') {
+        if (scanner) scanner.stop();
+        reader.style.display = 'none';
+        btn.textContent = '📷 點此開啟相機掃條碼';
+      } else {
+        reader.style.display = 'block';
+        btn.textContent = '關閉相機';
+        scanner = new Html5Qrcode('reader');
+        scanner.start({ facingMode: 'environment' }, { fps: 15, qrbox: { width: 260, height: 140 } },
+          (code) => { toggleScanner(); handleBarcodeScan(code); }, () => {}
+        ).catch(() => {
+          alert('請確認允許相機權限');
+          reader.style.display = 'none';
+          btn.textContent = '📷 點此開啟相機掃條碼';
+        });
+      }
+    }
+
+    async function handleBarcodeScan(code) {
+      const msg = document.getElementById('scanMsg');
+      msg.textContent = `已讀取條碼：${code}`;
+      const inputName = prompt(`條碼：${code}\n請輸入「商品名稱」:`, "超商食品");
+      if (!inputName) return;
+      const inputCal = prompt(`請輸入「卡路里 (kcal)」:`, "150");
+      if (!inputCal || isNaN(inputCal)) return;
+
+      const name = inputName.trim();
+      const cal = Math.round(Number(inputCal));
+      const pick = prompt(`選擇餐別：\n1.早餐 2.午餐 3.晚餐 4.點心 5.飲料`, "2");
+      const map = { "1": "breakfast", "2": "lunch", "3": "dinner", "4": "snack", "5": "drink" };
+      const target = map[pick] || "lunch";
+
+      const d = new Date();
+      const timeStr = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+      const record = { date: currentDateStr, time: timeStr, meal: mealNames[target], name: name, cal: cal, p: 0, sugar: "", height: "", weight: "", bmi: "", water: "" };
+
+      if (!appData[target]) appData[target] = [];
+      appData[target].unshift(record);
+      render();
+      syncToGoogleSheet(record);
+    }
+
+    function exportBackup() {
+      const backupData = {
+        user_cal_budget: dailyCalBudget,
+        user_water_goal: dailyWaterGoal,
+        user_protein_goal: dailyProteinGoal,
+        all_logs: {}
+      };
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.startsWith('health_tracker_')) {
+          backupData.all_logs[key] = JSON.parse(localStorage.getItem(key));
+        }
+      }
+      const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `健康日記備份_${currentDateStr}.json`;
+      a.click();
+    }
+
+    function importBackup(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = JSON.parse(e.target.result);
+          if (data.user_cal_budget) localStorage.setItem('user_cal_budget', data.user_cal_budget);
+          if (data.all_logs) {
+            Object.keys(data.all_logs).forEach(k => {
+              localStorage.setItem(k, JSON.stringify(data.all_logs[k]));
+            });
+          }
+          alert('備份還原成功！');
+          location.reload();
+        } catch(err) {
+          alert('格式不正確');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    render();
+  </script>
+</body>
+</html>
