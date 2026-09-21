@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>健康熱量與生活日記 v5.7</title>
+  <title>健康熱量與生活日記 v5.9</title>
   <script src="https://unpkg.com/html5-qrcode"></script>
   <style>
     * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 0; }
@@ -46,11 +46,11 @@
     .btn-copy-yesterday { background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; font-size: 0.72rem; padding: 2px 6px; border-radius: 6px; cursor: pointer; }
     .btn-clear-meal { background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; font-size: 0.72rem; padding: 2px 6px; border-radius: 6px; cursor: pointer; margin-left: 4px; }
     
-    /* 快捷按鈕條 */
     .quick-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
     .q-btn { background: #f1f5f9; border: 1.5px solid #cbd5e1; color: #1e293b; font-size: 0.75rem; font-weight: 600; padding: 4px 10px; border-radius: 8px; cursor: pointer; }
     .q-btn:active { background: #e2e8f0; }
     .q-highlight { background: #fef3c7; border-color: #f59e0b; color: #b45309; }
+    .q-green { background: #f0fdf4; border-color: #86efac; color: #166534; }
 
     .badge { padding: 4px 10px; border-radius: 8px; color: white; font-size: 0.85rem; font-weight: bold; }
     .b-water { background: #0284c7; }
@@ -100,15 +100,23 @@
 
   <div id="syncToast">🔄 雲端同步中...</div>
 
-  <!-- 🌟 原生 Datalist 系統：支援全手機瀏覽器秒彈出選單 -->
+  <!-- 🌟 原生 Datalist 系統：新增菠菜全系列 -->
   <datalist id="foodDatalist">
+    <option value="炒菠菜">炒菠菜 / 蒜炒菠菜 (120 kcal)</option>
+    <option value="燙菠菜">燙菠菜 (45 kcal)</option>
+    <option value="胡麻菠菜">日式涼拌胡麻菠菜 (110 kcal)</option>
+    <option value="菠菜炒蛋">菠菜炒蛋 (190 kcal)</option>
+    <option value="炒敏豆">炒敏豆 / 炒四季豆 (110 kcal)</option>
+    <option value="燙敏豆">燙敏豆 / 燙四季豆 (40 kcal)</option>
+    <option value="水煮毛豆">水煮毛豆仁 (125 kcal / 高蛋白13g)</option>
+    <option value="炒甜豆莢">炒甜豆莢 / 荷蘭豆 (100 kcal)</option>
+    <option value="炒長豆">炒長豆 / 豇豆 (110 kcal)</option>
+    <option value="炸四季豆">鹹酥雞炸四季豆 (140 kcal)</option>
     <option value="台南水晶餃">台南大水晶餃 (200 kcal / 顆)</option>
     <option value="祿記水晶餃">台南百年老店祿記 (200 kcal / 顆)</option>
     <option value="水晶餃">一般小水晶餃 (60 kcal / 顆)</option>
     <option value="客家水晶餃">三角客家水晶餃 (120 kcal / 顆)</option>
-    <option value="炸水晶餃">炸水晶餃一份 (350 kcal)</option>
     <option value="奇亞籽">奇亞籽 / 鼠尾草籽 1匙 (60 kcal)</option>
-    <option value="奇芽籽">奇亞籽 (60 kcal)</option>
     <option value="奇亞籽水">奇亞籽水 1杯 (60 kcal)</option>
     <option value="奇亞籽無糖豆漿">奇亞籽無糖豆漿 (200 kcal)</option>
     <option value="芝麻吐司">芝麻吐司單片 (180 kcal)</option>
@@ -255,7 +263,6 @@
         </div>
       </div>
       
-      <!-- 快捷鈕 -->
       <div class="quick-chips">
         <button class="q-btn q-highlight" onclick="quickFill('breakfast', '奇亞籽', 60, 3)">🌱 奇亞籽 (+60)</button>
         <button class="q-btn" onclick="quickFill('breakfast', '芝麻吐司', 180, 5)">芝麻吐司</button>
@@ -264,7 +271,7 @@
       </div>
 
       <div class="meal-input-group">
-        <input type="text" id="name-breakfast" list="foodDatalist" placeholder="🔍 點此選擇或輸入 (如: 奇亞籽)" oninput="onFoodSelected('breakfast')" onkeydown="handleEnterAdd(event, 'breakfast')" autocomplete="off">
+        <input type="text" id="name-breakfast" list="foodDatalist" placeholder="🔍 點此選擇或輸入 (如: 奇亞籽、菠菜)" oninput="onFoodSelected('breakfast')" onkeydown="handleEnterAdd(event, 'breakfast')" autocomplete="off">
         <div class="input-row-sub">
           <input type="number" id="qty-breakfast" value="1" step="0.5" min="0.1" placeholder="份數" oninput="updateTotalCal('breakfast')" onkeydown="handleEnterAdd(event, 'breakfast')">
           <input type="number" id="cal-breakfast" placeholder="🔥 熱量 (kcal)" oninput="onManualCalChange('breakfast')" onkeydown="handleEnterAdd(event, 'breakfast')">
@@ -285,16 +292,16 @@
         </div>
       </div>
 
-      <!-- 快捷鈕 -->
       <div class="quick-chips">
+        <button class="q-btn q-green" onclick="quickFill('lunch', '炒菠菜', 120, 3)">🥬 炒菠菜 (+120)</button>
+        <button class="q-btn q-green" onclick="quickFill('lunch', '炒敏豆', 110, 2)">🫛 炒敏豆 (+110)</button>
+        <button class="q-btn q-green" onclick="quickFill('lunch', '水煮毛豆', 125, 13)">🫘 毛豆仁 (+125)</button>
         <button class="q-btn q-highlight" onclick="quickFill('lunch', '台南水晶餃', 200, 6)">🥟 台南水晶餃 (+200)</button>
-        <button class="q-btn" onclick="quickFill('lunch', '炒芥藍菜', 130, 3)">炒芥藍</button>
         <button class="q-btn" onclick="quickFill('lunch', '正忠排骨飯', 890, 32)">正忠排骨</button>
-        <button class="q-btn" onclick="quickFill('lunch', '筍乾', 160, 2)">筍乾</button>
       </div>
 
       <div class="meal-input-group">
-        <input type="text" id="name-lunch" list="foodDatalist" placeholder="🔍 點此選擇或輸入 (如: 台南水晶餃)" oninput="onFoodSelected('lunch')" onkeydown="handleEnterAdd(event, 'lunch')" autocomplete="off">
+        <input type="text" id="name-lunch" list="foodDatalist" placeholder="🔍 點此選擇或輸入 (如: 炒菠菜、敏豆)" oninput="onFoodSelected('lunch')" onkeydown="handleEnterAdd(event, 'lunch')" autocomplete="off">
         <div class="input-row-sub">
           <input type="number" id="qty-lunch" value="1" step="0.5" min="0.1" placeholder="份數" oninput="updateTotalCal('lunch')" onkeydown="handleEnterAdd(event, 'lunch')">
           <input type="number" id="cal-lunch" placeholder="🔥 熱量 (kcal)" oninput="onManualCalChange('lunch')" onkeydown="handleEnterAdd(event, 'lunch')">
@@ -315,16 +322,16 @@
         </div>
       </div>
 
-      <!-- 快捷鈕 -->
       <div class="quick-chips">
+        <button class="q-btn q-green" onclick="quickFill('dinner', '燙菠菜', 45, 3)">🥬 燙菠菜 (+45)</button>
+        <button class="q-btn q-green" onclick="quickFill('dinner', '炒菠菜', 120, 3)">炒菠菜 (+120)</button>
+        <button class="q-btn q-green" onclick="quickFill('dinner', '燙敏豆', 40, 2)">🫛 燙敏豆 (+40)</button>
         <button class="q-btn q-highlight" onclick="quickFill('dinner', '台南水晶餃', 200, 6)">🥟 台南水晶餃 (+200)</button>
         <button class="q-btn" onclick="quickFill('dinner', '燙芥藍菜', 50, 3)">燙芥藍</button>
-        <button class="q-btn" onclick="quickFill('dinner', '滷百頁', 200, 12)">滷百頁</button>
-        <button class="q-btn" onclick="quickFill('dinner', '控肉筍乾', 180, 8)">控肉筍乾</button>
       </div>
 
       <div class="meal-input-group">
-        <input type="text" id="name-dinner" list="foodDatalist" placeholder="🔍 點此選擇或輸入 (如: 台南水晶餃)" oninput="onFoodSelected('dinner')" onkeydown="handleEnterAdd(event, 'dinner')" autocomplete="off">
+        <input type="text" id="name-dinner" list="foodDatalist" placeholder="🔍 點此選擇或輸入 (如: 炒菠菜、燙敏豆)" oninput="onFoodSelected('dinner')" onkeydown="handleEnterAdd(event, 'dinner')" autocomplete="off">
         <div class="input-row-sub">
           <input type="number" id="qty-dinner" value="1" step="0.5" min="0.1" placeholder="份數" oninput="updateTotalCal('dinner')" onkeydown="handleEnterAdd(event, 'dinner')">
           <input type="number" id="cal-dinner" placeholder="🔥 熱量 (kcal)" oninput="onManualCalChange('dinner')" onkeydown="handleEnterAdd(event, 'dinner')">
@@ -345,8 +352,9 @@
       </div>
 
       <div class="quick-chips">
+        <button class="q-btn q-green" onclick="quickFill('snack', '水煮毛豆', 125, 13)">🫘 水煮毛豆 (+125)</button>
+        <button class="q-btn" onclick="quickFill('snack', '炸四季豆', 140, 2)">炸四季豆</button>
         <button class="q-btn q-highlight" onclick="quickFill('snack', '台南水晶餃', 200, 6)">🥟 台南水晶餃</button>
-        <button class="q-btn" onclick="quickFill('snack', '炸水晶餃', 350, 8)">炸水晶餃</button>
         <button class="q-btn" onclick="quickFill('snack', '炸雞排', 650, 35)">炸雞排</button>
       </div>
 
@@ -401,6 +409,35 @@
     const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbz_pceZbIkWcBtp8a9EzbPEsj1avqhcMjNs16o85SERy6vFmq6IY1iwsuT6oQb4u3g9/exec";
 
     const calorieDictionary = {
+      // 🥬 菠菜專區
+      "炒菠菜": { cal: 120, p: 3 },
+      "菠菜": { cal: 120, p: 3 },
+      "蒜炒菠菜": { cal: 120, p: 3 },
+      "燙菠菜": { cal: 45, p: 3 },
+      "胡麻菠菜": { cal: 110, p: 3 },
+      "菠菜炒蛋": { cal: 190, p: 10 },
+
+      // 🫛 敏豆、四季豆與豆類蔬菜
+      "炒敏豆": { cal: 110, p: 2 },
+      "敏豆": { cal: 110, p: 2 },
+      "四季豆": { cal: 110, p: 2 },
+      "炒四季豆": { cal: 110, p: 2 },
+      "燙敏豆": { cal: 40, p: 2 },
+      "燙四季豆": { cal: 40, p: 2 },
+      "水煮毛豆": { cal: 125, p: 13 },
+      "毛豆": { cal: 125, p: 13 },
+      "水煮毛豆仁": { cal: 125, p: 13 },
+      "炒甜豆莢": { cal: 100, p: 3 },
+      "甜豆莢": { cal: 100, p: 3 },
+      "荷蘭豆": { cal: 90, p: 3 },
+      "炒長豆": { cal: 110, p: 2 },
+      "長豆": { cal: 110, p: 2 },
+      "鹹蛋長豆": { cal: 170, p: 5 },
+      "炸四季豆": { cal: 140, p: 2 },
+      "熟黑豆": { cal: 130, p: 9 },
+      "熟黃豆": { cal: 140, p: 12 },
+
+      // 🥟 水晶餃專區
       "台南水晶餃": { cal: 200, p: 6 },
       "台南水晶餃(單顆)": { cal: 200, p: 6 },
       "祿記水晶餃": { cal: 200, p: 6 },
@@ -409,11 +446,13 @@
       "三角水晶餃": { cal: 120, p: 4 },
       "炸水晶餃": { cal: 350, p: 8 },
 
+      // 🌱 奇亞籽 / 奇芽籽專區
       "奇亞籽": { cal: 60, p: 3 },
       "奇芽籽": { cal: 60, p: 3 },
       "奇亞籽水": { cal: 60, p: 3 },
       "奇亞籽無糖豆漿": { cal: 200, p: 18 },
 
+      // 蛋豆肉
       "水煮蛋": { cal: 75, p: 7 }, "荷包蛋": { cal: 120, p: 7 }, "茶葉蛋": { cal: 75, p: 7 },
       "舒肥雞沙拉": { cal: 180, p: 25 }, "雞胸肉生菜沙拉": { cal: 180, p: 25 },
       "無糖豆漿": { cal: 147, p: 15 }, "馬可先生無糖黑豆漿": { cal: 170, p: 16 }, "無糖黑豆漿": { cal: 170, p: 16 },
@@ -427,7 +466,6 @@
     let baseCaloriesMap = {};
     let baseProteinMap = {};
 
-    // 🌟 點擊快捷按鈕一鍵填入
     function quickFill(type, name, cal, p) {
       document.getElementById(`name-${type}`).value = name;
       baseCaloriesMap[type] = cal;
@@ -436,7 +474,6 @@
       document.getElementById(`cal-${type}`).value = Math.round(cal * qty);
     }
 
-    // 🌟 原生 Datalist 選中後自動帶出熱量
     function onFoodSelected(type) {
       const val = document.getElementById(`name-${type}`).value.trim();
       const norm = val.replace(/奇芽/g, '奇亞').replace(/臺/g, '台');
