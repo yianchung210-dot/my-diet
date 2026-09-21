@@ -127,7 +127,7 @@
       <button onclick="shiftDate(1)">後一天 ▶</button>
     </div>
 
-    <!-- 頂部總覽（含智慧 TDEE 試算按鈕） -->
+    <!-- 頂部總覽 -->
     <div class="summary-box">
       <div class="summary-top">
         <span id="dateShow">--</span>
@@ -288,12 +288,12 @@
       <div class="recent-chips" id="chips-lunch"></div>
       
       <div class="meal-input-group">
-        <input type="text" id="name-lunch" placeholder="🔍 輸入食物名稱 (如: 炒芥藍、正忠排骨)" oninput="handleSmartInput('lunch')" onkeydown="handleEnterAdd(event, 'lunch')" autocomplete="off">
+        <input type="text" id="name-lunch" placeholder="🔍 輸入食物名稱 (如: 水晶餃、炒芥藍、正忠排骨)" oninput="handleSmartInput('lunch')" onkeydown="handleEnterAdd(event, 'lunch')" autocomplete="off">
         <div class="autocomplete-box" id="suggest-lunch"></div>
         <div class="input-row-sub">
           <input type="number" id="qty-lunch" value="1" step="0.5" min="0.1" placeholder="份數" oninput="updateTotalCal('lunch')" onkeydown="handleEnterAdd(event, 'lunch')">
           <input type="number" id="cal-lunch" placeholder="🔥 熱量 (kcal)" oninput="onManualCalChange('lunch')" onkeydown="handleEnterAdd(event, 'lunch')">
-          <button class="btn btn-add" onclick="manualAdd('lunch')">＋ 新增</button>
+          <button class="btn-add" onclick="manualAdd('lunch')">＋ 新增</button>
         </div>
       </div>
       <div class="item-list" id="list-lunch"></div>
@@ -312,12 +312,12 @@
       <div class="recent-chips" id="chips-dinner"></div>
       
       <div class="meal-input-group">
-        <input type="text" id="name-dinner" placeholder="🔍 輸入食物名稱 (如: 燙芥藍、三杯雞)" oninput="handleSmartInput('dinner')" onkeydown="handleEnterAdd(event, 'dinner')" autocomplete="off">
+        <input type="text" id="name-dinner" placeholder="🔍 輸入食物名稱 (如: 水晶餃、燙芥藍、三杯雞)" oninput="handleSmartInput('dinner')" onkeydown="handleEnterAdd(event, 'dinner')" autocomplete="off">
         <div class="autocomplete-box" id="suggest-dinner"></div>
         <div class="input-row-sub">
           <input type="number" id="qty-dinner" value="1" step="0.5" min="0.1" placeholder="份數" oninput="updateTotalCal('dinner')" onkeydown="handleEnterAdd(event, 'dinner')">
           <input type="number" id="cal-dinner" placeholder="🔥 熱量 (kcal)" oninput="onManualCalChange('dinner')" onkeydown="handleEnterAdd(event, 'dinner')">
-          <button class="btn btn-add" onclick="manualAdd('dinner')">＋ 新增</button>
+          <button class="btn-add" onclick="manualAdd('dinner')">＋ 新增</button>
         </div>
       </div>
       <div class="item-list" id="list-dinner"></div>
@@ -326,7 +326,7 @@
     <!-- 8. 點心/宵夜 -->
     <div class="card">
       <div class="card-head">
-        <span class="badge b-snack">🍪 點心 / 宵夜 / 炸雞排</span>
+        <span class="badge b-snack">🍪 點心 / 宵夜 / 水晶餃</span>
         <div>
           <button class="btn-clear-meal" onclick="clearMeal('snack')">清空</button>
           <span style="font-size:0.85rem; color:#64748b; margin-left:4px;">小計：<strong id="sub-snack">0</strong> kcal</span>
@@ -335,7 +335,7 @@
       <div class="recent-chips" id="chips-snack"></div>
       
       <div class="meal-input-group">
-        <input type="text" id="name-snack" placeholder="🔍 輸入食物名稱 (如: 炸雞排、蛋黃酥)" oninput="handleSmartInput('snack')" onkeydown="handleEnterAdd(event, 'snack')" autocomplete="off">
+        <input type="text" id="name-snack" placeholder="🔍 輸入食物名稱 (如: 炸水晶餃、炸雞排、蛋黃酥)" oninput="handleSmartInput('snack')" onkeydown="handleEnterAdd(event, 'snack')" autocomplete="off">
         <div class="autocomplete-box" id="suggest-snack"></div>
         <div class="input-row-sub">
           <input type="number" id="qty-snack" value="1" step="0.5" min="0.1" placeholder="份數" oninput="updateTotalCal('snack')" onkeydown="handleEnterAdd(event, 'snack')">
@@ -382,21 +382,37 @@
   <script>
     const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbz_pceZbIkWcBtp8a9EzbPEsj1avqhcMjNs16o85SERy6vFmq6IY1iwsuT6oQb4u3g9/exec";
 
-    // 🌟 全台超完整飲食資料庫
+    // 🌟 全台超完整飲食資料庫（已完整加入水晶餃系列）
     const calorieDictionary = {
+      // 🥟 水晶餃專區
+      "水晶餃": { cal: 60, p: 2 },
+      "水晶餃(單顆)": { cal: 60, p: 2 },
+      "水晶餃(4顆)": { cal: 240, p: 8 },
+      "滷味水晶餃": { cal: 65, p: 2 },
+      "客家水晶餃": { cal: 120, p: 4 },
+      "三角水晶餃": { cal: 120, p: 4 },
+      "客家水晶餃(單顆)": { cal: 120, p: 4 },
+      "炸水晶餃": { cal: 350, p: 8 },
+      "炸水晶餃一份": { cal: 350, p: 8 },
+
+      // 蛋豆肉高蛋白質
       "水煮蛋": { cal: 75, p: 7 }, "荷包蛋": { cal: 120, p: 7 }, "茶葉蛋": { cal: 75, p: 7 },
       "舒肥雞沙拉": { cal: 180, p: 25 }, "雞胸肉生菜沙拉": { cal: 180, p: 25 },
       "無糖豆漿": { cal: 147, p: 15 }, "馬可先生無糖黑豆漿": { cal: 170, p: 16 }, "無糖黑豆漿": { cal: 170, p: 16 }, "馬可先生黑豆漿": { cal: 170, p: 16 },
       "嘴邊肉": { cal: 140, p: 18 }, "骨仔肉": { cal: 150, p: 17 }, "肝連肉": { cal: 150, p: 18 }, "松阪豬": { cal: 220, p: 16 },
 
+      // 🥬 芥藍菜與蔬菜專區
       "炒芥藍菜": { cal: 130, p: 3 }, "炒芥藍": { cal: 130, p: 3 }, "蒜炒芥藍": { cal: 130, p: 3 }, "熱炒芥藍": { cal: 130, p: 3 },
       "燙芥藍菜": { cal: 50, p: 3 }, "燙芥藍": { cal: 50, p: 3 }, "沙茶牛肉炒芥藍": { cal: 480, p: 24 },
 
+      // 🍗 雞排與百頁專區
       "炸雞排": { cal: 650, p: 35 }, "香酥雞排": { cal: 650, p: 35 }, "脆皮雞排": { cal: 700, p: 35 }, "碳烤雞排": { cal: 750, p: 35 }, "起司雞排": { cal: 850, p: 38 },
       "百頁豆腐": { cal: 200, p: 12 }, "滷百頁": { cal: 200, p: 12 }, "炒百頁": { cal: 220, p: 12 }, "炸百頁豆腐": { cal: 380, p: 12 }, "炸百頁": { cal: 380, p: 12 },
 
+      // 🥬 筍乾與配菜專區
       "筍乾": { cal: 160, p: 2 }, "滷筍乾": { cal: 160, p: 2 }, "控肉筍乾": { cal: 180, p: 8 }, "筍乾控肉": { cal: 180, p: 8 },
 
+      // 🥮 沙西餅、麻糬酥、大餅與中式糕點專區
       "沙西餅": { cal: 260, p: 4 }, "沙西餅(單個)": { cal: 260, p: 4 },
       "麻糬酥": { cal: 320, p: 4 }, "芋頭麻糬酥": { cal: 300, p: 4 }, "紅豆麻糬酥": { cal: 320, p: 4 }, "麻糬酥(單顆)": { cal: 320, p: 4 }, "Q餅": { cal: 400, p: 8 }, "咖哩滷肉Q餅": { cal: 420, p: 9 },
       "中式大餅": { cal: 300, p: 5 }, "大餅(1/8塊)": { cal: 280, p: 4 }, "魯肉豆沙大餅": { cal: 300, p: 6 }, "芝麻核桃大餅": { cal: 320, p: 5 }, "冬瓜肉餅": { cal: 310, p: 5 },
@@ -406,9 +422,11 @@
       "太陽餅": { cal: 280, p: 3 }, "太陽餅(單顆)": { cal: 280, p: 3 }, "老婆餅": { cal: 260, p: 3 }, "老婆餅(單顆)": { cal: 260, p: 3 },
       "芋頭酥": { cal: 300, p: 4 }, "芋頭酥(單顆)": { cal: 300, p: 4 }, "綠豆黃": { cal: 190, p: 3 }, "綠豆黃(單顆)": { cal: 190, p: 3 },
 
+      // 吐司與早餐烘焙
       "芝麻吐司": { cal: 180, p: 5 }, "芝麻厚片吐司": { cal: 320, p: 7 }, "芝麻抹醬吐司": { cal: 180, p: 5 },
       "紅豆吐司": { cal: 160, p: 4 }, "起司吐司": { cal: 150, p: 6 }, "原味蛋餅": { cal: 260, p: 10 }, "起司蛋餅": { cal: 320, p: 14 },
 
+      // 蔬菜專區
       "炒高麗菜": { cal: 130, p: 2 }, "熱炒高麗菜": { cal: 130, p: 2 }, "炒空心菜": { cal: 130, p: 2 }, "熱炒空心菜": { cal: 130, p: 2 },
       "炒水蓮": { cal: 140, p: 2 }, "水蓮": { cal: 140, p: 2 }, "炒地瓜葉": { cal: 120, p: 3 }, "地瓜葉": { cal: 120, p: 3 },
       "炒菠菜": { cal: 120, p: 3 }, "菠菜": { cal: 120, p: 3 }, "炒大陸妹": { cal: 110, p: 2 }, "炒福山萵苣": { cal: 110, p: 2 },
@@ -423,35 +441,44 @@
       "和風沙拉": { cal: 80, p: 1 }, "和風生菜沙拉": { cal: 80, p: 1 }, "凱薩沙拉": { cal: 220, p: 4 }, "千島沙拉": { cal: 200, p: 2 }, "胡麻沙拉": { cal: 180, p: 3 },
       "Costco凱薩沙拉": { cal: 780, p: 32 },
 
+      // 三杯料理專區
       "三杯杏鮑菇": { cal: 160, p: 4 }, "三杯雞": { cal: 520, p: 36 }, "三杯中卷": { cal: 260, p: 28 }, "三杯透抽": { cal: 260, p: 28 }, "三杯花枝": { cal: 260, p: 28 },
       "三杯田雞": { cal: 280, p: 30 }, "三杯米血": { cal: 380, p: 6 }, "三杯豆腐": { cal: 240, p: 14 }, "三杯百頁豆腐": { cal: 420, p: 14 },
 
+      // 義大利麵系列
       "白酒蛤蜊義大利麵": { cal: 480, p: 22 }, "蒜香白酒蛤蜊麵": { cal: 480, p: 22 }, "蒜辣白酒蛤蜊義大利麵": { cal: 490, p: 22 }, "蒜香清炒海鮮義大利麵": { cal: 510, p: 25 },
       "肉醬義大利麵": { cal: 620, p: 20 }, "波隆那肉醬義大利麵": { cal: 620, p: 20 }, "紅醬海鮮義大利麵": { cal: 580, p: 26 }, "紅醬雞肉義大利麵": { cal: 600, p: 28 },
       "白醬培根義大利麵": { cal: 820, p: 18 }, "奶油培根義大利麵": { cal: 820, p: 18 }, "白醬海鮮義大利麵": { cal: 760, p: 25 },
       "青醬海鮮義大利麵": { cal: 780, p: 26 }, "青醬蛤蜊義大利麵": { cal: 780, p: 22 }, "青醬雞肉義大利麵": { cal: 750, p: 30 }, "焗烤牛肉千層麵": { cal: 860, p: 32 },
 
+      // 鹹酥雞其他炸物
       "鹹酥雞一份": { cal: 450, p: 20 }, "炸四季豆": { cal: 140, p: 2 }, "炸魷魚": { cal: 350, p: 22 },
       "炸甜不辣一份": { cal: 320, p: 8 }, "炸米血": { cal: 260, p: 4 }, "炸銀絲卷": { cal: 420, p: 6 }, "地瓜球(小)": { cal: 280, p: 1 }, "地瓜球": { cal: 280, p: 1 },
 
+      // Costco 好市多
       "Costco牛肉捲": { cal: 820, p: 36 }, "好市多牛肉捲": { cal: 820, p: 36 }, "Costco雞肉捲": { cal: 760, p: 34 }, "好市多雞肉捲": { cal: 760, p: 34 },
       "Costco烤雞腿": { cal: 320, p: 28 }, "Costco烤全雞": { cal: 1500, p: 110 }, "Costco蛤蜊濃湯": { cal: 320, p: 10 }, "Costco單片披薩": { cal: 680, p: 24 },
       "Costco熱狗": { cal: 560, p: 18 }, "Costco貝果": { cal: 290, p: 10 }, "Costco可頌": { cal: 280, p: 5 },
 
+      // 鹹水雞與餡餅
       "鹹水雞": { cal: 220, p: 22 }, "鹽水雞": { cal: 220, p: 22 }, "鹽水雞胸": { cal: 130, p: 24 }, "鹽水雞腿": { cal: 230, p: 20 }, "鹹水雞筍片": { cal: 40, p: 1 }, "鹹水雞青花菜": { cal: 35, p: 2 },
       "牛肉餡餅": { cal: 350, p: 14 }, "豬肉餡餅": { cal: 320, p: 12 }, "蘿蔔絲餡餅": { cal: 260, p: 5 }, "韭菜盒子": { cal: 300, p: 8 }, "蔥油餅": { cal: 350, p: 6 }, "紅豆餅": { cal: 190, p: 4 },
 
+      // 傳統麵店與黑白切
       "麻醬麵": { cal: 520, p: 12 }, "炸醬麵": { cal: 500, p: 14 }, "肉燥乾麵": { cal: 480, p: 12 }, "紅油抄手": { cal: 450, p: 15 }, "涼麵": { cal: 450, p: 11 },
       "牛肉麵": { cal: 750, p: 30 }, "紅燒牛肉麵": { cal: 780, p: 30 }, "清燉牛肉麵": { cal: 580, p: 30 }, "陽春麵": { cal: 350, p: 9 }, "榨菜肉絲麵": { cal: 450, p: 14 }, "餛飩麵": { cal: 460, p: 16 },
       "滷蛋": { cal: 75, p: 7 }, "油豆腐(2塊)": { cal: 120, p: 6 }, "大腸頭": { cal: 260, p: 12 },
 
+      // 便當、港式燒臘與八方雲集
       "正忠排骨飯": { cal: 890, p: 32 }, "正忠炸雞腿飯": { cal: 960, p: 36 }, "便當大爺排骨飯": { cal: 820, p: 30 }, "便當大爺雞腿飯": { cal: 880, p: 34 },
       "三寶飯便當": { cal: 920, p: 36 }, "三寶飯": { cal: 920, p: 36 }, "脆皮燒肉便當": { cal: 880, p: 28 }, "蜜汁叉燒便當": { cal: 820, p: 30 }, "京醬排骨": { cal: 460, p: 22 }, "糖醋排骨": { cal: 580, p: 20 },
       "八方鍋貼10顆": { cal: 650, p: 20 }, "八方水餃10顆": { cal: 550, p: 22 }, "八方酸辣湯": { cal: 160, p: 6 }, "八方玉米濃湯": { cal: 180, p: 4 },
 
+      // 手搖名店
       "大茗酪梨奶蓋紅玉": { cal: 320, p: 3 }, "酪梨奶蓋紅玉": { cal: 320, p: 3 }, "大茗烤糖蕎麥凍奶青": { cal: 310, p: 2 }, "迷客夏珍珠紅茶拿鐵": { cal: 360, p: 6 },
       "迷客夏大甲芋頭鮮奶": { cal: 380, p: 7 }, "一沐日逮丸奶茶": { cal: 450, p: 3 }, "50嵐1號": { cal: 420, p: 2 }, "50嵐波霸奶茶": { cal: 480, p: 3 }, "麻古楊枝甘露": { cal: 490, p: 2 }, "得正春烏龍": { cal: 0, p: 0 },
 
+      // 家常熱炒、湯品與飲品
       "蛋花湯": { cal: 80, p: 6 }, "蛤蜊湯": { cal: 70, p: 8 }, "貢丸湯": { cal: 150, p: 7 }, "四神湯": { cal: 250, p: 12 }, "香菇雞湯": { cal: 220, p: 18 },
       "蕃茄炒蛋": { cal: 170, p: 9 }, "番茄炒蛋": { cal: 170, p: 9 }, "洋蔥炒蛋": { cal: 160, p: 8 },
       "美式黑咖啡": { cal: 15, p: 0 }, "拿鐵咖啡": { cal: 180, p: 8 }, "瑞士妞可可": { cal: 160, p: 4 }, "無糖青茶": { cal: 0, p: 0 }
@@ -532,7 +559,6 @@
       localStorage.setItem('custom_barcode_db', JSON.stringify(custom));
     }
 
-    // 🌟 核心：根據體重與目標試算 TDEE / 減脂 / 增肌熱量建議
     function calcTDEEGoal() {
       const userW = parseFloat(appData.weight) || 0;
       const userH = parseFloat(appData.height) || 0;
@@ -541,14 +567,12 @@
         return alert('請先在下方「🩺 身體數據」填寫並儲存體重（若有身高更準確），才能計算個人化代謝熱量！');
       }
 
-      const h = userH > 0 ? userH : 170; // 預設身高
+      const h = userH > 0 ? userH : 170;
       const age = parseInt(localStorage.getItem('user_age') || '35');
       const gender = localStorage.getItem('user_gender') || 'male';
 
-      // 1. 計算 BMR (Mifflin-St Jeor 公式)
       let bmr = Math.round((10 * userW) + (6.25 * h) - (5 * age) + (gender === 'male' ? 5 : -161));
 
-      // 2. 選擇生活活動量
       const actChoice = prompt(
         `【個人化代謝試算】\n目前體重: ${userW} kg | 身高: ${h} cm\n基礎代謝率 (BMR) 約: ${bmr} kcal\n\n請選擇您的「日常活動量」：\n1. 久坐辦公型 (上班族/公務員/少動) - 係數 1.2\n2. 輕度活動 (每週輕運動 1~3 天，如快走/匹克球) - 係數 1.375\n3. 中度運動 (每週規律運動 3~5 天) - 係數 1.55`,
         "1"
@@ -559,7 +583,6 @@
       const mult = actMultipliers[actChoice] || 1.2;
       const tdee = Math.round(bmr * mult);
 
-      // 3. 選擇增重或減脂目標
       const goalChoice = prompt(
         `您的每日維持體重消耗 (TDEE) 為：${tdee} kcal\n\n請選擇您的健康目標：\n1. 穩健減脂 (熱量赤字 -400 kcal，每週約減0.4kg)\n2. 積極減脂 (熱量赤字 -500 kcal，適合大基數)\n3. 維持目前體重 (熱量平衡)\n4. 增肌增重 (熱量盈餘 +350 kcal，搭配重訓)`,
         "1"
@@ -568,14 +591,14 @@
 
       let targetCal = tdee;
       let targetDesc = "維持體重";
-      let recommendedProtein = Math.round(userW * 1.5); // 預設建議蛋白質 (每公斤體重 1.5g)
+      let recommendedProtein = Math.round(userW * 1.5);
 
       if (goalChoice === "1") {
         targetCal = tdee - 400;
         targetDesc = "穩健減脂";
         recommendedProtein = Math.round(userW * 1.6);
       } else if (goalChoice === "2") {
-        targetCal = Math.max(bmr, tdee - 500); // 減脂不低於基礎代謝
+        targetCal = Math.max(bmr, tdee - 500);
         targetDesc = "積極減脂";
         recommendedProtein = Math.round(userW * 1.8);
       } else if (goalChoice === "3") {
@@ -867,9 +890,9 @@
 
         const defaults = {
           breakfast: ["芝麻吐司", "馬可先生無糖黑豆漿", "生菜沙拉", "八方水餃10顆", "美式黑咖啡"],
-          lunch: ["炒芥藍菜", "筍乾", "炒水蓮", "白酒蛤蜊義大利麵", "正忠排骨飯"],
-          dinner: ["燙芥藍菜", "滷百頁", "控肉筍乾", "三杯雞", "便當大爺雞腿飯"],
-          snack: ["沙西餅", "麻糬酥", "炸雞排", "大餅(1/8塊)", "地瓜球"],
+          lunch: ["水晶餃", "炒芥藍菜", "筍乾", "炒水蓮", "正忠排骨飯"],
+          dinner: ["水晶餃", "燙芥藍菜", "滷百頁", "控肉筍乾", "三杯雞"],
+          snack: ["炸水晶餃", "沙西餅", "麻糬酥", "炸雞排", "地瓜球"],
           drink: ["Costco蛤蜊濃湯", "大茗酪梨奶蓋紅玉", "迷客夏珍珠紅茶拿鐵", "50嵐1號", "無糖青茶"]
         };
 
