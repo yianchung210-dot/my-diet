@@ -125,7 +125,7 @@
     .btn-quick-water:active { background: #e0f2fe; border-color: #bae6fd; }
 
     /* 輸入區排版 */
-    .meal-input-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 8px; }
+    .meal-input-group { display: flex; flex-direction: column; gap: 8px; position: relative; margin-bottom: 8px; }
     .input-row-sub { display: grid; grid-template-columns: 0.9fr 1.3fr auto; gap: 8px; align-items: center; }
     .grid-2 { display: grid; grid-template-columns: 1.4fr 1fr; gap: 8px; margin-bottom: 8px; }
     .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 8px; }
@@ -174,77 +174,106 @@
 
   <div id="syncToast">🔄 雲端同步中...</div>
 
-  <!-- 🌟 全域模糊選單：已收錄大陸妹全系列 -->
+  <!-- 🌟 全品項完整檢視與收錄選單 -->
   <datalist id="foodDatalist">
-    <!-- 蔬菜專區 -->
-    <option value="大陸妹">燙大陸妹 / 福山萵苣 (35 kcal / 蛋白質2g)</option>
-    <option value="燙大陸妹">燙大陸妹 (35 kcal / 蛋白質2g)</option>
+    <!-- 🥬 蔬菜專區（全面涵蓋 清燙 vs 淋肉燥/油蔥 vs 蒜炒） -->
+    <option value="燙大陸妹(淋肉燥)">燙大陸妹/淋肉燥油蔥 (120 kcal / 蛋白質2g)</option>
+    <option value="燙大陸妹">清燙大陸妹 (35 kcal / 蛋白質2g)</option>
     <option value="炒大陸妹">蒜炒大陸妹 (100 kcal / 蛋白質2g)</option>
+    <option value="大陸妹">大陸妹 (35 kcal / 蛋白質2g)</option>
     <option value="福山萵苣">福山萵苣 / 大陸妹 (35 kcal / 蛋白質2g)</option>
+    <option value="燙菠菜(淋肉燥)">燙菠菜/淋肉燥 (130 kcal / 蛋白質3g)</option>
+    <option value="燙菠菜">清燙菠菜 (45 kcal / 蛋白質3g)</option>
     <option value="炒菠菜">炒菠菜 (120 kcal / 蛋白質3g)</option>
-    <option value="燙菠菜">燙菠菜 (45 kcal / 蛋白質3g)</option>
+    <option value="燙地瓜葉(淋肉燥)">燙地瓜葉/淋肉燥 (140 kcal / 蛋白質3g)</option>
+    <option value="燙地瓜葉">清燙地瓜葉 (50 kcal / 蛋白質3g)</option>
+    <option value="炒地瓜葉">炒地瓜葉 (120 kcal / 蛋白質3g)</option>
+    <option value="炒高麗菜">炒高麗菜 (130 kcal / 蛋白質2g)</option>
+    <option value="燙高麗菜">清燙高麗菜 (50 kcal / 蛋白質2g)</option>
     <option value="炒敏豆">炒敏豆 / 四季豆 (110 kcal / 蛋白質2g)</option>
     <option value="燙敏豆">燙敏豆 (40 kcal / 蛋白質2g)</option>
     <option value="水煮毛豆">水煮毛豆仁 (125 kcal / 蛋白質13g)</option>
-    <option value="炒高麗菜">炒高麗菜 (130 kcal / 蛋白質2g)</option>
+    <option value="炒水蓮">炒水蓮 (140 kcal / 蛋白質2g)</option>
     <option value="炒芥藍菜">炒芥藍菜 (130 kcal / 蛋白質3g)</option>
-    <option value="燙地瓜葉">燙地瓜葉 (50 kcal / 蛋白質3g)</option>
-    <option value="筍乾">筍乾 (160 kcal / 蛋白質2g)</option>
+    <option value="燙芥藍菜">燙芥藍菜 (50 kcal / 蛋白質3g)</option>
+    <option value="筍乾">筍乾 / 滷筍乾 (160 kcal / 蛋白質2g)</option>
 
-    <!-- 雞肉專區 -->
-    <option value="雞肉">去皮雞肉 (140 kcal / 蛋白質26g)</option>
+    <!-- 🍗 雞肉專區 -->
+    <option value="雞肉">去皮雞肉一份 (140 kcal / 蛋白質26g)</option>
     <option value="雞胸肉">舒肥雞胸肉 (140 kcal / 蛋白質26g)</option>
-    <option value="水煮雞肉">水煮雞肉 (130 kcal / 蛋白質28g)</option>
+    <option value="水煮雞肉">水煮雞胸肉 (130 kcal / 蛋白質28g)</option>
+    <option value="舒肥雞肉">超商舒肥雞肉 (140 kcal / 蛋白質26g)</option>
     <option value="滷雞腿">便當滷大雞腿 (300 kcal / 蛋白質24g)</option>
     <option value="炸雞腿">便當炸大雞腿 (480 kcal / 蛋白質25g)</option>
     <option value="烤雞腿">烤雞腿 (320 kcal / 蛋白質26g)</option>
     <option value="炸雞排">炸雞排 (650 kcal / 蛋白質35g)</option>
-    <option value="鹽水雞">鹽水雞胸 (130 kcal / 蛋白質24g)</option>
+    <option value="鹽水雞">鹽水雞一份 (220 kcal / 蛋白質22g)</option>
+    <option value="鹽水雞胸">鹽水雞胸 (130 kcal / 蛋白質24g)</option>
+    <option value="三杯雞">三杯雞一份 (520 kcal / 蛋白質36g)</option>
 
-    <!-- 豬肉、豬頭皮與黑白切 -->
-    <option value="豬肉">瘦豬肉 (180 kcal / 蛋白質22g)</option>
+    <!-- 🥩 豬肉、豬頭皮、黑白切與排骨 -->
+    <option value="豬肉">瘦豬肉一份 (180 kcal / 蛋白質22g)</option>
     <option value="豬頭皮">黑白切豬頭皮 (240 kcal / 蛋白質15g)</option>
     <option value="豬耳朵">黑白切豬耳朵 (220 kcal / 蛋白質16g)</option>
     <option value="嘴邊肉">黑白切嘴邊肉 (140 kcal / 蛋白質18g)</option>
     <option value="肝連肉">黑白切肝連肉 (150 kcal / 蛋白質18g)</option>
     <option value="骨仔肉">骨仔肉 (150 kcal / 蛋白質17g)</option>
     <option value="松阪豬">松阪豬肉 (220 kcal / 蛋白質16g)</option>
-    <option value="滷排骨">便當滷排骨 (340 kcal / 蛋白質20g)</option>
-    <option value="炸排骨">便當炸排骨 (450 kcal / 蛋白質22g)</option>
-    <option value="控肉">滷控肉 (320 kcal / 蛋白質12g)</option>
+    <option value="蒜泥白肉">蒜泥白肉 (280 kcal / 蛋白質15g)</option>
+    <option value="大腸頭">滷大腸頭 (260 kcal / 蛋白質12g)</option>
+    <option value="滷排骨">便當厚切滷排骨 (340 kcal / 蛋白質20g)</option>
+    <option value="炸排骨">便當現炸排骨 (450 kcal / 蛋白質22g)</option>
+    <option value="控肉">滷控肉一塊 (320 kcal / 蛋白質12g)</option>
     <option value="鹹蛋蒸肉">鹹蛋蒸肉 / 蒸肉餅 (300 kcal / 蛋白質18g)</option>
+    <option value="正忠排骨飯">正忠排骨便當 (890 kcal / 蛋白質32g)</option>
 
-    <!-- 麵類與粄條 -->
+    <!-- 🍜 麵類、粄條與義大利麵 -->
     <option value="粄條">客家湯粄條 (400 kcal / 蛋白質8g)</option>
     <option value="乾粄條">乾拌粄條 (450 kcal / 蛋白質8g)</option>
     <option value="炒粄條">客家炒粄條 (580 kcal / 蛋白質12g)</option>
     <option value="麻醬麵">麻醬乾麵 (520 kcal / 蛋白質12g)</option>
+    <option value="炸醬麵">炸醬乾麵 (500 kcal / 蛋白質14g)</option>
+    <option value="肉燥乾麵">肉燥乾麵 (480 kcal / 蛋白質12g)</option>
+    <option value="涼麵">台式麻醬涼麵 (450 kcal / 蛋白質11g)</option>
     <option value="牛肉麵">紅燒牛肉麵 (750 kcal / 蛋白質30g)</option>
+    <option value="清燉牛肉麵">清燉牛肉麵 (580 kcal / 蛋白質30g)</option>
     <option value="陽春麵">清湯陽春麵 (350 kcal / 蛋白質9g)</option>
-    <option value="炸醬麵">炸醬麵 (500 kcal / 蛋白質14g)</option>
-    <option value="涼麵">麻醬涼麵 (450 kcal / 蛋白質11g)</option>
+    <option value="榨菜肉絲麵">榨菜肉絲麵 (450 kcal / 蛋白質14g)</option>
+    <option value="餛飩麵">餛飩麵 (460 kcal / 蛋白質16g)</option>
+    <option value="白酒蛤蜊義大利麵">蒜辣白酒蛤蜊麵 (490 kcal / 蛋白質22g)</option>
+    <option value="肉醬義大利麵">波隆那肉醬義大利麵 (620 kcal / 蛋白質20g)</option>
 
-    <!-- 麵輪、豆類與滷味 -->
-    <option value="麵輪">滷麵輪 (200 kcal / 蛋白質12g)</option>
+    <!-- 🍲 麵輪、滷味與小吃 -->
+    <option value="麵輪">滷麵輪一份 (200 kcal / 蛋白質12g)</option>
     <option value="旗魚黑輪">旗魚黑輪一串 (160 kcal / 蛋白質8g)</option>
-    <option value="包蛋旗魚黑輪">包蛋旗魚黑輪 (130 kcal / 蛋白質6g)</option>
+    <option value="包蛋旗魚黑輪">夜市包蛋旗魚黑輪 (130 kcal / 蛋白質6g)</option>
     <option value="關東煮">綜合關東煮 (180 kcal / 蛋白質8g)</option>
-    <option value="關東煮黑輪">關東煮黑輪 (95 kcal / 蛋白質4g)</option>
-    <option value="滷豆干">滷豆干 (135 kcal / 蛋白質14g)</option>
+    <option value="關東煮黑輪">關東煮黑輪一支 (95 kcal / 蛋白質4g)</option>
+    <option value="滷豆干">滷豆干3塊 (135 kcal / 蛋白質14g)</option>
     <option value="滷百頁豆腐">滷百頁豆腐 (200 kcal / 蛋白質12g)</option>
+    <option value="滷花干">滷花干一塊 (180 kcal / 蛋白質10g)</option>
+    <option value="滷海帶">滷海帶一條 (20 kcal / 蛋白質1g)</option>
+    <option value="滷米血">滷米血一塊 (140 kcal / 蛋白質2g)</option>
     <option value="滷蛋">滷蛋一顆 (75 kcal / 蛋白質7g)</option>
+    <option value="滷牛腱">滷牛腱一份 (160 kcal / 蛋白質26g)</option>
     <option value="綜合滷味">綜合滷味一份 (180 kcal / 蛋白質10g)</option>
+    <option value="滷肉飯">小碗滷肉飯 (420 kcal / 蛋白質12g)</option>
+    <option value="肉燥">肉燥一湯匙 (120 kcal / 蛋白質5g)</option>
 
-    <!-- 水晶餃、白飯與飲品 -->
+    <!-- 🥟 水晶餃、白飯與蛋豆飲品 -->
     <option value="台南水晶餃">台南大水晶餃 (200 kcal / 蛋白質6g)</option>
+    <option value="祿記水晶餃">台南百年老店祿記 (200 kcal / 蛋白質6g)</option>
     <option value="客家水晶餃">三角客家水晶餃 (120 kcal / 蛋白質4g)</option>
-    <option value="水晶餃">小水晶餃 (60 kcal / 蛋白質2g)</option>
+    <option value="水晶餃">小水晶餃一顆 (60 kcal / 蛋白質2g)</option>
     <option value="白飯">白飯一碗 (280 kcal / 蛋白質6g)</option>
     <option value="白飯(半碗)">白飯半碗 (140 kcal / 蛋白質3g)</option>
-    <option value="奇亞籽">奇亞籽 1匙 (60 kcal / 蛋白質3g)</option>
-    <option value="奇亞籽水">奇亞籽水 1杯 (60 kcal / 蛋白質3g)</option>
+    <option value="奇亞籽">奇亞籽一匙 (60 kcal / 蛋白質3g)</option>
+    <option value="奇亞籽水">奇亞籽水一杯 (60 kcal / 蛋白質3g)</option>
     <option value="無糖豆漿">無糖豆漿 (147 kcal / 蛋白質15g)</option>
+    <option value="黑豆漿">無糖黑豆漿 (170 kcal / 蛋白質16g)</option>
     <option value="水煮蛋">水煮蛋 (75 kcal / 蛋白質7g)</option>
+    <option value="荷包蛋">荷包蛋 (120 kcal / 蛋白質7g)</option>
+    <option value="芝麻吐司">芝麻吐司單片 (180 kcal / 蛋白質5g)</option>
   </datalist>
 
   <div class="container">
@@ -342,7 +371,7 @@
     <div class="card">
       <div class="card-head">
         <span class="badge b-step">👟 每日步數</span>
-        <span style="font-size:0.82rem; color:#64748b;">消耗：<strong id="sub-steps" style="color:#6b21a8;">0</strong> kcal</span>
+        <span style="font-size:0.82rem; color:#6b7280;">消耗：<strong id="sub-steps" style="color:#6b21a8;">0</strong> kcal</span>
       </div>
       <div style="display:grid; grid-template-columns: 2fr 1fr auto; gap:6px;">
         <input type="number" id="stepInput" placeholder="輸入步數 (如: 6000)" onkeydown="if(event.key==='Enter') saveSteps()">
@@ -403,7 +432,7 @@
         </div>
       </div>
       <div class="meal-input-group">
-        <input type="text" id="name-lunch" list="foodDatalist" placeholder="🔍 點此選單或打字搜尋 (如: 大陸妹、旗魚黑輪)" oninput="onFoodInput('lunch')" onkeydown="handleEnterAdd(event, 'lunch')" autocomplete="off">
+        <input type="text" id="name-lunch" list="foodDatalist" placeholder="🔍 點此選單或打字搜尋 (如: 燙大陸妹、旗魚黑輪)" oninput="onFoodInput('lunch')" onkeydown="handleEnterAdd(event, 'lunch')" autocomplete="off">
         <div class="input-row-sub">
           <input type="number" id="qty-lunch" value="1" step="0.5" min="0.1" placeholder="份數" oninput="updateTotalCal('lunch')" onkeydown="handleEnterAdd(event, 'lunch')">
           <input type="number" id="cal-lunch" placeholder="🔥 熱量 (kcal)" oninput="onManualCalChange('lunch')" onkeydown="handleEnterAdd(event, 'lunch')">
@@ -424,7 +453,7 @@
         </div>
       </div>
       <div class="meal-input-group">
-        <input type="text" id="name-dinner" list="foodDatalist" placeholder="🔍 點此選單或打字搜尋 (如: 大陸妹、豬頭皮)" oninput="onFoodInput('dinner')" onkeydown="handleEnterAdd(event, 'dinner')" autocomplete="off">
+        <input type="text" id="name-dinner" list="foodDatalist" placeholder="🔍 點此選單或打字搜尋 (如: 燙大陸妹、豬頭皮)" oninput="onFoodInput('dinner')" onkeydown="handleEnterAdd(event, 'dinner')" autocomplete="off">
         <div class="input-row-sub">
           <input type="number" id="qty-dinner" value="1" step="0.5" min="0.1" placeholder="份數" oninput="updateTotalCal('dinner')" onkeydown="handleEnterAdd(event, 'dinner')">
           <input type="number" id="cal-dinner" placeholder="🔥 熱量 (kcal)" oninput="onManualCalChange('dinner')" onkeydown="handleEnterAdd(event, 'dinner')">
@@ -444,7 +473,7 @@
         </div>
       </div>
       <div class="meal-input-group">
-        <input type="text" id="name-snack" list="foodDatalist" placeholder="🔍 點此選單或打字搜尋 (如: 旗魚黑輪、毛豆)" oninput="onFoodInput('snack')" onkeydown="handleEnterAdd(event, 'snack')" autocomplete="off">
+        <input type="text" id="name-snack" list="foodDatalist" placeholder="🔍 點此選單或打字搜尋 (如: 旗魚黑輪、水晶餃)" oninput="onFoodInput('snack')" onkeydown="handleEnterAdd(event, 'snack')" autocomplete="off">
         <div class="input-row-sub">
           <input type="number" id="qty-snack" value="1" step="0.5" min="0.1" placeholder="份數" oninput="updateTotalCal('snack')" onkeydown="handleEnterAdd(event, 'snack')">
           <input type="number" id="cal-snack" placeholder="🔥 熱量 (kcal)" oninput="onManualCalChange('snack')" onkeydown="handleEnterAdd(event, 'snack')">
@@ -507,22 +536,38 @@
       localStorage.setItem('custom_barcode_db', JSON.stringify(custom));
     }
 
-    // 核心卡路里字典庫（已包含大陸妹與福山萵苣）
+    // 🌟 全面校對後的完整核心卡路里字典庫
     const calorieDictionary = {
-      // 🥬 蔬菜專區
-      "大陸妹": { cal: 35, p: 2 },
+      // 🥬 蔬菜專區（全面涵蓋 清燙 vs 淋肉燥/油蔥 vs 蒜炒）
+      "燙大陸妹(淋肉燥)": { cal: 120, p: 2 },
       "燙大陸妹": { cal: 35, p: 2 },
       "炒大陸妹": { cal: 100, p: 2 },
+      "大陸妹": { cal: 35, p: 2 },
       "福山萵苣": { cal: 35, p: 2 },
-      "炒菠菜": { cal: 120, p: 3 },
+      "燙菠菜(淋肉燥)": { cal: 130, p: 3 },
       "燙菠菜": { cal: 45, p: 3 },
+      "炒菠菜": { cal: 120, p: 3 },
+      "菠菜": { cal: 120, p: 3 },
+      "燙地瓜葉(淋肉燥)": { cal: 140, p: 3 },
+      "燙地瓜葉": { cal: 50, p: 3 },
+      "炒地瓜葉": { cal: 120, p: 3 },
+      "地瓜葉": { cal: 50, p: 3 },
+      "炒高麗菜": { cal: 130, p: 2 },
+      "燙高麗菜": { cal: 50, p: 2 },
+      "高麗菜": { cal: 130, p: 2 },
       "炒敏豆": { cal: 110, p: 2 },
+      "敏豆": { cal: 110, p: 2 },
+      "四季豆": { cal: 110, p: 2 },
       "燙敏豆": { cal: 40, p: 2 },
       "水煮毛豆": { cal: 125, p: 13 },
-      "炒高麗菜": { cal: 130, p: 2 },
+      "毛豆": { cal: 125, p: 13 },
+      "炒水蓮": { cal: 140, p: 2 },
+      "水蓮": { cal: 140, p: 2 },
       "炒芥藍菜": { cal: 130, p: 3 },
-      "燙地瓜葉": { cal: 50, p: 3 },
+      "燙芥藍菜": { cal: 50, p: 3 },
+      "芥藍": { cal: 130, p: 3 },
       "筍乾": { cal: 160, p: 2 },
+      "滷筍乾": { cal: 160, p: 2 },
 
       // 🍗 雞肉專區
       "雞肉": { cal: 140, p: 26 },
@@ -533,9 +578,11 @@
       "炸雞腿": { cal: 480, p: 25 },
       "烤雞腿": { cal: 320, p: 26 },
       "炸雞排": { cal: 650, p: 35 },
-      "鹽水雞": { cal: 130, p: 24 },
+      "鹽水雞": { cal: 220, p: 22 },
+      "鹽水雞胸": { cal: 130, p: 24 },
+      "三杯雞": { cal: 520, p: 36 },
 
-      // 🥩 豬肉、豬頭皮與黑白切
+      // 🥩 豬肉、豬頭皮、黑白切與排骨
       "豬肉": { cal: 180, p: 22 },
       "豬頭皮": { cal: 240, p: 15 },
       "豬耳朵": { cal: 220, p: 16 },
@@ -543,34 +590,53 @@
       "肝連肉": { cal: 150, p: 18 },
       "骨仔肉": { cal: 150, p: 17 },
       "松阪豬": { cal: 220, p: 16 },
+      "蒜泥白肉": { cal: 280, p: 15 },
+      "大腸頭": { cal: 260, p: 12 },
       "滷排骨": { cal: 340, p: 20 },
       "炸排骨": { cal: 450, p: 22 },
       "控肉": { cal: 320, p: 12 },
       "鹹蛋蒸肉": { cal: 300, p: 18 },
+      "鹹蛋蒸肉餅": { cal: 300, p: 18 },
+      "正忠排骨飯": { cal: 890, p: 32 },
 
-      // 🍜 麵類與粄條
+      // 🍜 麵類、粄條與義大利麵
       "粄條": { cal: 400, p: 8 },
       "乾粄條": { cal: 450, p: 8 },
       "炒粄條": { cal: 580, p: 12 },
       "麻醬麵": { cal: 520, p: 12 },
-      "牛肉麵": { cal: 750, p: 30 },
-      "陽春麵": { cal: 350, p: 9 },
       "炸醬麵": { cal: 500, p: 14 },
+      "肉燥乾麵": { cal: 480, p: 12 },
       "涼麵": { cal: 450, p: 11 },
+      "牛肉麵": { cal: 750, p: 30 },
+      "紅燒牛肉麵": { cal: 780, p: 30 },
+      "清燉牛肉麵": { cal: 580, p: 30 },
+      "陽春麵": { cal: 350, p: 9 },
+      "榨菜肉絲麵": { cal: 450, p: 14 },
+      "餛飩麵": { cal: 460, p: 16 },
+      "白酒蛤蜊義大利麵": { cal: 490, p: 22 },
+      "肉醬義大利麵": { cal: 620, p: 20 },
 
-      // 🍲 麵輪、豆類與滷味
+      // 🍲 麵輪、滷味與小吃
       "麵輪": { cal: 200, p: 12 },
+      "滷麵輪": { cal: 200, p: 12 },
       "旗魚黑輪": { cal: 160, p: 8 },
       "包蛋旗魚黑輪": { cal: 130, p: 6 },
       "關東煮": { cal: 180, p: 8 },
       "關東煮黑輪": { cal: 95, p: 4 },
       "滷豆干": { cal: 135, p: 14 },
       "滷百頁豆腐": { cal: 200, p: 12 },
+      "滷花干": { cal: 180, p: 10 },
+      "滷海帶": { cal: 20, p: 1 },
+      "滷米血": { cal: 140, p: 2 },
       "滷蛋": { cal: 75, p: 7 },
+      "滷牛腱": { cal: 160, p: 26 },
       "綜合滷味": { cal: 180, p: 10 },
+      "滷肉飯": { cal: 420, p: 12 },
+      "肉燥": { cal: 120, p: 5 },
 
-      // 🥟 水晶餃、白飯與飲品
+      // 🥟 水晶餃、白飯與蛋豆飲品
       "台南水晶餃": { cal: 200, p: 6 },
+      "祿記水晶餃": { cal: 200, p: 6 },
       "客家水晶餃": { cal: 120, p: 4 },
       "水晶餃": { cal: 60, p: 2 },
       "白飯": { cal: 280, p: 6 },
@@ -578,7 +644,10 @@
       "奇亞籽": { cal: 60, p: 3 },
       "奇亞籽水": { cal: 60, p: 3 },
       "無糖豆漿": { cal: 147, p: 15 },
-      "水煮蛋": { cal: 75, p: 7 }
+      "黑豆漿": { cal: 170, p: 16 },
+      "水煮蛋": { cal: 75, p: 7 },
+      "荷包蛋": { cal: 120, p: 7 },
+      "芝麻吐司": { cal: 180, p: 5 }
     };
 
     let baseCaloriesMap = {};
