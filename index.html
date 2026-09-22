@@ -174,8 +174,23 @@
 
   <div id="syncToast">🔄 雲端同步中...</div>
 
-  <!-- 🌟 全品項完整收錄選單 (含馬可先生系列、蛋餅、燒餅油條、糕餅、蔬菜細分、肉類) -->
+  <!-- 🌟 全品項完整收錄選單 (含炒飯系列、洋蔥炒肉、蛋餅、糕餅、蔬菜、肉類) -->
   <datalist id="foodDatalist">
+    <!-- 🍳 炒飯系列專區 -->
+    <option value="醬油洋蔥豬肉炒飯">醬油洋蔥豬肉炒飯 (650 kcal / 蛋白質22g)</option>
+    <option value="洋蔥豬肉炒飯">洋蔥豬肉炒飯 (650 kcal / 蛋白質22g)</option>
+    <option value="豬肉炒飯">台式肉絲炒飯 / 豬肉炒飯 (620 kcal / 蛋白質20g)</option>
+    <option value="醬油炒飯">醬油蛋炒飯 (520 kcal / 蛋白質14g)</option>
+    <option value="牛肉炒飯">牛肉炒飯 (660 kcal / 蛋白質24g)</option>
+    <option value="蝦仁炒飯">蝦仁蛋炒飯 (550 kcal / 蛋白質19g)</option>
+
+    <!-- 🧅 洋蔥炒肉、家常熱炒專區 -->
+    <option value="洋蔥炒肉">洋蔥炒肉 / 洋蔥炒豬肉 (260 kcal / 蛋白質18g)</option>
+    <option value="洋蔥炒豬肉">洋蔥炒豬肉 (260 kcal / 蛋白質18g)</option>
+    <option value="洋蔥炒牛肉">洋蔥炒牛肉 (250 kcal / 蛋白質22g)</option>
+    <option value="洋蔥炒雞肉">洋蔥炒雞肉 (190 kcal / 蛋白質25g)</option>
+    <option value="黑胡椒洋蔥豬柳">黑胡椒洋蔥豬柳 (280 kcal / 蛋白質19g)</option>
+
     <!-- 🥖 馬可先生健康專區 -->
     <option value="馬可先生無糖黑豆漿">馬可先生無糖黑豆漿 (170 kcal / 蛋白質16g)</option>
     <option value="馬可先生無糖濃豆漿">馬可先生無糖濃豆漿 (160 kcal / 蛋白質15g)</option>
@@ -442,7 +457,7 @@
         </div>
       </div>
       <div class="meal-input-group">
-        <input type="text" id="name-breakfast" list="foodDatalist" placeholder="🔍 點此選單或打字 (如: 馬可先生、洋蔥蛋餅)" oninput="onFoodInput('breakfast')" onkeydown="handleEnterAdd(event, 'breakfast')" autocomplete="off">
+        <input type="text" id="name-breakfast" list="foodDatalist" placeholder="🔍 點此選單或打字 (如: 洋蔥炒飯、洋蔥蛋餅)" oninput="onFoodInput('breakfast')" onkeydown="handleEnterAdd(event, 'breakfast')" autocomplete="off">
         <div class="input-row-sub">
           <input type="number" id="qty-breakfast" value="1" step="0.5" min="0.1" placeholder="份數" oninput="updateTotalCal('breakfast')" onkeydown="handleEnterAdd(event, 'breakfast')">
           <input type="number" id="cal-breakfast" placeholder="🔥 熱量 (kcal)" oninput="onManualCalChange('breakfast')" onkeydown="handleEnterAdd(event, 'breakfast')">
@@ -463,7 +478,7 @@
         </div>
       </div>
       <div class="meal-input-group">
-        <input type="text" id="name-lunch" list="foodDatalist" placeholder="🔍 點此選單或打字 (如: 燙大陸妹、綠豆椪)" oninput="onFoodInput('lunch')" onkeydown="handleEnterAdd(event, 'lunch')" autocomplete="off">
+        <input type="text" id="name-lunch" list="foodDatalist" placeholder="🔍 點此選單或打字 (如: 醬油洋蔥豬肉炒飯、燙大陸妹)" oninput="onFoodInput('lunch')" onkeydown="handleEnterAdd(event, 'lunch')" autocomplete="off">
         <div class="input-row-sub">
           <input type="number" id="qty-lunch" value="1" step="0.5" min="0.1" placeholder="份數" oninput="updateTotalCal('lunch')" onkeydown="handleEnterAdd(event, 'lunch')">
           <input type="number" id="cal-lunch" placeholder="🔥 熱量 (kcal)" oninput="onManualCalChange('lunch')" onkeydown="handleEnterAdd(event, 'lunch')">
@@ -484,7 +499,7 @@
         </div>
       </div>
       <div class="meal-input-group">
-        <input type="text" id="name-dinner" list="foodDatalist" placeholder="🔍 點此選單或打字 (如: 鳳梨酥、豬頭皮、麵輪)" oninput="onFoodInput('dinner')" onkeydown="handleEnterAdd(event, 'dinner')" autocomplete="off">
+        <input type="text" id="name-dinner" list="foodDatalist" placeholder="🔍 點此選單或打字 (如: 洋蔥豬肉炒飯、洋蔥炒牛肉)" oninput="onFoodInput('dinner')" onkeydown="handleEnterAdd(event, 'dinner')" autocomplete="off">
         <div class="input-row-sub">
           <input type="number" id="qty-dinner" value="1" step="0.5" min="0.1" placeholder="份數" oninput="updateTotalCal('dinner')" onkeydown="handleEnterAdd(event, 'dinner')">
           <input type="number" id="cal-dinner" placeholder="🔥 熱量 (kcal)" oninput="onManualCalChange('dinner')" onkeydown="handleEnterAdd(event, 'dinner')">
@@ -504,7 +519,7 @@
         </div>
       </div>
       <div class="meal-input-group">
-        <input type="text" id="name-snack" list="foodDatalist" placeholder="🔍 點此選單或打字 (如: 馬可先生、蛋黃酥、旗魚黑輪)" oninput="onFoodInput('snack')" onkeydown="handleEnterAdd(event, 'snack')" autocomplete="off">
+        <input type="text" id="name-snack" list="foodDatalist" placeholder="🔍 點此選單或打字 (如: 蛋黃酥、旗魚黑輪)" oninput="onFoodInput('snack')" onkeydown="handleEnterAdd(event, 'snack')" autocomplete="off">
         <div class="input-row-sub">
           <input type="number" id="qty-snack" value="1" step="0.5" min="0.1" placeholder="份數" oninput="updateTotalCal('snack')" onkeydown="handleEnterAdd(event, 'snack')">
           <input type="number" id="cal-snack" placeholder="🔥 熱量 (kcal)" oninput="onManualCalChange('snack')" onkeydown="handleEnterAdd(event, 'snack')">
@@ -567,8 +582,27 @@
       localStorage.setItem('custom_barcode_db', JSON.stringify(custom));
     }
 
-    // 🌟 全面校對後的完整核心卡路里字典庫（含馬可先生系列、模糊比對）
+    // 🌟 全面校對後的完整核心卡路里字典庫（含炒飯系列、洋蔥炒肉、馬可先生、蛋餅、糕餅、蔬菜細分、肉類）
     const calorieDictionary = {
+      // 🍳 炒飯系列專區
+      "醬油洋蔥豬肉炒飯": { cal: 650, p: 22 },
+      "洋蔥豬肉炒飯": { cal: 650, p: 22 },
+      "豬肉炒飯": { cal: 620, p: 20 },
+      "肉絲炒飯": { cal: 620, p: 20 },
+      "醬油炒飯": { cal: 520, p: 14 },
+      "牛肉炒飯": { cal: 660, p: 24 },
+      "蝦仁炒飯": { cal: 550, p: 19 },
+      "蛋炒飯": { cal: 500, p: 14 },
+      "炒飯": { cal: 600, p: 18 },
+
+      // 🧅 洋蔥炒肉、家常熱炒專區
+      "洋蔥炒肉": { cal: 260, p: 18 },
+      "洋蔥炒豬肉": { cal: 260, p: 18 },
+      "洋蔥炒牛肉": { cal: 250, p: 22 },
+      "洋蔥炒雞肉": { cal: 190, p: 25 },
+      "黑胡椒洋蔥豬柳": { cal: 280, p: 19 },
+      "洋蔥豬柳": { cal: 280, p: 19 },
+
       // 🥖 馬可先生健康專區
       "馬可先生無糖黑豆漿": { cal: 170, p: 16 },
       "馬可先生無糖濃豆漿": { cal: 160, p: 15 },
@@ -721,7 +755,6 @@
     let baseCaloriesMap = {};
     let baseProteinMap = {};
 
-    // 🌟 強效模糊比對函式（支援關鍵字、子字串與多音錯別字）
     function onFoodInput(type) {
       const inputVal = document.getElementById(`name-${type}`).value.trim();
       if (!inputVal) return;
@@ -732,10 +765,7 @@
         .replace(/魯/g, '滷')
         .replace(/奇芽/g, '奇亞');
 
-      // 1. 先找完全符合或標準化符合
       let matchedKey = Object.keys(calorieDictionary).find(k => k === inputVal || k === normVal);
-      
-      // 2. 次之模糊雙向包含比對（例如輸入「馬可」或「黑豆」自動命中「馬可先生無糖黑豆漿」）
       if (!matchedKey) {
         matchedKey = Object.keys(calorieDictionary).find(k => k.includes(normVal) || normVal.includes(k));
       }
