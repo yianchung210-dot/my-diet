@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>健康熱量與生活日記</title>
+  <title>健康熱量日記 v7.1 條碼記憶修復版</title>
   <script src="https://unpkg.com/html5-qrcode"></script>
   <style>
     :root {
-      --bg: #f8fafc;
+      --bg: #f3f4f6;
       --card-bg: #ffffff;
-      --text-main: #0f172a;
-      --text-sub: #64748b;
+      --text-main: #111827;
+      --text-sub: #6b7280;
       --primary: #2563eb;
-      --border-color: #e2e8f0;
+      --border-color: #e5e7eb;
     }
 
     * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif; margin: 0; padding: 0; }
@@ -21,88 +21,85 @@
 
     #syncToast {
       position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
-      background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(8px); color: #f8fafc;
-      font-size: 0.8rem; font-weight: 600; letter-spacing: 0.3px;
-      padding: 8px 18px; border-radius: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-      z-index: 999999; display: none; align-items: center; gap: 6px;
+      background: rgba(17, 24, 39, 0.92); backdrop-filter: blur(8px); color: #f9fafb;
+      font-size: 0.8rem; font-weight: 600; padding: 8px 18px; border-radius: 30px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15); z-index: 999999; display: none; align-items: center; gap: 6px;
     }
 
-    /* 日期切換 */
+    /* 日期導覽 */
     .date-nav {
       display: flex; align-items: center; justify-content: space-between;
-      background: var(--card-bg); padding: 8px 10px; border-radius: 16px;
-      border: 1px solid var(--border-color); box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+      background: var(--card-bg); padding: 8px 12px; border-radius: 16px;
+      border: 1px solid var(--border-color); box-shadow: 0 2px 6px rgba(0,0,0,0.02);
     }
     .date-nav button {
-      background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 10px;
+      background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 10px;
       padding: 6px 12px; font-size: 0.78rem; font-weight: 600; cursor: pointer;
-      color: #334155; transition: all 0.15s ease;
+      color: #374151; transition: all 0.15s ease;
     }
-    .date-nav button:active { background: #e2e8f0; transform: scale(0.96); }
+    .date-nav button:active { background: #e5e7eb; transform: scale(0.96); }
     .date-picker-wrap { display: flex; align-items: center; gap: 6px; }
     .date-picker-wrap input[type="date"] {
       padding: 5px 8px; font-size: 0.85rem; font-weight: 700;
-      border: 1px solid #cbd5e1; border-radius: 10px; outline: none;
-      background: #fff; color: #1e293b;
+      border: 1px solid #d1d5db; border-radius: 10px; outline: none;
+      background: #fff; color: #111827;
     }
 
-    /* 頂部儀表板 */
+    /* 頂部霧黑極簡儀表板 */
     .summary-box {
-      background: linear-gradient(145deg, #1e293b 0%, #334155 50%, #1e3a8a 100%);
-      color: white; border-radius: 20px; padding: 18px;
-      box-shadow: 0 12px 28px -6px rgba(30, 41, 59, 0.35);
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      color: white; border-radius: 20px; padding: 20px 18px;
+      box-shadow: 0 12px 30px -8px rgba(15, 23, 42, 0.45);
       position: relative; overflow: hidden;
     }
     .summary-box::after {
-      content: ""; position: absolute; top: -50px; right: -50px;
-      width: 140px; height: 140px; background: rgba(255,255,255,0.05);
+      content: ""; position: absolute; top: -40px; right: -40px;
+      width: 120px; height: 120px; background: rgba(255,255,255,0.04);
       border-radius: 50%; pointer-events: none;
     }
-    .summary-top { display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem; font-weight: 500; opacity: 0.92; }
+    .summary-top { display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem; font-weight: 500; opacity: 0.9; }
     .budget-tag {
-      background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(4px);
-      padding: 3px 10px; border-radius: 20px; cursor: pointer; font-size: 0.73rem;
-      font-weight: 600; border: 1px solid rgba(255,255,255,0.22);
-      transition: background 0.2s;
+      background: rgba(255, 255, 255, 0.12); backdrop-filter: blur(4px);
+      padding: 4px 10px; border-radius: 20px; cursor: pointer; font-size: 0.73rem;
+      font-weight: 600; border: 1px solid rgba(255,255,255,0.2);
     }
-    .budget-tag:active { background: rgba(255, 255, 255, 0.25); }
+    .budget-tag:active { background: rgba(255, 255, 255, 0.22); }
 
-    .net-cal-wrap { text-align: center; margin: 10px 0 12px; }
-    .net-cal-title { font-size: 0.78rem; opacity: 0.82; letter-spacing: 0.5px; font-weight: 500; }
-    .net-cal { font-size: 2.6rem; font-weight: 800; letter-spacing: -0.5px; line-height: 1.1; margin-top: 2px; }
-    .net-cal span { font-size: 0.95rem; font-weight: 500; opacity: 0.85; }
+    .net-cal-wrap { text-align: center; margin: 12px 0 14px; }
+    .net-cal-title { font-size: 0.78rem; opacity: 0.75; letter-spacing: 0.5px; font-weight: 500; }
+    .net-cal { font-size: 2.7rem; font-weight: 800; letter-spacing: -0.5px; line-height: 1; margin-top: 4px; }
+    .net-cal span { font-size: 0.95rem; font-weight: 500; opacity: 0.8; }
 
     .stats-row {
       display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;
-      border-top: 1px solid rgba(255, 255, 255, 0.16); padding-top: 12px; text-align: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.12); padding-top: 12px; text-align: center;
     }
-    .stat-label { font-size: 0.7rem; opacity: 0.8; font-weight: 500; }
-    .stat-val { font-size: 1rem; font-weight: 700; margin-top: 3px; letter-spacing: -0.2px; }
+    .stat-label { font-size: 0.7rem; opacity: 0.75; font-weight: 500; }
+    .stat-val { font-size: 0.98rem; font-weight: 700; margin-top: 3px; }
 
-    .protein-box { margin-top: 12px; padding-top: 10px; border-top: 1px dashed rgba(255, 255, 255, 0.2); font-size: 0.75rem; }
+    .protein-box { margin-top: 12px; padding-top: 10px; border-top: 1px dashed rgba(255, 255, 255, 0.16); font-size: 0.75rem; }
     .protein-top { display: flex; justify-content: space-between; margin-bottom: 5px; font-weight: 500; }
-    .protein-bar-bg { width: 100%; height: 7px; background: rgba(255, 255, 255, 0.2); border-radius: 10px; overflow: hidden; }
+    .protein-bar-bg { width: 100%; height: 7px; background: rgba(255, 255, 255, 0.16); border-radius: 10px; overflow: hidden; }
     .protein-bar-fill { height: 100%; background: #38bdf8; width: 0%; border-radius: 10px; transition: width 0.4s ease; }
 
-    /* 卡片設計 */
+    /* 卡片與標籤 */
     .card {
       background: var(--card-bg); border-radius: 18px; padding: 16px;
-      border: 1px solid var(--border-color);
-      box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.04);
+      border: 1px solid var(--border-color); box-shadow: 0 4px 16px -2px rgba(0,0,0,0.03);
     }
     .card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
 
     .btn-copy-yesterday {
-      background: #f1f5f9; border: 1px solid #cbd5e1; color: #334155;
+      background: #f3f4f6; border: 1px solid #d1d5db; color: #374151;
       font-size: 0.72rem; font-weight: 600; padding: 4px 9px; border-radius: 8px; cursor: pointer;
     }
     .btn-clear-meal {
-      background: #f8fafc; border: 1px solid #cbd5e1; color: #64748b;
+      background: #f9fafb; border: 1px solid #e5e7eb; color: #6b7280;
       font-size: 0.72rem; font-weight: 600; padding: 4px 9px; border-radius: 8px; cursor: pointer; margin-left: 4px;
     }
-    .btn-clear-meal:active { background: #e2e8f0; color: #334155; }
+    .btn-clear-meal:active { background: #e5e7eb; color: #111827; }
 
-    /* 質感中性標籤（無粉紅、無桃紅） */
+    /* 沉穩標籤（零粉紅、零桃紅） */
     .badge {
       display: inline-flex; align-items: center; gap: 4px;
       padding: 4px 10px; border-radius: 10px; font-size: 0.82rem; font-weight: 700;
@@ -112,59 +109,58 @@
     .b-step { background: #ede9fe; color: #5b21b6; }
     .b-sport { background: #dcfce7; color: #15803d; }
     .b-breakfast { background: #fef3c7; color: #92400e; }
-    .b-lunch { background: #e2e8f0; color: #334155; }       /* 改為質感石板灰藍 */
-    .b-dinner { background: #e0e7ff; color: #3730a3; }      /* 靛藍 */
-    .b-snack { background: #fef9c3; color: #854d0e; }       /* 沉穩琥珀金 */
-    .b-drink { background: #cffafe; color: #0e7490; }       /* 冰河青藍 */
+    .b-lunch { background: #e2e8f0; color: #334155; }
+    .b-dinner { background: #e0e7ff; color: #3730a3; }
+    .b-snack { background: #fef9c3; color: #854d0e; }
+    .b-drink { background: #cffafe; color: #0e7490; }
 
     /* 喝水進度條 */
     .water-progress-bg { width: 100%; height: 10px; background: #f0f9ff; border-radius: 10px; overflow: hidden; margin: 10px 0; border: 1px solid #e0f2fe; }
     .water-progress-fill { height: 100%; background: linear-gradient(90deg, #38bdf8, #0284c7); width: 0%; border-radius: 10px; transition: width 0.4s ease; }
     .quick-water-btns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 8px; }
     .btn-quick-water {
-      background: #f8fafc; border: 1px solid #e2e8f0; color: #0369a1;
+      background: #f9fafb; border: 1px solid #e5e7eb; color: #0369a1;
       border-radius: 10px; padding: 9px 4px; font-weight: 700; font-size: 0.82rem; cursor: pointer;
-      transition: all 0.15s ease;
     }
-    .btn-quick-water:active { background: #e0f2fe; border-color: #bae6fd; transform: scale(0.96); }
+    .btn-quick-water:active { background: #e0f2fe; border-color: #bae6fd; }
 
-    /* 輸入排版 */
+    /* 輸入區與排版 */
     .meal-input-group { display: flex; flex-direction: column; gap: 8px; position: relative; margin-bottom: 8px; }
     .input-row-sub { display: grid; grid-template-columns: 0.9fr 1.3fr auto; gap: 8px; align-items: center; }
     .grid-2 { display: grid; grid-template-columns: 1.4fr 1fr; gap: 8px; margin-bottom: 8px; }
     .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 8px; }
 
     input, select {
-      width: 100%; padding: 9px 12px; border: 1.5px solid #cbd5e1; border-radius: 10px;
-      font-size: 0.88rem; outline: none; background: #fff; color: #1e293b;
+      width: 100%; padding: 9px 12px; border: 1.5px solid #d1d5db; border-radius: 10px;
+      font-size: 0.88rem; outline: none; background: #fff; color: #111827;
       transition: border-color 0.2s, box-shadow 0.2s;
     }
     input:focus, select:focus {
-      border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+      border-color: #475569; box-shadow: 0 0 0 3px rgba(71, 85, 105, 0.15);
     }
 
     /* 浮動模糊選單 */
     .fuzzy-dropdown {
       position: absolute; top: 46px; left: 0; right: 0;
       background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px);
-      border: 1.5px solid #3b82f6; border-radius: 12px; max-height: 220px;
+      border: 1.5px solid #475569; border-radius: 12px; max-height: 220px;
       overflow-y: auto; z-index: 99999; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
       display: none;
     }
     .fuzzy-item {
-      padding: 10px 14px; font-size: 0.88rem; color: #1e293b; cursor: pointer;
-      display: flex; justify-content: space-between; border-bottom: 1px solid #f1f5f9;
+      padding: 10px 14px; font-size: 0.88rem; color: #111827; cursor: pointer;
+      display: flex; justify-content: space-between; border-bottom: 1px solid #f3f4f6;
     }
     .fuzzy-item:last-child { border-bottom: none; }
-    .fuzzy-item:hover, .fuzzy-item:active { background: #f1f5f9; color: #1e3a8a; font-weight: 600; }
+    .fuzzy-item:hover, .fuzzy-item:active { background: #f3f4f6; color: #0f172a; font-weight: 600; }
     .fuzzy-cal { color: #0f766e; font-size: 0.82rem; font-weight: 700; }
 
-    /* 按鈕 */
+    /* 按鈕樣式 */
     button.btn {
       border: none; border-radius: 10px; font-weight: 700; cursor: pointer;
-      padding: 9px 14px; font-size: 0.85rem; transition: transform 0.15s ease, opacity 0.2s;
+      padding: 9px 14px; font-size: 0.85rem; transition: transform 0.15s ease;
     }
-    button.btn:active { transform: scale(0.96); opacity: 0.9; }
+    button.btn:active { transform: scale(0.96); }
     .btn-add { background: #1e293b; color: white; padding: 9px 16px; font-size: 0.88rem; white-space: nowrap; }
     .btn-cam { width: 100%; background: #334155; color: white; padding: 11px; font-size: 0.9rem; }
     .btn-green { width: 100%; background: #15803d; color: white; }
@@ -172,22 +168,22 @@
     .btn-teal { width: 100%; background: #0f766e; color: white; }
     .btn-sky { width: 100%; background: #0284c7; color: white; }
 
-    /* 項目列 */
+    /* 紀錄清單列 */
     .item-list { display: flex; flex-direction: column; gap: 5px; margin-top: 4px; }
     .item-row {
       display: flex; justify-content: space-between; align-items: center;
-      padding: 8px 12px; background: #f8fafc; border-radius: 10px; font-size: 0.85rem;
-      border: 1px solid #f1f5f9;
+      padding: 8px 12px; background: #f9fafb; border-radius: 10px; font-size: 0.85rem;
+      border: 1px solid #f3f4f6;
     }
-    .time-tag { font-size: 0.72rem; color: #64748b; margin-left: 6px; background: #e2e8f0; padding: 2px 6px; border-radius: 6px; }
-    .del-btn { background: none; border: none; color: #94a3b8; font-size: 0.85rem; cursor: pointer; padding: 2px 6px; }
-    .del-btn:hover, .del-btn:active { color: #334155; }
+    .time-tag { font-size: 0.72rem; color: #6b7280; margin-left: 6px; background: #e5e7eb; padding: 2px 6px; border-radius: 6px; }
+    .del-btn { background: none; border: none; color: #9ca3af; font-size: 0.85rem; cursor: pointer; padding: 2px 6px; }
+    .del-btn:hover, .del-btn:active { color: #374151; }
 
-    .backup-footer { text-align: center; margin-top: 14px; font-size: 0.78rem; color: #64748b; display: flex; justify-content: center; gap: 14px; }
-    .backup-link { color: #334155; text-decoration: underline; cursor: pointer; font-weight: 600; }
+    .backup-footer { text-align: center; margin-top: 14px; font-size: 0.78rem; color: #6b7280; display: flex; justify-content: center; gap: 14px; }
+    .backup-link { color: #374151; text-decoration: underline; cursor: pointer; font-weight: 600; }
 
     #reader { border-radius: 12px; overflow: hidden; margin-top: 8px; display: none; }
-    #scanMsg { font-size: 0.78rem; color: #64748b; margin-top: 6px; text-align: center; }
+    #scanMsg { font-size: 0.78rem; color: #6b7280; margin-top: 6px; text-align: center; }
   </style>
 </head>
 <body>
@@ -196,7 +192,7 @@
 
   <div class="container">
 
-    <!-- 日期切換 -->
+    <!-- 日期導覽 -->
     <div class="date-nav">
       <button onclick="shiftDate(-1)">◀ 前一天</button>
       <div class="date-picker-wrap">
@@ -206,7 +202,7 @@
       <button onclick="shiftDate(1)">後一天 ▶</button>
     </div>
 
-    <!-- 頂部總覽 -->
+    <!-- 頂部總覽儀表板 -->
     <div class="summary-box">
       <div class="summary-top">
         <span id="dateShow">--</span>
@@ -255,7 +251,7 @@
     <div class="card">
       <div class="card-head">
         <span class="badge b-water">💧 喝水紀錄</span>
-        <span style="font-size:0.82rem; color:#64748b;">已喝：<strong id="waterCur" style="color:#0284c7;">0</strong> / <span id="waterGoal" onclick="editWaterGoal()" style="cursor:pointer; text-decoration:underline;">2000</span> ml</span>
+        <span style="font-size:0.82rem; color:#6b7280;">已喝：<strong id="waterCur" style="color:#0284c7;">0</strong> / <span id="waterGoal" onclick="editWaterGoal()" style="cursor:pointer; text-decoration:underline;">2000</span> ml</span>
       </div>
       <div class="water-progress-bg">
         <div class="water-progress-fill" id="waterBar"></div>
@@ -275,7 +271,7 @@
     <div class="card">
       <div class="card-head">
         <span class="badge b-body">🩺 身體數據</span>
-        <span style="font-size:0.82rem; color:#64748b;">BMI：<strong id="bmiVal" style="color:#0f766e;">--</strong></span>
+        <span style="font-size:0.82rem; color:#6b7280;">BMI：<strong id="bmiVal" style="color:#0f766e;">--</strong></span>
       </div>
       <div class="grid-3">
         <input type="number" id="sugarInput" placeholder="血糖 (mg/dL)">
@@ -289,11 +285,11 @@
     <div class="card">
       <div class="card-head">
         <span class="badge b-step">👟 每日步數</span>
-        <span style="font-size:0.82rem; color:#64748b;">消耗：<strong id="sub-steps" style="color:#6b21a8;">0</strong> kcal</span>
+        <span style="font-size:0.82rem; color:#6b7280;">消耗：<strong id="sub-steps" style="color:#6b21a8;">0</strong> kcal</span>
       </div>
       <div style="display:grid; grid-template-columns: 2fr 1fr auto; gap:6px;">
         <input type="number" id="stepInput" placeholder="輸入步數 (如: 6000)" onkeydown="if(event.key==='Enter') saveSteps()">
-        <span style="font-size:0.8rem; line-height:38px; color:#64748b;">步</span>
+        <span style="font-size:0.8rem; line-height:38px; color:#6b7280;">步</span>
         <button class="btn btn-purple" onclick="saveSteps()">更新</button>
       </div>
     </div>
@@ -302,7 +298,7 @@
     <div class="card">
       <div class="card-head">
         <span class="badge b-sport">🏃 運動燃脂</span>
-        <span style="font-size:0.82rem; color:#64748b;">消耗：<strong id="sub-sport" style="color:#15803d;">0</strong> kcal</span>
+        <span style="font-size:0.82rem; color:#6b7280;">消耗：<strong id="sub-sport" style="color:#15803d;">0</strong> kcal</span>
       </div>
       <div class="grid-2">
         <select id="sportType">
@@ -325,7 +321,7 @@
         <div>
           <button class="btn-copy-yesterday" onclick="copyYesterdayMeal('breakfast')">📋 複製昨天</button>
           <button class="btn-clear-meal" onclick="clearMeal('breakfast')">清空</button>
-          <span style="font-size:0.82rem; color:#64748b; margin-left:4px;">小計：<strong id="sub-breakfast">0</strong> kcal</span>
+          <span style="font-size:0.82rem; color:#6b7280; margin-left:4px;">小計：<strong id="sub-breakfast">0</strong> kcal</span>
         </div>
       </div>
       <div class="meal-input-group">
@@ -347,7 +343,7 @@
         <div>
           <button class="btn-copy-yesterday" onclick="copyYesterdayMeal('lunch')">📋 複製昨天</button>
           <button class="btn-clear-meal" onclick="clearMeal('lunch')">清空</button>
-          <span style="font-size:0.82rem; color:#64748b; margin-left:4px;">小計：<strong id="sub-lunch">0</strong> kcal</span>
+          <span style="font-size:0.82rem; color:#6b7280; margin-left:4px;">小計：<strong id="sub-lunch">0</strong> kcal</span>
         </div>
       </div>
       <div class="meal-input-group">
@@ -369,7 +365,7 @@
         <div>
           <button class="btn-copy-yesterday" onclick="copyYesterdayMeal('dinner')">📋 複製昨天</button>
           <button class="btn-clear-meal" onclick="clearMeal('dinner')">清空</button>
-          <span style="font-size:0.82rem; color:#64748b; margin-left:4px;">小計：<strong id="sub-dinner">0</strong> kcal</span>
+          <span style="font-size:0.82rem; color:#6b7280; margin-left:4px;">小計：<strong id="sub-dinner">0</strong> kcal</span>
         </div>
       </div>
       <div class="meal-input-group">
@@ -390,7 +386,7 @@
         <span class="badge b-snack">🍪 點心 / 宵夜</span>
         <div>
           <button class="btn-clear-meal" onclick="clearMeal('snack')">清空</button>
-          <span style="font-size:0.82rem; color:#64748b; margin-left:4px;">小計：<strong id="sub-snack">0</strong> kcal</span>
+          <span style="font-size:0.82rem; color:#6b7280; margin-left:4px;">小計：<strong id="sub-snack">0</strong> kcal</span>
         </div>
       </div>
       <div class="meal-input-group">
@@ -411,7 +407,7 @@
         <span class="badge b-drink">🧋 飲料 / 沖泡</span>
         <div>
           <button class="btn-clear-meal" onclick="clearMeal('drink')">清空</button>
-          <span style="font-size:0.82rem; color:#64748b; margin-left:4px;">小計：<strong id="sub-drink">0</strong> kcal</span>
+          <span style="font-size:0.82rem; color:#6b7280; margin-left:4px;">小計：<strong id="sub-drink">0</strong> kcal</span>
         </div>
       </div>
       <div class="meal-input-group">
@@ -438,6 +434,28 @@
 
   <script>
     const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbz_pceZbIkWcBtp8a9EzbPEsj1avqhcMjNs16o85SERy6vFmq6IY1iwsuT6oQb4u3g9/exec";
+
+    // 內建基本條碼庫
+    const baseBarcodeDB = {
+      "4710088410012": { name: "7-11 茶葉蛋", cal: 75, p: 7 },
+      "4710018111019": { name: "統一無糖高纖豆漿", cal: 147, p: 15 },
+      "4710088432311": { name: "7-11 溫泉蛋", cal: 63, p: 6 },
+      "4710018182019": { name: "純喫茶 紅茶", cal: 176, p: 0 },
+      "4710088421018": { name: "7-11 鮪魚御飯糰", cal: 218, p: 6 },
+      "4710085121010": { name: "統一布丁", cal: 110, p: 2 }
+    };
+
+    // 🌟 核心：讀取與儲存「使用者自學條碼資料庫」
+    function getLearnedBarcodeDB() {
+      const custom = JSON.parse(localStorage.getItem('custom_barcode_db') || '{}');
+      return { ...baseBarcodeDB, ...custom };
+    }
+
+    function saveLearnedBarcode(code, name, cal, p = 0) {
+      const custom = JSON.parse(localStorage.getItem('custom_barcode_db') || '{}');
+      custom[code] = { name: name, cal: cal, p: p };
+      localStorage.setItem('custom_barcode_db', JSON.stringify(custom));
+    }
 
     const calorieDictionary = {
       // 🍜 麵類、粄條專區
@@ -632,7 +650,7 @@
     function showToast(msg, isSuccess = false) {
       const toast = document.getElementById('syncToast');
       toast.textContent = msg;
-      toast.style.background = isSuccess ? 'rgba(15, 118, 110, 0.95)' : 'rgba(15, 23, 42, 0.92)';
+      toast.style.background = isSuccess ? 'rgba(15, 118, 110, 0.95)' : 'rgba(17, 24, 39, 0.92)';
       toast.style.display = 'flex';
       setTimeout(() => { toast.style.display = 'none'; }, 2000);
     }
@@ -883,7 +901,6 @@
 
       const remainEl = document.getElementById('remainCal');
       remainEl.textContent = remainVal;
-      // 剩餘額度超標時改用暖橘黃，其餘保持薄荷綠
       remainEl.style.color = remainVal < 0 ? "#ea580c" : "#34d399";
 
       const key = `health_tracker_${currentDateStr}`;
@@ -1032,26 +1049,63 @@
       }
     }
 
+    // 🌟 修正後的條碼查詢與自動學習記憶函式
     async function handleBarcodeScan(code) {
       const msg = document.getElementById('scanMsg');
-      msg.textContent = `已讀取條碼：${code}`;
-      const inputName = prompt(`條碼：${code}\n請輸入「商品名稱」:`, "超商食品");
-      if (!inputName) return;
-      const inputCal = prompt(`請輸入「卡路里 (kcal)」:`, "150");
-      if (!inputCal || isNaN(inputCal)) return;
+      msg.textContent = `已讀取條碼：${code}，搜尋資料庫中...`;
 
-      const name = inputName.trim();
-      const cal = Math.round(Number(inputCal));
-      const pick = prompt(`選擇餐別：\n1.早餐 2.午餐 3.晚餐 4.點心 5.飲料`, "2");
+      const allBarcodeDB = getLearnedBarcodeDB();
+      let name = '';
+      let cal = 0;
+      let p = 0;
+
+      // 1. 優先比對：內建資料庫與過去自學的條碼
+      if (allBarcodeDB[code]) {
+        name = allBarcodeDB[code].name;
+        cal = allBarcodeDB[code].cal;
+        p = allBarcodeDB[code].p || 0;
+      } else {
+        // 2. 外部聯網查詢國際食品條碼庫
+        try {
+          const res = await fetch(`https://world.openfoodfacts.org/api/v0/product/${code}.json`);
+          const d = await res.json();
+          if (d.status === 1 && d.product) {
+            name = d.product.product_name || '';
+            const n = d.product.nutriments || {};
+            cal = Math.round(n['energy-kcal_100g'] || n['energy-kcal_serving'] || n['energy-kcal'] || 0);
+            p = Math.round(n['proteins_100g'] || n['proteins_serving'] || n['proteins'] || 0);
+          }
+        } catch(e) {}
+      }
+
+      // 3. 資料庫皆無紀錄：觸發自學輸入並永久存檔
+      if (!name || !cal) {
+        const inputName = prompt(`【智慧自學學習】\n條碼：${code}\n這是第一次掃描的新商品！\n請輸入「商品名稱」:`, name || "超商食品");
+        if (!inputName) return;
+        const inputCal = prompt(`請看外包裝營養標示，輸入「每份卡路里 (kcal)」:`, "150");
+        if (!inputCal || isNaN(inputCal)) return;
+
+        name = inputName.trim();
+        cal = Math.round(Number(inputCal));
+        
+        // 寫入 localStorage 儲存
+        saveLearnedBarcode(code, name, cal, p);
+        alert(`🎉 系統已成功自學！\n已永久記住：【${name}】(${cal} kcal)\n下次再掃此條碼將會瞬間自動識別！`);
+      }
+
+      // 4. 寫入當前飲食紀錄
+      const pick = prompt(`商品：${name} (${cal} kcal)\n請選擇要記錄在：\n1. 早餐\n2. 午餐\n3. 晚餐\n4. 點心\n5. 飲料`, "1");
       const map = { "1": "breakfast", "2": "lunch", "3": "dinner", "4": "snack", "5": "drink" };
       const target = map[pick] || "lunch";
 
       const d = new Date();
       const timeStr = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
-      const record = { date: currentDateStr, time: timeStr, meal: mealNames[target], name: name, cal: cal, p: 0, sugar: "", height: "", weight: "", bmi: "", water: "" };
+      const record = { date: currentDateStr, time: timeStr, meal: mealNames[target], name: name, cal: cal, p: p, sugar: "", height: "", weight: "", bmi: "", water: "" };
 
       if (!appData[target]) appData[target] = [];
       appData[target].unshift(record);
+
+      msg.textContent = `✅ 已自動識別：${name} (${cal} kcal)`;
       render();
       syncToGoogleSheet(record);
     }
@@ -1061,6 +1115,7 @@
         user_cal_budget: dailyCalBudget,
         user_water_goal: dailyWaterGoal,
         user_protein_goal: dailyProteinGoal,
+        custom_barcode_db: JSON.parse(localStorage.getItem('custom_barcode_db') || '{}'),
         all_logs: {}
       };
       for (let i = 0; i < localStorage.length; i++) {
@@ -1084,6 +1139,9 @@
         try {
           const data = JSON.parse(e.target.result);
           if (data.user_cal_budget) localStorage.setItem('user_cal_budget', data.user_cal_budget);
+          if (data.user_water_goal) localStorage.setItem('user_water_goal', data.user_water_goal);
+          if (data.user_protein_goal) localStorage.setItem('user_protein_goal', data.user_protein_goal);
+          if (data.custom_barcode_db) localStorage.setItem('custom_barcode_db', JSON.stringify(data.custom_barcode_db));
           if (data.all_logs) {
             Object.keys(data.all_logs).forEach(k => {
               localStorage.setItem(k, JSON.stringify(data.all_logs[k]));
