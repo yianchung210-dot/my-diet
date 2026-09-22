@@ -6,125 +6,188 @@
   <title>健康熱量與生活日記</title>
   <script src="https://unpkg.com/html5-qrcode"></script>
   <style>
-    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 0; }
-    body { background: #f8fafc; padding: 14px 10px 80px; display: flex; justify-content: center; }
-    .container { width: 100%; max-width: 440px; display: flex; flex-direction: column; gap: 12px; }
+    :root {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-sub: #64748b;
+      --primary: #2563eb;
+      --border-color: #e2e8f0;
+    }
+
+    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif; margin: 0; padding: 0; }
+    body { background: var(--bg); padding: 18px 12px 90px; display: flex; justify-content: center; color: var(--text-main); }
+    .container { width: 100%; max-width: 440px; display: flex; flex-direction: column; gap: 14px; }
 
     #syncToast {
-      position: fixed; top: 12px; left: 50%; transform: translateX(-50%);
-      background: rgba(15, 23, 42, 0.95); color: #f8fafc; font-size: 0.8rem; font-weight: bold;
-      padding: 7px 16px; border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+      position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
+      background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(8px); color: #f8fafc;
+      font-size: 0.8rem; font-weight: 600; letter-spacing: 0.3px;
+      padding: 8px 18px; border-radius: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.15);
       z-index: 999999; display: none; align-items: center; gap: 6px;
     }
 
-    .date-nav { display: flex; align-items: center; justify-content: space-between; background: white; padding: 8px 12px; border-radius: 14px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-    .date-nav button { background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 8px; padding: 6px 10px; font-size: 0.8rem; font-weight: bold; cursor: pointer; color: #334155; }
-    .date-nav button:active { background: #e2e8f0; }
+    /* 日期切換 */
+    .date-nav {
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--card-bg); padding: 8px 10px; border-radius: 16px;
+      border: 1px solid var(--border-color); box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    }
+    .date-nav button {
+      background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 10px;
+      padding: 6px 12px; font-size: 0.78rem; font-weight: 600; cursor: pointer;
+      color: #334155; transition: all 0.15s ease;
+    }
+    .date-nav button:active { background: #e2e8f0; transform: scale(0.96); }
     .date-picker-wrap { display: flex; align-items: center; gap: 6px; }
-    .date-picker-wrap input[type="date"] { padding: 5px 8px; font-size: 0.85rem; font-weight: bold; border: 1.5px solid #cbd5e1; border-radius: 8px; outline: none; background: #fff; color: #1e293b; }
+    .date-picker-wrap input[type="date"] {
+      padding: 5px 8px; font-size: 0.85rem; font-weight: 700;
+      border: 1px solid #cbd5e1; border-radius: 10px; outline: none;
+      background: #fff; color: #1e293b;
+    }
 
-    .summary-box { background: linear-gradient(135deg, #1e3a8a, #2563eb); color: white; border-radius: 18px; padding: 16px; box-shadow: 0 4px 12px rgba(37,99,235,0.25); }
-    .summary-top { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; opacity: 0.9; }
-    .budget-tag { background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; }
-    .net-cal-wrap { text-align: center; margin: 8px 0; }
-    .net-cal-title { font-size: 0.8rem; opacity: 0.85; margin-bottom: 2px; }
-    .net-cal { font-size: 2.3rem; font-weight: 800; }
-    .net-cal span { font-size: 1rem; font-weight: normal; }
-    
-    .stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 10px; text-align: center; }
-    .stat-label { font-size: 0.7rem; opacity: 0.85; }
-    .stat-val { font-size: 0.95rem; font-weight: 700; margin-top: 2px; }
+    /* 頂部儀表板 */
+    .summary-box {
+      background: linear-gradient(145deg, #1e293b 0%, #334155 50%, #1e3a8a 100%);
+      color: white; border-radius: 20px; padding: 18px;
+      box-shadow: 0 12px 28px -6px rgba(30, 41, 59, 0.35);
+      position: relative; overflow: hidden;
+    }
+    .summary-box::after {
+      content: ""; position: absolute; top: -50px; right: -50px;
+      width: 140px; height: 140px; background: rgba(255,255,255,0.05);
+      border-radius: 50%; pointer-events: none;
+    }
+    .summary-top { display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem; font-weight: 500; opacity: 0.92; }
+    .budget-tag {
+      background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(4px);
+      padding: 3px 10px; border-radius: 20px; cursor: pointer; font-size: 0.73rem;
+      font-weight: 600; border: 1px solid rgba(255,255,255,0.22);
+      transition: background 0.2s;
+    }
+    .budget-tag:active { background: rgba(255, 255, 255, 0.25); }
 
-    .protein-box { margin-top: 10px; padding-top: 8px; border-top: 1px dashed rgba(255,255,255,0.25); font-size: 0.75rem; }
-    .protein-top { display: flex; justify-content: space-between; margin-bottom: 4px; }
-    .protein-bar-bg { width: 100%; height: 8px; background: rgba(255,255,255,0.25); border-radius: 6px; overflow: hidden; }
-    .protein-bar-fill { height: 100%; background: #38bdf8; width: 0%; transition: width 0.3s; }
+    .net-cal-wrap { text-align: center; margin: 10px 0 12px; }
+    .net-cal-title { font-size: 0.78rem; opacity: 0.82; letter-spacing: 0.5px; font-weight: 500; }
+    .net-cal { font-size: 2.6rem; font-weight: 800; letter-spacing: -0.5px; line-height: 1.1; margin-top: 2px; }
+    .net-cal span { font-size: 0.95rem; font-weight: 500; opacity: 0.85; }
 
-    .card { background: white; border-radius: 14px; padding: 14px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-    .card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-weight: bold; }
-    
-    .btn-copy-yesterday { background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; font-size: 0.72rem; padding: 3px 8px; border-radius: 6px; cursor: pointer; }
-    .btn-clear-meal { background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; font-size: 0.72rem; padding: 3px 8px; border-radius: 6px; cursor: pointer; margin-left: 4px; }
+    .stats-row {
+      display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;
+      border-top: 1px solid rgba(255, 255, 255, 0.16); padding-top: 12px; text-align: center;
+    }
+    .stat-label { font-size: 0.7rem; opacity: 0.8; font-weight: 500; }
+    .stat-val { font-size: 1rem; font-weight: 700; margin-top: 3px; letter-spacing: -0.2px; }
 
-    .badge { padding: 4px 10px; border-radius: 8px; color: white; font-size: 0.85rem; font-weight: bold; }
-    .b-water { background: #0284c7; }
-    .b-body { background: #0d9488; }
-    .b-step { background: #8b5cf6; }
-    .b-sport { background: #16a34a; }
-    .b-breakfast { background: #f59e0b; }
-    .b-lunch { background: #ef4444; }
-    .b-dinner { background: #6366f1; }
-    .b-snack { background: #10b981; }
-    .b-drink { background: #06b6d4; }
+    .protein-box { margin-top: 12px; padding-top: 10px; border-top: 1px dashed rgba(255, 255, 255, 0.2); font-size: 0.75rem; }
+    .protein-top { display: flex; justify-content: space-between; margin-bottom: 5px; font-weight: 500; }
+    .protein-bar-bg { width: 100%; height: 7px; background: rgba(255, 255, 255, 0.2); border-radius: 10px; overflow: hidden; }
+    .protein-bar-fill { height: 100%; background: #38bdf8; width: 0%; border-radius: 10px; transition: width 0.4s ease; }
 
-    .water-progress-bg { width: 100%; height: 14px; background: #e0f2fe; border-radius: 10px; overflow: hidden; margin: 8px 0; }
-    .water-progress-fill { height: 100%; background: linear-gradient(90deg, #38bdf8, #0284c7); width: 0%; transition: width 0.3s; }
-    .quick-water-btns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 6px; }
-    .btn-quick-water { background: #f0f9ff; border: 1.5px solid #bae6fd; color: #0369a1; border-radius: 8px; padding: 8px 4px; font-weight: bold; font-size: 0.8rem; cursor: pointer; }
-    
-    /* 輸入群組與高層級下拉選單 */
-    .meal-input-group { display: flex; flex-direction: column; gap: 6px; position: relative; margin-bottom: 8px; }
-    .input-row-sub { display: grid; grid-template-columns: 1fr 1.3fr auto; gap: 6px; align-items: center; }
-    .grid-2 { display: grid; grid-template-columns: 1.4fr 1fr; gap: 6px; margin-bottom: 6px; }
-    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 8px; }
-    
-    input, select { width: 100%; padding: 9px 10px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; outline: none; background: #fff; }
-    input:focus, select:focus { border-color: #2563eb; }
-    
-    /* 浮動模糊搜尋選單 */
+    /* 卡片設計 */
+    .card {
+      background: var(--card-bg); border-radius: 18px; padding: 16px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.04);
+    }
+    .card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+
+    .btn-copy-yesterday {
+      background: #f1f5f9; border: 1px solid #cbd5e1; color: #334155;
+      font-size: 0.72rem; font-weight: 600; padding: 4px 9px; border-radius: 8px; cursor: pointer;
+    }
+    .btn-clear-meal {
+      background: #f8fafc; border: 1px solid #cbd5e1; color: #64748b;
+      font-size: 0.72rem; font-weight: 600; padding: 4px 9px; border-radius: 8px; cursor: pointer; margin-left: 4px;
+    }
+    .btn-clear-meal:active { background: #e2e8f0; color: #334155; }
+
+    /* 質感中性標籤（無粉紅、無桃紅） */
+    .badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 4px 10px; border-radius: 10px; font-size: 0.82rem; font-weight: 700;
+    }
+    .b-water { background: #e0f2fe; color: #0369a1; }
+    .b-body { background: #ccfbf1; color: #0f766e; }
+    .b-step { background: #ede9fe; color: #5b21b6; }
+    .b-sport { background: #dcfce7; color: #15803d; }
+    .b-breakfast { background: #fef3c7; color: #92400e; }
+    .b-lunch { background: #e2e8f0; color: #334155; }       /* 改為質感石板灰藍 */
+    .b-dinner { background: #e0e7ff; color: #3730a3; }      /* 靛藍 */
+    .b-snack { background: #fef9c3; color: #854d0e; }       /* 沉穩琥珀金 */
+    .b-drink { background: #cffafe; color: #0e7490; }       /* 冰河青藍 */
+
+    /* 喝水進度條 */
+    .water-progress-bg { width: 100%; height: 10px; background: #f0f9ff; border-radius: 10px; overflow: hidden; margin: 10px 0; border: 1px solid #e0f2fe; }
+    .water-progress-fill { height: 100%; background: linear-gradient(90deg, #38bdf8, #0284c7); width: 0%; border-radius: 10px; transition: width 0.4s ease; }
+    .quick-water-btns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+    .btn-quick-water {
+      background: #f8fafc; border: 1px solid #e2e8f0; color: #0369a1;
+      border-radius: 10px; padding: 9px 4px; font-weight: 700; font-size: 0.82rem; cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .btn-quick-water:active { background: #e0f2fe; border-color: #bae6fd; transform: scale(0.96); }
+
+    /* 輸入排版 */
+    .meal-input-group { display: flex; flex-direction: column; gap: 8px; position: relative; margin-bottom: 8px; }
+    .input-row-sub { display: grid; grid-template-columns: 0.9fr 1.3fr auto; gap: 8px; align-items: center; }
+    .grid-2 { display: grid; grid-template-columns: 1.4fr 1fr; gap: 8px; margin-bottom: 8px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+
+    input, select {
+      width: 100%; padding: 9px 12px; border: 1.5px solid #cbd5e1; border-radius: 10px;
+      font-size: 0.88rem; outline: none; background: #fff; color: #1e293b;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    input:focus, select:focus {
+      border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    }
+
+    /* 浮動模糊選單 */
     .fuzzy-dropdown {
-      position: absolute;
-      top: 42px;
-      left: 0;
-      right: 0;
-      background: #ffffff;
-      border: 1.5px solid #2563eb;
-      border-radius: 8px;
-      max-height: 220px;
-      overflow-y: auto;
-      z-index: 99999;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      position: absolute; top: 46px; left: 0; right: 0;
+      background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px);
+      border: 1.5px solid #3b82f6; border-radius: 12px; max-height: 220px;
+      overflow-y: auto; z-index: 99999; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
       display: none;
     }
     .fuzzy-item {
-      padding: 9px 12px;
-      font-size: 0.88rem;
-      color: #1e293b;
-      cursor: pointer;
-      display: flex;
-      justify-content: space-between;
-      border-bottom: 1px solid #f1f5f9;
+      padding: 10px 14px; font-size: 0.88rem; color: #1e293b; cursor: pointer;
+      display: flex; justify-content: space-between; border-bottom: 1px solid #f1f5f9;
     }
     .fuzzy-item:last-child { border-bottom: none; }
-    .fuzzy-item:hover, .fuzzy-item:active {
-      background: #eff6ff;
-      color: #1d4ed8;
-      font-weight: bold;
-    }
-    .fuzzy-cal {
-      color: #059669;
-      font-size: 0.82rem;
-      font-weight: 700;
-    }
+    .fuzzy-item:hover, .fuzzy-item:active { background: #f1f5f9; color: #1e3a8a; font-weight: 600; }
+    .fuzzy-cal { color: #0f766e; font-size: 0.82rem; font-weight: 700; }
 
-    button.btn { border: none; border-radius: 8px; font-weight: bold; cursor: pointer; padding: 8px 12px; font-size: 0.85rem; }
-    .btn-add { background: #2563eb; color: white; padding: 9px 16px; font-size: 0.9rem; white-space: nowrap; }
-    .btn-cam { width: 100%; background: #ea580c; color: white; padding: 10px; font-size: 0.9rem; }
-    .btn-green { width: 100%; background: #16a34a; color: white; }
-    .btn-purple { width: 100%; background: #8b5cf6; color: white; }
-    .btn-teal { width: 100%; background: #0d9488; color: white; }
+    /* 按鈕 */
+    button.btn {
+      border: none; border-radius: 10px; font-weight: 700; cursor: pointer;
+      padding: 9px 14px; font-size: 0.85rem; transition: transform 0.15s ease, opacity 0.2s;
+    }
+    button.btn:active { transform: scale(0.96); opacity: 0.9; }
+    .btn-add { background: #1e293b; color: white; padding: 9px 16px; font-size: 0.88rem; white-space: nowrap; }
+    .btn-cam { width: 100%; background: #334155; color: white; padding: 11px; font-size: 0.9rem; }
+    .btn-green { width: 100%; background: #15803d; color: white; }
+    .btn-purple { width: 100%; background: #6b21a8; color: white; }
+    .btn-teal { width: 100%; background: #0f766e; color: white; }
     .btn-sky { width: 100%; background: #0284c7; color: white; }
 
-    .item-list { display: flex; flex-direction: column; gap: 4px; }
-    .item-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 10px; background: #f8fafc; border-radius: 6px; font-size: 0.85rem; }
-    .time-tag { font-size: 0.72rem; color: #64748b; margin-left: 6px; background: #e2e8f0; padding: 1px 4px; border-radius: 4px; }
-    .del-btn { background: none; border: none; color: #ef4444; font-size: 0.85rem; cursor: pointer; padding-left: 6px; }
+    /* 項目列 */
+    .item-list { display: flex; flex-direction: column; gap: 5px; margin-top: 4px; }
+    .item-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 8px 12px; background: #f8fafc; border-radius: 10px; font-size: 0.85rem;
+      border: 1px solid #f1f5f9;
+    }
+    .time-tag { font-size: 0.72rem; color: #64748b; margin-left: 6px; background: #e2e8f0; padding: 2px 6px; border-radius: 6px; }
+    .del-btn { background: none; border: none; color: #94a3b8; font-size: 0.85rem; cursor: pointer; padding: 2px 6px; }
+    .del-btn:hover, .del-btn:active { color: #334155; }
 
-    .backup-footer { text-align: center; margin-top: 10px; font-size: 0.78rem; color: #64748b; display: flex; justify-content: center; gap: 12px; }
-    .backup-link { color: #2563eb; text-decoration: underline; cursor: pointer; font-weight: bold; }
+    .backup-footer { text-align: center; margin-top: 14px; font-size: 0.78rem; color: #64748b; display: flex; justify-content: center; gap: 14px; }
+    .backup-link { color: #334155; text-decoration: underline; cursor: pointer; font-weight: 600; }
 
-    #reader { border-radius: 10px; overflow: hidden; margin-top: 8px; display: none; }
-    #scanMsg { font-size: 0.8rem; color: #64748b; margin-top: 6px; text-align: center; }
+    #reader { border-radius: 12px; overflow: hidden; margin-top: 8px; display: none; }
+    #scanMsg { font-size: 0.78rem; color: #64748b; margin-top: 6px; text-align: center; }
   </style>
 </head>
 <body>
@@ -133,11 +196,12 @@
 
   <div class="container">
 
+    <!-- 日期切換 -->
     <div class="date-nav">
       <button onclick="shiftDate(-1)">◀ 前一天</button>
       <div class="date-picker-wrap">
         <input type="date" id="targetDate" onchange="onDateChanged()">
-        <button onclick="setToday()" style="padding:4px 8px;">今天</button>
+        <button onclick="setToday()">今天</button>
       </div>
       <button onclick="shiftDate(1)">後一天 ▶</button>
     </div>
@@ -146,7 +210,7 @@
     <div class="summary-box">
       <div class="summary-top">
         <span id="dateShow">--</span>
-        <div style="display:flex; gap:4px;">
+        <div style="display:flex; gap:6px;">
           <span class="budget-tag" onclick="calcTDEEGoal()">🪄 智慧目標試算</span>
           <span class="budget-tag" onclick="editBudget()">⚙️ <span id="budgetVal">2000</span> kcal</span>
         </div>
@@ -180,8 +244,9 @@
       </div>
     </div>
 
+    <!-- 條碼掃描卡 -->
     <div class="card">
-      <button class="btn btn-cam" id="camBtn" onclick="toggleScanner()">📷 點此開啟相機掃條碼</button>
+      <button class="btn btn-cam" id="camBtn" onclick="toggleScanner()">📷 開啟相機掃描食品條碼</button>
       <div id="reader"></div>
       <div id="scanMsg">掃描條碼：新商品手動輸入一次，系統將自學永久記憶！</div>
     </div>
@@ -190,7 +255,7 @@
     <div class="card">
       <div class="card-head">
         <span class="badge b-water">💧 喝水紀錄</span>
-        <span style="font-size:0.85rem; color:#64748b;">已喝：<strong id="waterCur" style="color:#0284c7;">0</strong> / <span id="waterGoal" onclick="editWaterGoal()" style="cursor:pointer; text-decoration:underline;">2000</span> ml</span>
+        <span style="font-size:0.82rem; color:#64748b;">已喝：<strong id="waterCur" style="color:#0284c7;">0</strong> / <span id="waterGoal" onclick="editWaterGoal()" style="cursor:pointer; text-decoration:underline;">2000</span> ml</span>
       </div>
       <div class="water-progress-bg">
         <div class="water-progress-fill" id="waterBar"></div>
@@ -210,25 +275,25 @@
     <div class="card">
       <div class="card-head">
         <span class="badge b-body">🩺 身體數據</span>
-        <span style="font-size:0.85rem; color:#64748b;">BMI：<strong id="bmiVal" style="color:#0d9488;">--</strong></span>
+        <span style="font-size:0.82rem; color:#64748b;">BMI：<strong id="bmiVal" style="color:#0f766e;">--</strong></span>
       </div>
       <div class="grid-3">
         <input type="number" id="sugarInput" placeholder="血糖 (mg/dL)">
         <input type="number" id="heightInput" placeholder="身高 (cm)">
         <input type="number" id="weightInput" placeholder="體重 (kg)">
       </div>
-      <button class="btn btn-teal" onclick="saveBodyStats()">儲存當日生理數據</button>
+      <button class="btn btn-teal" onclick="saveBodyStats()">儲存生理數據</button>
     </div>
 
     <!-- 3. 每日步數 -->
     <div class="card">
       <div class="card-head">
         <span class="badge b-step">👟 每日步數</span>
-        <span style="font-size:0.85rem; color:#64748b;">消耗：<strong id="sub-steps" style="color:#8b5cf6;">0</strong> kcal</span>
+        <span style="font-size:0.82rem; color:#64748b;">消耗：<strong id="sub-steps" style="color:#6b21a8;">0</strong> kcal</span>
       </div>
       <div style="display:grid; grid-template-columns: 2fr 1fr auto; gap:6px;">
         <input type="number" id="stepInput" placeholder="輸入步數 (如: 6000)" onkeydown="if(event.key==='Enter') saveSteps()">
-        <span style="font-size:0.8rem; line-height:36px; color:#64748b;">步</span>
+        <span style="font-size:0.8rem; line-height:38px; color:#64748b;">步</span>
         <button class="btn btn-purple" onclick="saveSteps()">更新</button>
       </div>
     </div>
@@ -237,7 +302,7 @@
     <div class="card">
       <div class="card-head">
         <span class="badge b-sport">🏃 運動燃脂</span>
-        <span style="font-size:0.85rem; color:#64748b;">消耗：<strong id="sub-sport" style="color:#16a34a;">0</strong> kcal</span>
+        <span style="font-size:0.82rem; color:#64748b;">消耗：<strong id="sub-sport" style="color:#15803d;">0</strong> kcal</span>
       </div>
       <div class="grid-2">
         <select id="sportType">
@@ -260,11 +325,11 @@
         <div>
           <button class="btn-copy-yesterday" onclick="copyYesterdayMeal('breakfast')">📋 複製昨天</button>
           <button class="btn-clear-meal" onclick="clearMeal('breakfast')">清空</button>
-          <span style="font-size:0.85rem; color:#64748b; margin-left:4px;">小計：<strong id="sub-breakfast">0</strong> kcal</span>
+          <span style="font-size:0.82rem; color:#64748b; margin-left:4px;">小計：<strong id="sub-breakfast">0</strong> kcal</span>
         </div>
       </div>
       <div class="meal-input-group">
-        <input type="text" id="name-breakfast" placeholder="🔍 輸入食物名稱 (模糊搜尋)" oninput="handleFuzzySearch('breakfast')" onkeydown="handleEnterAdd(event, 'breakfast')" autocomplete="off">
+        <input type="text" id="name-breakfast" placeholder="🔍 搜尋早餐 (如: 粄條、奇亞籽、吐司)" oninput="handleFuzzySearch('breakfast')" onkeydown="handleEnterAdd(event, 'breakfast')" autocomplete="off">
         <div class="fuzzy-dropdown" id="dropdown-breakfast"></div>
         <div class="input-row-sub">
           <input type="number" id="qty-breakfast" value="1" step="0.5" min="0.1" placeholder="份數" oninput="updateTotalCal('breakfast')" onkeydown="handleEnterAdd(event, 'breakfast')">
@@ -282,11 +347,11 @@
         <div>
           <button class="btn-copy-yesterday" onclick="copyYesterdayMeal('lunch')">📋 複製昨天</button>
           <button class="btn-clear-meal" onclick="clearMeal('lunch')">清空</button>
-          <span style="font-size:0.85rem; color:#64748b; margin-left:4px;">小計：<strong id="sub-lunch">0</strong> kcal</span>
+          <span style="font-size:0.82rem; color:#64748b; margin-left:4px;">小計：<strong id="sub-lunch">0</strong> kcal</span>
         </div>
       </div>
       <div class="meal-input-group">
-        <input type="text" id="name-lunch" placeholder="🔍 輸入食物名稱 (如: 黑輪、水晶餃、蒸肉)" oninput="handleFuzzySearch('lunch')" onkeydown="handleEnterAdd(event, 'lunch')" autocomplete="off">
+        <input type="text" id="name-lunch" placeholder="🔍 搜尋午餐 (如: 旗魚黑輪、鹹蛋蒸肉、白飯)" oninput="handleFuzzySearch('lunch')" onkeydown="handleEnterAdd(event, 'lunch')" autocomplete="off">
         <div class="fuzzy-dropdown" id="dropdown-lunch"></div>
         <div class="input-row-sub">
           <input type="number" id="qty-lunch" value="1" step="0.5" min="0.1" placeholder="份數" oninput="updateTotalCal('lunch')" onkeydown="handleEnterAdd(event, 'lunch')">
@@ -304,11 +369,11 @@
         <div>
           <button class="btn-copy-yesterday" onclick="copyYesterdayMeal('dinner')">📋 複製昨天</button>
           <button class="btn-clear-meal" onclick="clearMeal('dinner')">清空</button>
-          <span style="font-size:0.85rem; color:#64748b; margin-left:4px;">小計：<strong id="sub-dinner">0</strong> kcal</span>
+          <span style="font-size:0.82rem; color:#64748b; margin-left:4px;">小計：<strong id="sub-dinner">0</strong> kcal</span>
         </div>
       </div>
       <div class="meal-input-group">
-        <input type="text" id="name-dinner" placeholder="🔍 輸入食物名稱 (如: 菠菜、敏豆、排骨)" oninput="handleFuzzySearch('dinner')" onkeydown="handleEnterAdd(event, 'dinner')" autocomplete="off">
+        <input type="text" id="name-dinner" placeholder="🔍 搜尋晚餐 (如: 豬頭皮、炒菠菜、麵輪)" oninput="handleFuzzySearch('dinner')" onkeydown="handleEnterAdd(event, 'dinner')" autocomplete="off">
         <div class="fuzzy-dropdown" id="dropdown-dinner"></div>
         <div class="input-row-sub">
           <input type="number" id="qty-dinner" value="1" step="0.5" min="0.1" placeholder="份數" oninput="updateTotalCal('dinner')" onkeydown="handleEnterAdd(event, 'dinner')">
@@ -325,11 +390,11 @@
         <span class="badge b-snack">🍪 點心 / 宵夜</span>
         <div>
           <button class="btn-clear-meal" onclick="clearMeal('snack')">清空</button>
-          <span style="font-size:0.85rem; color:#64748b; margin-left:4px;">小計：<strong id="sub-snack">0</strong> kcal</span>
+          <span style="font-size:0.82rem; color:#64748b; margin-left:4px;">小計：<strong id="sub-snack">0</strong> kcal</span>
         </div>
       </div>
       <div class="meal-input-group">
-        <input type="text" id="name-snack" placeholder="🔍 輸入點心 (如: 旗魚黑輪、毛豆)" oninput="handleFuzzySearch('snack')" onkeydown="handleEnterAdd(event, 'snack')" autocomplete="off">
+        <input type="text" id="name-snack" placeholder="🔍 搜尋點心 (如: 旗魚黑輪、水晶餃、毛豆)" oninput="handleFuzzySearch('snack')" onkeydown="handleEnterAdd(event, 'snack')" autocomplete="off">
         <div class="fuzzy-dropdown" id="dropdown-snack"></div>
         <div class="input-row-sub">
           <input type="number" id="qty-snack" value="1" step="0.5" min="0.1" placeholder="份數" oninput="updateTotalCal('snack')" onkeydown="handleEnterAdd(event, 'snack')">
@@ -346,11 +411,11 @@
         <span class="badge b-drink">🧋 飲料 / 沖泡</span>
         <div>
           <button class="btn-clear-meal" onclick="clearMeal('drink')">清空</button>
-          <span style="font-size:0.85rem; color:#64748b; margin-left:4px;">小計：<strong id="sub-drink">0</strong> kcal</span>
+          <span style="font-size:0.82rem; color:#64748b; margin-left:4px;">小計：<strong id="sub-drink">0</strong> kcal</span>
         </div>
       </div>
       <div class="meal-input-group">
-        <input type="text" id="name-drink" placeholder="🔍 輸入飲料 (如: 奇亞籽水、黑豆漿)" oninput="handleFuzzySearch('drink')" onkeydown="handleEnterAdd(event, 'drink')" autocomplete="off">
+        <input type="text" id="name-drink" placeholder="🔍 搜尋飲料 (如: 奇亞籽水、黑豆漿)" oninput="handleFuzzySearch('drink')" onkeydown="handleEnterAdd(event, 'drink')" autocomplete="off">
         <div class="fuzzy-dropdown" id="dropdown-drink"></div>
         <div class="input-row-sub">
           <input type="number" id="qty-drink" value="1" step="0.5" min="0.1" placeholder="份數" oninput="updateTotalCal('drink')" onkeydown="handleEnterAdd(event, 'drink')">
@@ -363,7 +428,7 @@
 
     <!-- 底部備份 -->
     <div class="backup-footer">
-      <span class="backup-link" onclick="exportBackup()">📥 匯出手機備份檔</span>
+      <span class="backup-link" onclick="exportBackup()">📥 匯出備份檔</span>
       <span>|</span>
       <span class="backup-link" onclick="document.getElementById('importFile').click()">📤 匯入備份還原</span>
       <input type="file" id="importFile" style="display:none" accept=".json" onchange="importBackup(event)">
@@ -374,89 +439,102 @@
   <script>
     const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbz_pceZbIkWcBtp8a9EzbPEsj1avqhcMjNs16o85SERy6vFmq6IY1iwsuT6oQb4u3g9/exec";
 
-    // 🌟 包含全部在地特色小吃與家常料理的核心資料庫
     const calorieDictionary = {
+      // 🍜 麵類、粄條專區
+      "湯粄條": { cal: 400, p: 8, keywords: ["粄條", "湯粄條", "客家粄條", "條"] },
+      "乾粄條": { cal: 450, p: 8, keywords: ["粄條", "乾粄條", "乾拌粄條", "條"] },
+      "炒粄條": { cal: 580, p: 12, keywords: ["粄條", "炒粄條", "客家炒粄條", "條"] },
+      "粄條": { cal: 400, p: 8, keywords: ["粄條", "粄", "板條", "條"] },
+      "麻醬麵": { cal: 520, p: 12, keywords: ["麻醬麵", "麻醬", "乾麵", "麵"] },
+      "炸醬麵": { cal: 500, p: 14, keywords: ["炸醬麵", "炸醬", "乾麵", "麵"] },
+      "肉燥乾麵": { cal: 480, p: 12, keywords: ["肉燥乾麵", "乾麵", "肉燥麵", "麵"] },
+      "涼麵": { cal: 450, p: 11, keywords: ["涼麵", "麻醬涼麵", "麵"] },
+      "牛肉麵": { cal: 750, p: 30, keywords: ["牛肉麵", "紅燒牛肉麵", "牛肉", "麵"] },
+      "紅燒牛肉麵": { cal: 780, p: 30, keywords: ["紅燒牛肉麵", "牛肉麵", "麵"] },
+      "清燉牛肉麵": { cal: 580, p: 30, keywords: ["清燉牛肉麵", "清燉牛肉", "麵"] },
+      "陽春麵": { cal: 350, p: 9, keywords: ["陽春麵", "湯麵", "麵"] },
+      "榨菜肉絲麵": { cal: 450, p: 14, keywords: ["榨菜肉絲麵", "湯麵", "麵"] },
+      "餛飩麵": { cal: 460, p: 16, keywords: ["餛飩麵", "湯麵", "餛飩", "麵"] },
+      "蒜辣白酒蛤蜊義大利麵": { cal: 490, p: 22, keywords: ["白酒蛤蜊", "義大利麵", "蛤蜊麵", "麵"] },
+      "波隆那肉醬義大利麵": { cal: 620, p: 20, keywords: ["肉醬義大利麵", "義大利麵", "肉醬麵", "麵"] },
+
       // 🥢 旗魚黑輪與關東煮
       "旗魚黑輪": { cal: 160, p: 8, keywords: ["旗魚黑輪", "黑輪", "旗魚", "輪"] },
-      "包蛋旗魚黑輪": { cal: 130, p: 6, keywords: ["包蛋", "包蛋黑輪", "包蛋旗魚黑輪", "黑輪"] },
+      "包蛋旗魚黑輪": { cal: 130, p: 6, keywords: ["包蛋", "包蛋黑輪", "包蛋旗魚黑輪", "黑輪", "輪"] },
       "關東煮": { cal: 180, p: 8, keywords: ["關東煮", "綜合關東煮"] },
-      "關東煮黑輪": { cal: 95, p: 4, keywords: ["黑輪", "關東煮黑輪"] },
-      "關東煮白蘿蔔": { cal: 25, p: 1, keywords: ["蘿蔔", "白蘿蔔", "菜頭", "關東煮蘿蔔"] },
+      "關東煮黑輪": { cal: 95, p: 4, keywords: ["黑輪", "關東煮黑輪", "輪"] },
+      "關東煮白蘿蔔": { cal: 25, p: 1, keywords: ["蘿蔔", "白蘿蔔", "菜頭"] },
 
-      // 🥟 水晶餃專區
-      "台南水晶餃": { cal: 200, p: 6, keywords: ["台南", "水晶餃", "台南水晶餃", "餃"] },
-      "祿記水晶餃": { cal: 200, p: 6, keywords: ["祿記", "台南", "水晶餃", "祿記水晶餃"] },
-      "水晶餃": { cal: 60, p: 2, keywords: ["水晶餃", "餃"] },
-      "客家水晶餃": { cal: 120, p: 4, keywords: ["客家", "三角", "水晶餃", "客家水晶餃"] },
-      "炸水晶餃": { cal: 350, p: 8, keywords: ["炸水晶餃", "水晶餃"] },
-
-      // 🍚 主食與蒸肉
-      "白飯": { cal: 280, p: 6, keywords: ["白飯", "飯", "米飯", "一碗飯"] },
-      "白飯(半碗)": { cal: 140, p: 3, keywords: ["半碗飯", "白飯半碗"] },
-      "鹹蛋蒸肉": { cal: 300, p: 18, keywords: ["鹹蛋蒸肉", "蒸肉", "鹹蛋", "肉餅"] },
-      "鹹蛋蒸肉餅": { cal: 300, p: 18, keywords: ["鹹蛋蒸肉餅", "蒸肉餅", "肉餅"] },
-      "滷肉飯": { cal: 420, p: 12, keywords: ["滷肉飯", "魯肉飯", "肉燥飯"] },
-
-      // 🥩 豬肉與黑白切
+      // 🥩 豬肉、豬頭皮與黑白切
+      "豬頭皮": { cal: 240, p: 15, keywords: ["豬頭皮", "頭皮", "豬皮", "豬肉", "黑白切"] },
+      "豬耳朵": { cal: 220, p: 16, keywords: ["豬耳朵", "耳朵", "黑白切", "豬肉"] },
       "嘴邊肉": { cal: 140, p: 18, keywords: ["嘴邊肉", "黑白切", "豬肉"] },
       "肝連肉": { cal: 150, p: 18, keywords: ["肝連肉", "肝連", "黑白切", "豬肉"] },
       "骨仔肉": { cal: 150, p: 17, keywords: ["骨仔肉", "黑白切", "豬肉"] },
       "松阪豬": { cal: 220, p: 16, keywords: ["松阪豬", "松阪", "豬肉"] },
       "滷排骨": { cal: 340, p: 20, keywords: ["滷排骨", "魯排骨", "排骨"] },
-      "炸排骨": { cal: 450, p: 22, keywords: ["炸排骨", "排骨", "正忠排骨"] },
+      "炸排骨": { cal: 450, p: 22, keywords: ["炸排骨", "排骨"] },
       "控肉": { cal: 320, p: 12, keywords: ["控肉", "爌肉", "三層肉", "滷肉"] },
       "蒜泥白肉": { cal: 280, p: 15, keywords: ["蒜泥白肉", "白肉", "五花肉"] },
+
+      // 🍲 麵輪與滷味豆製品
+      "滷麵輪": { cal: 200, p: 12, keywords: ["麵輪", "滷麵輪", "魯麵輪", "素食", "輪"] },
+      "麵輪": { cal: 200, p: 12, keywords: ["麵輪", "滷麵輪", "魯麵輪", "輪"] },
+      "滷豆干": { cal: 135, p: 14, keywords: ["豆干", "滷豆干", "魯豆干"] },
+      "滷百頁豆腐": { cal: 200, p: 12, keywords: ["百頁豆腐", "滷百頁", "百頁"] },
+      "滷花干": { cal: 180, p: 10, keywords: ["花干", "滷花干", "魯花干"] },
+      "滷海帶": { cal: 20, p: 1, keywords: ["海帶", "滷海帶"] },
+      "滷米血": { cal: 140, p: 2, keywords: ["米血", "滷米血"] },
+      "滷蛋": { cal: 75, p: 7, keywords: ["滷蛋", "魯蛋", "蛋"] },
+      "綜合滷味": { cal: 180, p: 10, keywords: ["滷味", "魯味", "綜合滷味"] },
+      "滷牛腱": { cal: 160, p: 26, keywords: ["牛腱", "滷牛腱", "魯牛腱"] },
+
+      // 🥟 水晶餃專區
+      "台南水晶餃": { cal: 200, p: 6, keywords: ["台南", "水晶餃", "台南水晶餃", "餃"] },
+      "祿記水晶餃": { cal: 200, p: 6, keywords: ["祿記", "台南", "水晶餃", "祿記水晶餃"] },
+      "水晶餃": { cal: 60, p: 2, keywords: ["水晶餃", "餃"] },
+      "客家水晶餃": { cal: 120, p: 4, keywords: ["客家", "三角", "水晶餃"] },
+      "炸水晶餃": { cal: 350, p: 8, keywords: ["炸水晶餃", "水晶餃"] },
+
+      // 🍚 主食、便當與肉品
+      "白飯": { cal: 280, p: 6, keywords: ["白飯", "飯", "米飯", "一碗飯"] },
+      "白飯(半碗)": { cal: 140, p: 3, keywords: ["半碗飯", "白飯半碗"] },
+      "鹹蛋蒸肉": { cal: 300, p: 18, keywords: ["鹹蛋蒸肉", "蒸肉", "鹹蛋", "肉餅"] },
+      "鹹蛋蒸肉餅": { cal: 300, p: 18, keywords: ["鹹蛋蒸肉餅", "蒸肉餅", "肉餅"] },
+      "滷肉飯": { cal: 420, p: 12, keywords: ["滷肉飯", "魯肉飯", "肉燥飯"] },
+      "正忠排骨飯": { cal: 890, p: 32, keywords: ["正忠排骨", "排骨飯", "便當"] },
 
       // 🍗 雞肉專區
       "舒肥雞胸肉": { cal: 140, p: 26, keywords: ["雞胸肉", "舒肥雞", "雞肉", "雞胸"] },
       "水煮雞胸肉": { cal: 130, p: 28, keywords: ["水煮雞胸肉", "雞肉", "雞絲"] },
       "滷雞腿": { cal: 300, p: 24, keywords: ["滷雞腿", "魯雞腿", "雞腿"] },
       "炸雞腿": { cal: 480, p: 25, keywords: ["炸雞腿", "雞腿"] },
-      "烤雞腿": { cal: 320, p: 26, keywords: ["烤雞腿", "雞腿"] },
       "炸雞排": { cal: 650, p: 35, keywords: ["炸雞排", "雞排"] },
       "鹽水雞胸": { cal: 130, p: 24, keywords: ["鹽水雞", "鹹水雞", "雞胸"] },
-      "三杯雞": { cal: 520, p: 36, keywords: ["三杯雞", "三杯"] },
 
-      // 🍲 滷味
-      "滷味": { cal: 180, p: 10, keywords: ["滷味", "魯味", "綜合滷味"] },
-      "滷蛋": { cal: 75, p: 7, keywords: ["滷蛋", "魯蛋", "蛋"] },
-      "滷豆干": { cal: 135, p: 14, keywords: ["滷豆干", "魯豆干", "豆干"] },
-      "滷牛腱": { cal: 160, p: 26, keywords: ["滷牛腱", "魯牛腱", "牛腱"] },
-      "滷海帶": { cal: 20, p: 1, keywords: ["滷海帶", "海帶"] },
-      "滷百頁豆腐": { cal: 200, p: 12, keywords: ["百頁豆腐", "滷百頁", "百頁"] },
-      "滷花干": { cal: 180, p: 10, keywords: ["滷花干", "花干"] },
-      "滷米血": { cal: 140, p: 2, keywords: ["滷米血", "米血"] },
-
-      // 🥬 蔬菜與豆類
+      // 🥬 蔬菜專區
       "炒菠菜": { cal: 120, p: 3, keywords: ["炒菠菜", "菠菜", "菜"] },
       "燙菠菜": { cal: 45, p: 3, keywords: ["燙菠菜", "菠菜"] },
       "炒敏豆": { cal: 110, p: 2, keywords: ["炒敏豆", "敏豆", "四季豆", "炒四季豆", "豆"] },
       "燙敏豆": { cal: 40, p: 2, keywords: ["燙敏豆", "敏豆", "四季豆"] },
       "水煮毛豆": { cal: 125, p: 13, keywords: ["毛豆", "水煮毛豆", "毛豆仁", "豆"] },
-      "炒甜豆莢": { cal: 100, p: 3, keywords: ["甜豆", "荷蘭豆", "甜豆莢"] },
       "炒高麗菜": { cal: 130, p: 2, keywords: ["高麗菜", "炒高麗菜"] },
       "炒芥藍菜": { cal: 130, p: 3, keywords: ["芥藍", "炒芥藍", "芥藍菜"] },
       "燙芥藍菜": { cal: 50, p: 3, keywords: ["燙芥藍", "芥藍"] },
-      "炒水蓮": { cal: 140, p: 2, keywords: ["水蓮", "炒水蓮"] },
-      "燙地瓜葉": { cal: 50, p: 3, keywords: ["地瓜葉", "燙地瓜葉"] },
       "筍乾": { cal: 160, p: 2, keywords: ["筍乾", "滷筍乾", "控肉筍乾"] },
 
-      // 🌱 奇亞籽與飲品
+      // 🌱 奇亞籽
       "奇亞籽": { cal: 60, p: 3, keywords: ["奇亞籽", "奇芽籽", "鼠尾草籽"] },
       "奇亞籽水": { cal: 60, p: 3, keywords: ["奇亞籽水", "奇芽籽水"] },
-      "奇亞籽無糖豆漿": { cal: 200, p: 18, keywords: ["奇亞籽豆漿", "豆漿"] },
       "無糖豆漿": { cal: 147, p: 15, keywords: ["無糖豆漿", "豆漿"] },
       "馬可先生無糖黑豆漿": { cal: 170, p: 16, keywords: ["黑豆漿", "馬可先生", "豆漿"] },
       "水煮蛋": { cal: 75, p: 7, keywords: ["水煮蛋", "蛋"] },
-      "荷包蛋": { cal: 120, p: 7, keywords: ["荷包蛋", "煎蛋"] },
-      "芝麻吐司": { cal: 180, p: 5, keywords: ["芝麻吐司", "吐司"] },
-      "正忠排骨飯": { cal: 890, p: 32, keywords: ["正忠排骨", "排骨飯", "便當"] }
+      "芝麻吐司": { cal: 180, p: 5, keywords: ["芝麻吐司", "吐司"] }
     };
 
     let baseCaloriesMap = {};
     let baseProteinMap = {};
 
-    // 🌟 強效模糊比對搜尋函式
     function handleFuzzySearch(type) {
       const input = document.getElementById(`name-${type}`);
       const dropdown = document.getElementById(`dropdown-${type}`);
@@ -467,8 +545,8 @@
         return;
       }
 
-      // 標準化關鍵字（容錯：台/臺、魯/滷、奇芽/奇亞）
       const q = rawQuery.toLowerCase()
+        .replace(/板/g, '粄')
         .replace(/臺/g, '台')
         .replace(/魯/g, '滷')
         .replace(/奇芽/g, '奇亞');
@@ -476,9 +554,7 @@
       const matchedList = [];
 
       for (const [name, data] of Object.entries(calorieDictionary)) {
-        const normName = name.replace(/臺/g, '台').replace(/魯/g, '滷').replace(/奇芽/g, '奇亞');
-        
-        // 比對名稱本身，或是關鍵字陣列
+        const normName = name.replace(/板/g, '粄').replace(/臺/g, '台').replace(/魯/g, '滷').replace(/奇芽/g, '奇亞');
         const matchName = normName.includes(q);
         const matchKw = data.keywords && data.keywords.some(kw => kw.toLowerCase().includes(q));
 
@@ -504,7 +580,6 @@
         dropdown.style.display = 'none';
       }
 
-      // 若完全命中，自動帶出單份熱量
       if (calorieDictionary[rawQuery]) {
         baseCaloriesMap[type] = calorieDictionary[rawQuery].cal;
         baseProteinMap[type] = calorieDictionary[rawQuery].p || 0;
@@ -522,7 +597,6 @@
       document.getElementById(`dropdown-${type}`).style.display = 'none';
     }
 
-    // 點擊空白處關閉下拉選單
     document.addEventListener('click', (e) => {
       if (!e.target.closest('.meal-input-group')) {
         document.querySelectorAll('.fuzzy-dropdown').forEach(d => d.style.display = 'none');
@@ -558,7 +632,7 @@
     function showToast(msg, isSuccess = false) {
       const toast = document.getElementById('syncToast');
       toast.textContent = msg;
-      toast.style.background = isSuccess ? 'rgba(22, 101, 52, 0.95)' : 'rgba(15, 23, 42, 0.95)';
+      toast.style.background = isSuccess ? 'rgba(15, 118, 110, 0.95)' : 'rgba(15, 23, 42, 0.92)';
       toast.style.display = 'flex';
       setTimeout(() => { toast.style.display = 'none'; }, 2000);
     }
@@ -770,7 +844,7 @@
             <span class="time-tag">⏰ ${s.time}</span>
           </div>
           <div>
-            <strong style="color:#16a34a;">-${s.burn}</strong> kcal
+            <strong style="color:#15803d;">-${s.burn}</strong> kcal
             <button class="del-btn" onclick="removeSport(${idx})">✕</button>
           </div>
         `;
@@ -809,7 +883,8 @@
 
       const remainEl = document.getElementById('remainCal');
       remainEl.textContent = remainVal;
-      remainEl.style.color = remainVal < 0 ? "#f87171" : "#4ade80";
+      // 剩餘額度超標時改用暖橘黃，其餘保持薄荷綠
+      remainEl.style.color = remainVal < 0 ? "#ea580c" : "#34d399";
 
       const key = `health_tracker_${currentDateStr}`;
       localStorage.setItem(key, JSON.stringify(appData));
@@ -942,7 +1017,7 @@
       if (reader.style.display === 'block') {
         if (scanner) scanner.stop();
         reader.style.display = 'none';
-        btn.textContent = '📷 點此開啟相機掃條碼';
+        btn.textContent = '📷 開啟相機掃描食品條碼';
       } else {
         reader.style.display = 'block';
         btn.textContent = '關閉相機';
@@ -952,7 +1027,7 @@
         ).catch(() => {
           alert('請確認允許相機權限');
           reader.style.display = 'none';
-          btn.textContent = '📷 點此開啟相機掃條碼';
+          btn.textContent = '📷 開啟相機掃描食品條碼';
         });
       }
     }
