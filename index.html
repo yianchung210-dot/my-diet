@@ -125,7 +125,7 @@
     .btn-quick-water:active { background: #e0f2fe; border-color: #bae6fd; }
 
     /* 輸入區排版 */
-    .meal-input-group { display: flex; flex-direction: column; gap: 8px; position: relative; margin-bottom: 8px; }
+    .meal-input-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 8px; }
     .input-row-sub { display: grid; grid-template-columns: 0.9fr 1.3fr auto; gap: 8px; align-items: center; }
     .grid-2 { display: grid; grid-template-columns: 1.4fr 1fr; gap: 8px; margin-bottom: 8px; }
     .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 8px; }
@@ -174,9 +174,22 @@
 
   <div id="syncToast">🔄 雲端同步中...</div>
 
-  <!-- 🌟 全品項完整檢視與收錄選單 -->
+  <!-- 🌟 全品項完整收錄選單 (含糕餅、點心、燙青菜細分、肉類) -->
   <datalist id="foodDatalist">
-    <!-- 🥬 蔬菜專區（全面涵蓋 清燙 vs 淋肉燥/油蔥 vs 蒜炒） -->
+    <!-- 🥮 經典台式糕餅與甜點專區 -->
+    <option value="蛋黃酥">蛋黃酥單顆 (280 kcal / 蛋白質5g)</option>
+    <option value="鳳梨酥">鳳梨酥單顆 (200 kcal / 蛋白質2g)</option>
+    <option value="土鳳梨酥">土鳳梨酥單顆 (210 kcal / 蛋白質2g)</option>
+    <option value="綠豆椪">綠豆椪/綠豆凸單顆 (340 kcal / 蛋白質6g)</option>
+    <option value="魯肉綠豆椪">魯肉綠豆椪單顆 (420 kcal / 蛋白質8g)</option>
+    <option value="太陽餅">台中太陽餅單個 (240 kcal / 蛋白質3g)</option>
+    <option value="芋頭酥">芋頭酥單顆 (220 kcal / 蛋白質3g)</option>
+    <option value="牛舌餅">鹿港厚牛舌餅一片 (180 kcal / 蛋白質3g)</option>
+    <option value="宜蘭薄牛舌餅">宜蘭薄牛舌餅一片 (60 kcal / 蛋白質1g)</option>
+    <option value="老婆餅">老婆餅單個 (240 kcal / 蛋白質3g)</option>
+    <option value="胡椒餅">碳烤胡椒餅 (360 kcal / 蛋白質14g)</option>
+
+    <!-- 🥬 蔬菜專區（含 淋肉燥/油蔥 vs 清燙 vs 蒜炒） -->
     <option value="燙大陸妹(淋肉燥)">燙大陸妹/淋肉燥油蔥 (120 kcal / 蛋白質2g)</option>
     <option value="燙大陸妹">清燙大陸妹 (35 kcal / 蛋白質2g)</option>
     <option value="炒大陸妹">蒜炒大陸妹 (100 kcal / 蛋白質2g)</option>
@@ -411,7 +424,7 @@
         </div>
       </div>
       <div class="meal-input-group">
-        <input type="text" id="name-breakfast" list="foodDatalist" placeholder="🔍 點此選單或打字搜尋 (如: 大陸妹、雞肉)" oninput="onFoodInput('breakfast')" onkeydown="handleEnterAdd(event, 'breakfast')" autocomplete="off">
+        <input type="text" id="name-breakfast" list="foodDatalist" placeholder="🔍 點此選單或打字 (如: 蛋黃酥、雞肉、白飯)" oninput="onFoodInput('breakfast')" onkeydown="handleEnterAdd(event, 'breakfast')" autocomplete="off">
         <div class="input-row-sub">
           <input type="number" id="qty-breakfast" value="1" step="0.5" min="0.1" placeholder="份數" oninput="updateTotalCal('breakfast')" onkeydown="handleEnterAdd(event, 'breakfast')">
           <input type="number" id="cal-breakfast" placeholder="🔥 熱量 (kcal)" oninput="onManualCalChange('breakfast')" onkeydown="handleEnterAdd(event, 'breakfast')">
@@ -432,7 +445,7 @@
         </div>
       </div>
       <div class="meal-input-group">
-        <input type="text" id="name-lunch" list="foodDatalist" placeholder="🔍 點此選單或打字搜尋 (如: 燙大陸妹、旗魚黑輪)" oninput="onFoodInput('lunch')" onkeydown="handleEnterAdd(event, 'lunch')" autocomplete="off">
+        <input type="text" id="name-lunch" list="foodDatalist" placeholder="🔍 點此選單或打字 (如: 燙大陸妹、綠豆椪)" oninput="onFoodInput('lunch')" onkeydown="handleEnterAdd(event, 'lunch')" autocomplete="off">
         <div class="input-row-sub">
           <input type="number" id="qty-lunch" value="1" step="0.5" min="0.1" placeholder="份數" oninput="updateTotalCal('lunch')" onkeydown="handleEnterAdd(event, 'lunch')">
           <input type="number" id="cal-lunch" placeholder="🔥 熱量 (kcal)" oninput="onManualCalChange('lunch')" onkeydown="handleEnterAdd(event, 'lunch')">
@@ -453,7 +466,7 @@
         </div>
       </div>
       <div class="meal-input-group">
-        <input type="text" id="name-dinner" list="foodDatalist" placeholder="🔍 點此選單或打字搜尋 (如: 燙大陸妹、豬頭皮)" oninput="onFoodInput('dinner')" onkeydown="handleEnterAdd(event, 'dinner')" autocomplete="off">
+        <input type="text" id="name-dinner" list="foodDatalist" placeholder="🔍 點此選單或打字 (如: 鳳梨酥、豬頭皮、麵輪)" oninput="onFoodInput('dinner')" onkeydown="handleEnterAdd(event, 'dinner')" autocomplete="off">
         <div class="input-row-sub">
           <input type="number" id="qty-dinner" value="1" step="0.5" min="0.1" placeholder="份數" oninput="updateTotalCal('dinner')" onkeydown="handleEnterAdd(event, 'dinner')">
           <input type="number" id="cal-dinner" placeholder="🔥 熱量 (kcal)" oninput="onManualCalChange('dinner')" onkeydown="handleEnterAdd(event, 'dinner')">
@@ -473,7 +486,7 @@
         </div>
       </div>
       <div class="meal-input-group">
-        <input type="text" id="name-snack" list="foodDatalist" placeholder="🔍 點此選單或打字搜尋 (如: 旗魚黑輪、水晶餃)" oninput="onFoodInput('snack')" onkeydown="handleEnterAdd(event, 'snack')" autocomplete="off">
+        <input type="text" id="name-snack" list="foodDatalist" placeholder="🔍 點此選單或打字 (如: 蛋黃酥、鳳梨酥、旗魚黑輪)" oninput="onFoodInput('snack')" onkeydown="handleEnterAdd(event, 'snack')" autocomplete="off">
         <div class="input-row-sub">
           <input type="number" id="qty-snack" value="1" step="0.5" min="0.1" placeholder="份數" oninput="updateTotalCal('snack')" onkeydown="handleEnterAdd(event, 'snack')">
           <input type="number" id="cal-snack" placeholder="🔥 熱量 (kcal)" oninput="onManualCalChange('snack')" onkeydown="handleEnterAdd(event, 'snack')">
@@ -493,7 +506,7 @@
         </div>
       </div>
       <div class="meal-input-group">
-        <input type="text" id="name-drink" list="foodDatalist" placeholder="🔍 點此選單或打字搜尋 (如: 奇亞籽水、黑豆漿)" oninput="onFoodInput('drink')" onkeydown="handleEnterAdd(event, 'drink')" autocomplete="off">
+        <input type="text" id="name-drink" list="foodDatalist" placeholder="🔍 點此選單或打字 (如: 奇亞籽水、黑豆漿)" oninput="onFoodInput('drink')" onkeydown="handleEnterAdd(event, 'drink')" autocomplete="off">
         <div class="input-row-sub">
           <input type="number" id="qty-drink" value="1" step="0.5" min="0.1" placeholder="份數" oninput="updateTotalCal('drink')" onkeydown="handleEnterAdd(event, 'drink')">
           <input type="number" id="cal-drink" placeholder="🔥 熱量 (kcal)" oninput="onManualCalChange('drink')" onkeydown="handleEnterAdd(event, 'drink')">
@@ -536,8 +549,23 @@
       localStorage.setItem('custom_barcode_db', JSON.stringify(custom));
     }
 
-    // 🌟 全面校對後的完整核心卡路里字典庫
+    // 🌟 全面校對後的完整核心卡路里字典庫（含糕餅類、蔬菜細分、肉品）
     const calorieDictionary = {
+      // 🥮 經典糕餅與漢餅專區
+      "蛋黃酥": { cal: 280, p: 5 },
+      "鳳梨酥": { cal: 200, p: 2 },
+      "土鳳梨酥": { cal: 210, p: 2 },
+      "綠豆椪": { cal: 340, p: 6 },
+      "綠豆凸": { cal: 340, p: 6 },
+      "魯肉綠豆椪": { cal: 420, p: 8 },
+      "滷肉綠豆椪": { cal: 420, p: 8 },
+      "太陽餅": { cal: 240, p: 3 },
+      "芋頭酥": { cal: 220, p: 3 },
+      "牛舌餅": { cal: 180, p: 3 },
+      "宜蘭薄牛舌餅": { cal: 60, p: 1 },
+      "老婆餅": { cal: 240, p: 3 },
+      "胡椒餅": { cal: 360, p: 14 },
+
       // 🥬 蔬菜專區（全面涵蓋 清燙 vs 淋肉燥/油蔥 vs 蒜炒）
       "燙大陸妹(淋肉燥)": { cal: 120, p: 2 },
       "燙大陸妹": { cal: 35, p: 2 },
